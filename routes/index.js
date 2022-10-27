@@ -14,4 +14,10 @@ router.get('/google_OrgChart.html', function(req, res, next) {
   res.render('google_OrgChart', { title: 'google_OrgChart ddc' });
 });
 
+router.get('/d3_radialStackedBar.html', function(req, res, next) {
+  res.render('d3_radialStackedBar', { title: 'd3_radialStackedBar ddc' });
+});
+
+
+
 module.exports = router;
