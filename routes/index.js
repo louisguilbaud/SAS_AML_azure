@@ -18,6 +18,13 @@ router.get('/d3_radialStackedBar.html', function(req, res, next) {
   res.render('d3_radialStackedBar', { title: 'd3_radialStackedBar ddc' });
 });
 
+router.get('/d3_NetworkDiagram.html', function(req, res, next) {
+  res.render('d3_NetworkDiagram', { title: 'd3_NetworkDiagram ddc' });
+});
+
+router.get('/d3_FunnelChart.html', function(req, res, next) {
+  res.render('d3_FunnelChart', { title: 'd3_FunnelChart ddc' });
+});
 
 
 module.exports = router;
