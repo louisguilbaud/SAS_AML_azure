@@ -10,8 +10,8 @@ router.get('/jsonDataViewer.html', function(req, res, next) {
   res.render('jsonDataViewer', { title: 'jsonDataViewer ddc' });
 });
 
-router.get('/google_OrgCHart.html', function(req, res, next) {
-  res.render('google_OrgCHart', { title: 'google_OrgCHart ddc' });
+router.get('/google_OrgChart.html', function(req, res, next) {
+  res.render('google_OrgChart', { title: 'google_OrgChart ddc' });
 });
 
 module.exports = router;
