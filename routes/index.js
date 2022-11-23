@@ -39,4 +39,8 @@ router.get('/d3_spiralHeatmap.html', function(req, res, next) {
   res.render('d3_spiralHeatmap', { title: 'd3_spiralHeatmap ddc' });
 });
 
+router.get('/multiSelector.html', function(req, res, next) {
+  res.render('multiSelector', { title: 'Multiselector ddc' });
+});
+
 module.exports = router;
