@@ -43,16 +43,16 @@ router.get('/multiSelector.html', function(req, res, next) {
   res.render('multiSelector', { title: 'Multiselector ddc' });
 });
 
-router.get('/mlbasedmonitoring/Feedback.html', function(req, res, next) {
-  res.render('mlbasedmonitoring/Feedback', { title: 'ML Based monitoring Feedback ddc' });
+router.get('/Feedback.html', function(req, res, next) {
+  res.render('Feedback', { title: 'ML Based monitoring Feedback ddc' });
 });
 
-router.get('/mlbasedmonitoring/Scoring.html', function(req, res, next) {
-  res.render('mlbasedmonitoring/Scoring', { title: 'ML Based monitoring Scoring ddc' });
+router.get('/Scoring.html', function(req, res, next) {
+  res.render('Scoring', { title: 'ML Based monitoring Scoring ddc' });
 });
 
-router.get('/mlbasedmonitoring/TrainModel.html', function(req, res, next) {
-  res.render('mlbasedmonitoring/TrainModel', { title: 'ML Based monitoring TrainModel ddc' });
+router.get('/TrainModel.html', function(req, res, next) {
+  res.render('TrainModel', { title: 'ML Based monitoring TrainModel ddc' });
 });
 
 module.exports = router;

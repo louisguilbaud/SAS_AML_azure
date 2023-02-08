@@ -2,8 +2,8 @@
 
 <html>
   <head>
-    <script src='/javascripts/sas/util/messagingUtil.js'></script>
-    <script src="/javascripts/jquery/jquery.min.js"></script>
+    <script src='./javascripts/sas/util/messagingUtil.js'></script>
+    <script src="./javascripts/jquery/jquery.min.js"></script>
 
     <style type="text/css">
     .center {
@@ -94,28 +94,48 @@
         // Event handler used upper : retrieve three value from the report, Machine, Fluid and Step respectively 
         function onDataReceived(resultData)
         {
-            // Get value of the incoming json data array (FillingMachine , Fluid, Step, Feature)  
-            //document.getElementById('mainForm').elements['Machine'].value = resultData.data[0][0];
+            // Get value of the incoming json data array (FillingMachine , Fluid, Step, Feature)
+            document.getElementById('mainForm').elements['Machine'].value = resultData.data[0][0];
+            document.getElementById('mainForm').elements['Fluid'].value = resultData.data[0][1];
+            var listStep = [...new Set(resultData.data.map(e => e[2]))].join(',');
+            document.getElementById('mainForm').elements['Step'].value = listStep;
+            var listFeature = [...new Set(resultData.data.map(e => e[3]))].join(',');
+	    document.getElementById('mainForm').elements['Feature'].value = listFeature;
         }
                 
      </script>
 
 </head>
   <body>
-
     <div id="form-style-9"> 
         <form class="form-style-9" id="mainForm" action="/SASJobExecution/" enctype="multipart/form-data">
-            <input type="hidden" name="_program"     value="/Public/MLSensorMonitoring/jobs/Scoring">
+            <input type="hidden" name="_program"     value="/Public/MLSensorMonitoring/jobs/TrainModel">
             <input type="hidden" name="_action"      value="wait,execute">
-            <input type="hidden" name="_csrf"        value="$CSRF$">
             <ul>
             <li>
-                <input type="date" name="strtdte" class="field-style field-split align-left">
-                <input type="date" name="enddte" class="field-style field-split align-right">
+                <input type="text" id="Machine" name="Machine" class="field-style field-split align-left" />
+                <input type="text" id="Fluid" name="Fluid" class="field-style field-split align-right"  />
             </li>
+            <li>
+                <input type="text" id="Step" name="Step" class="field-style field-split align-right" />
+                <select type="text" id="Algo" name="Algo" class="field-style field-split align-left" />
+                            <option value="SVDD">Support Vector Data Description</option>
+                            <option value="IFOREST" disabled>Isolation Forest (Not activated)</option>
+                            <option value="MWRPCA" disabled>Moving Robust PCA (Not Activated)</option>
+                            <option value="AUTOENC" disabled>Autoencoders (Not Activated)</option>
+                </select>
+            </li>
+            <li>
+                <input type="text" id="Feature" name="Feature" class="field-style field-full align-left" />
+            </li>
+            <li>
+                <input type="date" id="trnsdt" name="trnsdt" class="field-style field-split align-left" />
+                <input type="date" id="trnedt" name="trnedt" class="field-style field-split align-right" />
+            </li>
+	    <li>
             <input type="submit" class="field-style field-full align-left" value="Click to start scoring" />
             </li>
-            </ul>
+	    </ul>
         </form>
     </div>
   </body>
