@@ -43,15 +43,15 @@ router.get('/multiSelector.html', function(req, res, next) {
   res.render('multiSelector', { title: 'Multiselector ddc' });
 });
 
-router.get('/mlbasedmonitoring/Feedback.thml', function(req, res, next) {
+router.get('/mlbasedmonitoring/Feedback.html', function(req, res, next) {
   res.render('Feedback', { title: 'ML Based monitoring Feedback ddc' });
 });
 
-router.get('/mlbasedmonitoring/Scoring.thml', function(req, res, next) {
+router.get('/mlbasedmonitoring/Scoring.html', function(req, res, next) {
   res.render('Scoring', { title: 'ML Based monitoring Scoring ddc' });
 });
 
-router.get('/mlbasedmonitoring/TrainModel.thml', function(req, res, next) {
+router.get('/mlbasedmonitoring/TrainModel.html', function(req, res, next) {
   res.render('TrainModel', { title: 'ML Based monitoring TrainModel ddc' });
 });
 
