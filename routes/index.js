@@ -44,15 +44,15 @@ router.get('/multiSelector.html', function(req, res, next) {
 });
 
 router.get('/mlbasedmonitoring/Feedback.html', function(req, res, next) {
-  res.render('Feedback', { title: 'ML Based monitoring Feedback ddc' });
+  res.render('mlbasedmonitoring/Feedback', { title: 'ML Based monitoring Feedback ddc' });
 });
 
 router.get('/mlbasedmonitoring/Scoring.html', function(req, res, next) {
-  res.render('Scoring', { title: 'ML Based monitoring Scoring ddc' });
+  res.render('mlbasedmonitoring/Scoring', { title: 'ML Based monitoring Scoring ddc' });
 });
 
 router.get('/mlbasedmonitoring/TrainModel.html', function(req, res, next) {
-  res.render('TrainModel', { title: 'ML Based monitoring TrainModel ddc' });
+  res.render('mlbasedmonitoring/TrainModel', { title: 'ML Based monitoring TrainModel ddc' });
 });
 
 module.exports = router;
