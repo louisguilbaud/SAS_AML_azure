@@ -55,4 +55,9 @@ router.get('/TrainModel.html', function(req, res, next) {
   res.render('TrainModel', { title: 'ML Based monitoring TrainModel ddc' });
 });
 
+router.get('/cas_rest_api_js_sample.html', function(req, res, next) {
+  res.render('cas_rest_api_js_sample', { title: 'Example of javascript using direct CAS Rest API' });
+});
+
+
 module.exports = router;
