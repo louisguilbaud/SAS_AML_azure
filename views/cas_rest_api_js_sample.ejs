@@ -4,13 +4,14 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>My MAS Application</title>
-    <meta name="description" content="A simple HTML file which interacts with MAS">
+    <title>My CAS Server Application</title>
+    <meta name="description" content="A simple HTML file which interacts with CAS Server">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <script src="https://cdn.developer.sas.com/packages/sas-auth-browser/latest/dist/index.js"></script>
+
 </head>
 
 <body onload="authenticate()">
@@ -20,16 +21,60 @@
         const App = () => {
             const html = `
                 <nav class="navbar bg-primary">
-                    <span class="navbar-brand m-2 h1 text-light" href="#">My MAS Application</span>
+                    <span class="navbar-brand m-2 h1 text-light" href="#">My CAS Server Application</span>
                     <span class="navbar-text m-2 text-light" id="userId"></span>
                 </nav>
                 <div id="authentication"></div>
-                <div class="row p-2">
-                <form class="col-6" id="scoringForm"></form>
+                <nav id="selector" class="mx-2 navbar">
+                    <span>
+                        <label for="libraries">Choose a CAS library : </label>
+                        <select id="libraries"name="libraries" style="width:300px;"></select>
+                        <label for="tables">Choose a CAS table : </label>
+                        <select id="tables" name="tables" style="width:300px;"></select>
+                        <button id="summarize" disabled type="button" class="btn btn-primary mx-2" data-bs-toggle="modal" data-bs-target="#selectionModal">Calculate Frequency</button>
+                    </span>
+                    <span>
+                        <button disabled class="btn btn-secondary mx-1" width="20px" id="previousPage">-</button>
+                        <input disabled value="1" id="page" size="3" style="text-align:center;" >
+                        <button disabled class="btn btn-secondary mx-1" width="20px" id="nextPage">+</button>
+                    </span>
+                </nav>
                 <div id="spinner" class="d-flex justify-content-center d-none">
                     <div class="spinner-border text-primary" role="status"></div>
                 </div>
-                <div class="col-6" id="scoringOutput">
+                <div id="output">
+                    <table class="table">
+                        <thead id="tableHeader"></thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+                <div class="modal fade" id="selectionModal" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Select group-by variables</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div id="modalBody" class="modal-body">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-5 bg-primary text-white p-1 text-center"><span>Available variables</span></div>
+                                    <div class="col-2"></div>
+                                    <div class="col-5 bg-primary text-white p-1 text-center"><span>Selected variables</span></div>
+                                </div>
+                                    <div id="variableSelector" class="row">
+                                    <div id="availableVariables" class="col-5 p-1 overflow-auto"></div>
+                                    <div class="col-2"></div>
+                                    <div id="selectedVariables" class="col-5 p-1 overflow-auto"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="generateFrequency">Generate Frequency table</button>
+                        </div>
+                        </div>
+                    </div>
                 </div>
             `
             return html
@@ -40,6 +85,11 @@
         App.state = {
             "baseUrl": "https://viya4.frasep.sas.com",
             "isAuthenticated": false,
+            "casSessionId": null,
+            "selectedLibrary": null,
+            "selectedTable": null,
+            "page": 1,
+            "pageSize": 20
         }
         // Function to authenticate user
         const authenticate = async () => {
@@ -91,164 +141,298 @@
                 .then(response => response.json())
             return response
         }
-        // Function to collect module signature
-        const getSignature = async () => {
-            const masModuleName = "sbxxab_heart_mas"
-            const endpoint = `/microanalyticScore/modules/${masModuleName}/steps/score`
+        // Function to start a CAS session
+        const startCasSession = async () => {
+            const endpoint = "/cas-shared-default-http/cas/sessions"
             const url = App.state.baseUrl + endpoint
-            const headers = {
-                "Accept": "application/vnd.sas.microanalytic.module.step+json"
-            }
-            const response = await fetch(url, { headers: headers, credentials: "include" }).then(response => {
-                // Retrieve the CSRF Token which will be required to score the data
-                App.state = { ...App.state, csrfToken: response.headers.get("X-Csrf-Token") }
-                return response.json()
-            })
-            return response
+            await fetch(url, { method: "POST", credentials: "include" })
+                .then(response => response.json())
+                .then(json => {
+                    // Store the CAS session ID
+                    App.state = { ...App.state, casSessionId: json.session }
+                    // Define an event to trigger other actions
+                    const event = new Event("session")
+                    document.getElementById("App").dispatchEvent(event)
+                    console.log("CAS Server session started")
+                    return
+                })
         }
-        // Generate form based on input signature
-        const generateForm = (target) => {
-            // Define the labels which will be displayed for the form elements
-            const labels = [
-                { "name": "sex", "description": "Sex" },
-                { "name": "ageatstart", "description": "Age when diagnosed" },
-                { "name": "cholesterol", "description": "Cholesterol Level" },
-                { "name": "diastolic", "description": "Diastolic Level" },
-                { "name": "mrw", "description": "Metropolitan Relative Weight" },
-                { "name": "systolic", "description": "Systolic level" },
-                { "name": "smoking", "description": "Number of Cigarets/Day" }
-            ]
-            // Generate the input elements
-            const inputs = App.state.inputs.map(input => {
-                // Retrieve element specific label
-                const [label] = labels.filter(label => label.name === input.name)
-                // Generate element specific label
-                const inputLabel = `<label for=${input.name} class="col-4 col-form-label" >${label.description}</label>`
-                // Generate HTML for the input element
-                switch (input.type) {
-                    case "string":
-                        return `
-                    <div class="row m-2">
-                        ${inputLabel}
-                        <div class="col-2">
-                            <input class="form-control" id=${input.name} type="string" size="${input.size}">
-                        </div>
-                    </div>
-                `
-                        break;
-                    case "decimal":
-                        return `
-                    <div class="row m-2">
-                        ${inputLabel}
-                        <div class="col-2">
-                            <input class="form-control" id=${input.name} type="numeric">
-                        </div>
-                    </div>
-                `
-                        break;
-                    default:
-                        console.log(`Type ${input.type} for input ${input.name} is not handled!`)
-                        break;
-                }
-            })
-            // Create a button to submit the form
-            const button = `<div class="row"><button type="submit" id="evaluateButton" class="btn btn-primary col-6 m-2">Evaluate!</button></div>`
-            // Write the generated form elements to the target div
-            document.getElementById(target).innerHTML = `${inputs.join("")} ${button}`
-        }
-        // Function to score the data
-        const scoreData = async (data) => {
-            const masModuleName = "sbxxab_heart_mas"
-            const endpoint = `/microanalyticScore/modules/${masModuleName}/steps/score`
+        // Function to retrieve a list of CAS libraries
+        const getLibraries = async () => {
+            const endpoint = `/cas-shared-default-http/cas/sessions/${App.state.casSessionId}/actions/table.caslibInfo`
             const url = App.state.baseUrl + endpoint
-            const formData = { "inputs": data }
-            const headers = {
-                "Content-Type": "application/vnd.sas.microanalytic.module.step.input+json",
-                "Accept": "application/vnd.sas.microanalytic.module.step.output+json",
-                "X-Csrf-Token": App.state.csrfToken
-            }
-            const response = await fetch(url, {
-                method: "POST",
-                body: JSON.stringify(formData),
-                headers: headers,
-                credentials: "include"
-            }).then(response => response.json())
-            return response
+            const libraries = await fetch(url, { method: "POST", credentials: "include" }).then(response => response.json())
+            return libraries.results.CASLibInfo
         }
-        // Generate output based on score data and output signature
-        const generateOutput = (data, target) => {
-            // Create a formatter function to display the probability in percent
-            const formatter = Intl.NumberFormat('en-US', { style: 'percent' })
-            // Define the labels which will be displayed for the output elements
-            const labels = [
-                { "name": "I_Status", "description": "The highest probable status in 6 months is", "type": "string" },
-                { "name": "P_StatusAlive", "description": "Probability of being 'Alive' in 6 months", "type": "numeric", "format": "percent" },
-                { "name": "P_StatusDead", "description": "Probability of being 'Dead' in 6 months", "type": "numeric", "format": "percent" },
-                { "name": "_WARN_", "description": "Warning", "type": "string" },
-                { "name": "_P_", "description": "Highest Probable Status", "type": "numeric" },
-            ]
-            // Generate the main information about the status
-            const [observation] = data.filter(obs => obs.name === "I_Status")
-            const [label] = labels.filter(label => observation.name === label.name)
-            let html = `<p>${label.description} <b>${observation.value.trim()}</b></p>`
-            // Generate more information section
-            const outputs = App.state.outputs.slice(1).map(output => {
-                const [observation] = data.filter(obs => obs.name.toUpperCase() === output.name.toUpperCase())
-                const [label] = labels.filter(label => observation.name === label.name)
-                // Define how to display the data based on their type and format
-                let displayValue
-                if (label.type === "numeric" && label.format === "percent") {
-                    displayValue = formatter.format(observation.value)
-                } else {
-                    displayValue = observation.value
-                }
-                return `<p>${label.description}: <b>${displayValue}</b></p>`
-            })
-            // Create a more information section
-            html += `<details>
-                        <summary><b>More information</b></summary>
-                        ${outputs.join("")}
-                    </details>
-                    `
-            // Insert the HTML elements in the target div
+        // Generate Select options and populate the selection box
+        const generateOptions = (data, target) => {
+            const options = data.rows.map(option => `<option value="${option[0]}">${option[0].toUpperCase()}</option>`)
+            let html = "<option disabled selected>Select an option</option>"
+            html += options.join("")
+            // Populate the target HTML element
             document.getElementById(target).innerHTML = html
         }
+        // Function to retrieve a list of tables
+        const getTables = async () => {
+            const endpoint = `/cas-shared-default-http/cas/sessions/${App.state.casSessionId}/actions/table.tableInfo`
+            const url = App.state.baseUrl + endpoint
+            const data = { "caslib": App.state.selectedLibrary }
+            const headers = {
+                "accept": "application/json",
+                "content-type": "application/json"
+            }
+            const tables = await fetch(url, { method: "POST", body: JSON.stringify(data), headers: headers, credentials: "include" })
+                .then(response => response.json())
+            return tables.results.TableInfo
+        }
+        // Function to extract data from a table
+        const fetchData = async () => {
+            const endpoint = `/cas-shared-default-http/cas/sessions/${App.state.casSessionId}/actions/table.fetch`
+            const url = App.state.baseUrl + endpoint
+            const data = {
+                "table": {
+                    "caslib": App.state.selectedLibrary,
+                    "name": App.state.selectedTable
+                },
+                "from": (App.state.page * App.state.pageSize) - (App.state.pageSize - 1),
+                "to": App.state.page * App.state.pageSize
+            }
+            const headers = {
+                "accept": "application/json",
+                "content-type": "application/json"
+            }
+            const table = await fetch(url, { method: "POST", body: JSON.stringify(data), headers: headers, credentials: "include" })
+                .then(response => response.json())
+            return table.results.Fetch
+        }
+        // Function to handle selection in modal
+        const handleSelectionModal = (event) => {
+            const selectedDiv = event.currentTarget
+            if (selectedDiv.parentElement.id === "availableVariables") {
+                document.getElementById("selectedVariables").appendChild(selectedDiv)
+            } else {
+                document.getElementById("availableVariables").appendChild(selectedDiv)
+            }
+        }
+        // Function to drop the frequency table if it exists
+        const dropTable = async (caslib, table) => {
+            const endpoint = `/cas-shared-default-http/cas/sessions/${App.state.casSessionId}/actions/table.dropTable`
+            const url = App.state.baseUrl + endpoint
+            const data = { "caslib": caslib, "name": table, quiet: true }
+            const headers = {
+                "accept": "application/json",
+                "content-type": "application/json"
+            }
+            const status = await fetch(url, { method: "POST", headers: headers, body: JSON.stringify(data), credentials: "include" })
+                .then(response => response.json())
+            return status
+        }
+        // Generate frequency table
+        const executeFrequency = async (selection) => {
+            // Display the spinner while retrieving the libraries list
+            loading(true, "spinner")
+            const endpoint = `/cas-shared-default-http/cas/sessions/${App.state.casSessionId}/actions/simple.freq`
+            const url = App.state.baseUrl + endpoint
+            const outputLib = "CASUSER"
+            const outputTable = App.state.selectedTable + "#Frequency"
+            const data = {
+                "table": { "caslib": App.state.selectedLibrary, "name": App.state.selectedTable },
+                "casout": { "caslib": outputLib, "name": outputTable, "promote": true },
+                "inputs": selection
+            }
+            const headers = {
+                "accept": "application/json",
+                "content-type": "application/json"
+            }
+            // Delete output table if exists
+            const tableDeletion = await dropTable(outputLib, outputTable)
+            if (tableDeletion.status === 0) {
+                const table = await fetch(url, { method: "POST", body: JSON.stringify(data), headers: headers, credentials: "include" })
+                    .then(response => response.json())
+                if (table.status === 0) {
+                    // Handle the switch to the generated table
+                    const librarySelector = document.getElementById("libraries")
+                    librarySelector.value = `CASUSER(${App.state.userInfo.id})`
+                    // Trigger the event to refresh the table list
+                    const event = new Event("change")
+                    librarySelector.dispatchEvent(event)
+                    // Wait for table list to be refreshed and set the selected table to the newly generated table
+                    setTimeout(() => {
+                        if (!App.state.loading) {
+                            const tableSelector = document.getElementById("tables")
+                            tableSelector.value = outputTable.toUpperCase()
+                            // Trigger the event to refresh the table
+                            tableSelector.dispatchEvent(event)
+                            // End the recursion
+                            clearTimeout()
+                        }
+                    }, 1000)
+                }
+            }
+        }
+        // Generate Table header
+        const generateTableHeader = (data, target) => {
+            const columns = data.map(column => `<th>${column.label ? column.label : column.name}</th>`)
+            // Populate the target HTML element
+            document.getElementById(target).innerHTML = columns.join("")
+        }
+        // Generate Table body
+        const generateTableBody = (data, target) => {
+            const rows = data.map(row => {
+                const cells = row.map(cell => `<td>${cell}</td>`)
+                return `<tr>${cells.join("")}</tr>`
+            })
+            // Populate the target HTML element
+            document.getElementById(target).innerHTML = rows.join("")
+        }
+
         // Define an event listener for authentication event
-        document.getElementById("App").addEventListener("authentication", async () => {
+        document.getElementById("App").addEventListener("authentication", () => {
             if (App.state.isAuthenticated) {
                 // Retrieve user information
                 // Display the user name in the application bar
                 getUserInfo().then(response => {
                     App.state = { ...App.state, userInfo: response }
+                    // Write the user name in the defined HTML div
                     document.getElementById("userId").innerHTML = response.name
                 })
-                // Retrieve the module signature
-                const signature = await getSignature()
-                App.state = {...App.state, inputs: signature.inputs}
-                generateForm("scoringForm")
-                // Store the inputs and outputs in the state
-                App.state = { ...App.state, inputs: signature.inputs, outputs: signature.outputs }
+                // Display the spinner while starting the compute server session
+                loading(true, "spinner")
+                // Start a compute server session
+                // Hide the spinner when done
+                startCasSession().then(() => loading(false, "spinner"))
+
             } else {
                 // Delete user information if user is not authenticated
                 App.state = { ...App.state, userInfo: null }
                 document.getElementById("userId").innerHTML = null
             }
         })
-        // Define an event listener for form submit
-        document.getElementById("scoringForm").addEventListener("submit", async (event) => {
-            // Prevents the reset of the form value on form submission
-            event.preventDefault()
-            // Adapt the form data to the format required by the scoring module
-            const data = []
-            Array.from(event.target.querySelectorAll("input")).map(input => {
-                const [varInfo] = App.state.inputs.filter(variable => variable.name === input.id)
-                varInfo.type === "string" ? value = input.value : value = parseFloat(input.value)
-                data.push({ "name": input.id, "value": value })
+        // Define an even listener for session event
+        document.getElementById("App").addEventListener("session", () => {
+            // Display the spinner while retrieving the libraries list
+            loading(true, "spinner")
+            // Retrieve libraries list
+            // Generate the options for libraries div
+            // Hide the spinner
+            getLibraries().then(data => {
+                generateOptions(data, "libraries")
+                loading(false, "spinner")
             })
-            // Score the data
-            const score = await scoreData(data)
-            // Display the output
-            generateOutput(score.outputs, "scoringOutput")
+        })
+        // Define an event listener for library selection
+        document.getElementById("libraries").addEventListener("change", (event) => {
+            // Handle state when a library is selected
+            App.state = {
+                ...App.state,
+                selectedLibrary: event.currentTarget.value,
+                selectedTable: null
+            }
+            // Display the spinner while retrieving the tables list
+            loading(true, "spinner")
+            // Retrieve tables list
+            // Generate the options for tables div
+            // Hide the spinner
+            getTables(event.currentTarget.value).then(data => {
+                generateOptions(data, "tables")
+                loading(false, "spinner")
+            })
+            // Empty the table if no table is selected
+            if (App.state.selectedTable === null) {
+                document.getElementById("tableHeader").innerHTML = null
+                document.getElementById("tableBody").innerHTML = null
+            }
+        })
+        // Define an event listener for table selection
+        document.getElementById("tables").addEventListener("change", async (event) => {
+            // Handle state when a table is selected
+            App.state = {
+                ...App.state,
+                selectedTable: event.currentTarget.value,
+                page: 1
+            }
+            // Display the spinner while generating the table
+            loading(true, "spinner")
+            // Retrieve data
+            // Hide the spinner
+            // Generate table header
+            // Generate table body
+            await fetchData().then(data => {
+                loading(false, "spinner")
+                App.state = { ...App.state, columns: data.schema }
+                generateTableHeader(data.schema, "tableHeader")
+                generateTableBody(data.rows, "tableBody")
+            })
+            document.getElementById("summarize").disabled = false
+            document.getElementById("previousPage").disabled = false
+            document.getElementById("nextPage").disabled = false
+            document.getElementById("page").value = App.state.page
+        })
+        // Define an event listener when modal opens
+        document.getElementById("selectionModal").addEventListener("show.bs.modal", (event) => {
+            // Empty the variable selection boxes
+            document.getElementById("selectedVariables").innerHTML = null
+            document.getElementById("availableVariables").innerHTML = null
+            const elements = App.state.columns.map((column, index) => {
+                if (column.type === "string") {
+                    const node = document.createElement('div')
+                    node.setAttribute("data-columnName", column.name)
+                    const newContent = document.createTextNode(column.label ? column.label : column.name)
+                    node.appendChild(newContent)
+                    node.onclick = handleSelectionModal
+                    document.getElementById("availableVariables").appendChild(node)
+                }
+            })
+        })
+        // Define an event listener to generate frequency table
+        document.getElementById("generateFrequency").addEventListener("click", () => {
+            const children = document.getElementById("selectedVariables").childNodes
+            const selection = Array.from(children).map(child => child.getAttribute("data-columnName"))
+            executeFrequency(selection)
+        })
+        // Define an event listener to go to previous page
+        document.getElementById("previousPage").addEventListener("click", async () => {
+            document.getElementById("summarize").disabled = true
+            if (App.state.page > 1) {
+                App.state = { ...App.state, page: App.state.page - 1 }
+                // Display the spinner while generating the table
+                loading(true, "spinner")
+                // Retrieve columns and rows
+                // Hide the spinner
+                // Generate table body
+                await fetchData().then(data => {
+                    loading(false, "spinner")
+                    if (data.rows.length > 0) {
+                        generateTableBody(data.rows, "tableBody")
+                    }
+                })
+            } else {
+                App.state = { ...App.state, page: 1 }
+            }
+            document.getElementById("page").value = App.state.page
+            document.getElementById("summarize").disabled = false
+        })
+        // Define an event listener to go to next page
+        document.getElementById("nextPage").addEventListener("click", async () => {
+            document.getElementById("summarize").disabled = true
+            App.state = { ...App.state, page: App.state.page + 1 }
+            // Display the spinner while generating the table
+            loading(true, "spinner")
+            // Retrieve columns and rows
+            // Hide the spinner
+            // Generate table body
+            await fetchData().then(data => {
+                loading(false, "spinner")
+                if (data.rows.length > 0) {
+                    generateTableBody(data.rows, "tableBody")
+                    console.log(App.state.page)
+                } else {
+                    App.state = { ...App.state, page: App.state.page - 1 }
+                }
+                document.getElementById("page").value = App.state.page
+            })
+            document.getElementById("summarize").disabled = false
         })
     </script>
+
 </body>
