@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <script src='./javascripts/sas/util/messagingUtil.js'></script>
+    <script src="./javascripts/jquery/jquery.min.js"></script>
+
+     <script type="text/javascript">
+                "use strict";
+
+                // Declare datareceive event handler from VA visualizations
+        va.messagingUtil.setOnDataReceivedCallback(onDataReceived);
+                // Event handler used upper : retrieve three value from the report, resource Id respectively
+        function onDataReceived(resultData)
+        {
+            // Role 1 : uri source object
+            document.getElementById('mainForm').elements['SCENARIO_GUID'].value = resultData.data[0][0];
+			document.getElementById('mainForm').elements['FLOW_GUID'].value = resultData.data[0][1];
+			document.getElementById('mainForm').elements['START_DATE'].value = resultData.data[0][2];
+			document.getElementById('mainForm').elements['END_DATE'].value = resultData.data[0][3];
+			var s_date_tmp = document.getElementById('mainForm').elements['START_DATE'].value;
+			var s_date = s_date_tmp.replace(/(..).(..).(....)/,"$3-$1-$2");
+			var e_date_tmp = document.getElementById('mainForm').elements['END_DATE'].value;
+			var e_date  = e_date_tmp.replace(/(..).(..).(....)/,"$3-$1-$2");
+			document.getElementById("date_ref").setAttribute("min",s_date);
+			document.getElementById("date_ref").setAttribute("max",e_date);
+			document.getElementById("date_ref").defaultValue = s_date;
+			document.getElementById("date_end").setAttribute("min",s_date);
+			document.getElementById("date_end").setAttribute("max",e_date);
+			document.getElementById("date_end").defaultValue = e_date;
+            }
+     </script>
+
+     <meta charset="utf-8" http-equiv="X-UA-Compatible" content="IE=edge" />
+     <link rel="stylesheet" href="https://tenant1.sasserver.demo.sas.com/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    </head>
+
+    <!DOCTYPE html>
+
+    <body>
+        <div class="container-fluid" style="text-align: center; margin-top: 0px;">  
+	<form id="mainForm" action="/SASJobExecution/" enctype="multipart/form-data">
+                <input type="hidden" name="_program" value="/Public/CDE/Jobs/JobSimulationScenarioCDE_2D">
+                <input type="hidden" name="SCENARIO_GUID" id="SCENARIO_GUID">
+		<input type="hidden" name="FLOW_GUID" id="FLOW_GUID">
+		<input type="hidden" name="START_DATE" id="START_DATE">
+		<input type="hidden" name="END_DATE" id="END_DATE">
+		<label> 
+		Date range for the simulation :
+		</label><br>
+		<label>
+		Select a frequency :
+		<select name="frequency" id="frequency">
+		<option value="Weekly">Weekly</option>
+		<option value="Monthly">Monthly</option>
+		<option value="Daily">Daily</option>
+		</select>
+		<label>
+		Select a start date :
+		<input type="date" name="date_ref" id="date_ref">
+		Select a end date :
+		<input type="date" name="date_end" id="date_end">
+		</label><br>
+                <input type="hidden" name="_action" value="wait">
+		<input type="submit" class="btn btn-primary" value="Click to proceed" />
+        	<br>   
+	</form>
+        </div>
+    </body>
+	
+</html>
+

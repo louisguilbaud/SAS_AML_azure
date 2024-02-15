@@ -80,7 +80,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ddc-ingress
-  namespace: viyademo
+  namespace: aml
 spec:
   ingressClassName: nginx
   tls:

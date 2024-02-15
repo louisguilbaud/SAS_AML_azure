@@ -59,5 +59,9 @@ router.get('/cas_rest_api_js_sample.html', function(req, res, next) {
   res.render('cas_rest_api_js_sample', { title: 'Example of javascript using direct CAS Rest API' });
 });
 
+router.get('/jobCalibrationScen2D.html', function(req, res, next) {
+  res.render('jobCalibrationScen2D', { title: 'jobCalibrationScen2D ddc' });
+});
+
 
 module.exports = router;
