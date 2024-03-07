@@ -63,5 +63,7 @@ router.get('/jobCalibrationScen2D.html', function(req, res, next) {
   res.render('jobCalibrationScen2D', { title: 'jobCalibrationScen2D ddc' });
 });
 
-
+router.get('/web_page_louis.html', function(req, res, next) {
+  res.render('web_page_louis', { title: 'Web page louis ddc' });
+});
 module.exports = router;
