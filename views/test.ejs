@@ -1,9 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Summarizer</title>
+</head>
 <body>
+    <h1>News Summarizer</h1>
+    <p>Enter the URL of the newspaper article:</p>
+    <input type="text" id="articleUrl">
+    <button onclick="summarizeArticle()">Summarize</button>
+    <div id="summary"></div>
 
-<h1>My First Heading</h1>
-<p>My first paragraph.</p>
+    <script>
+        function summarizeArticle() {
+            var articleUrl = document.getElementById('articleUrl').value;
 
+            // Azure API endpoint and key
+            var apiUrl = 'https://fsi-openai.openai.azure.com/openai/deployments/network-generation/completions?api-version=2023-09-15-preview';
+            var apiKey = 'cb8d8b73032c4a3b849b2f5dcd1ab8c5';
+
+            // Request body
+            var requestBody = {
+                url: articleUrl
+            };
+
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Ocp-Apim-Subscription-Key': apiKey
+                },
+                body: JSON.stringify(requestBody)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Display the summary
+                document.getElementById('summary').innerHTML = '<h2>Summary:</h2>' + data.summary;
+            })
+            .catch(error => {
+                console.error('There was a problem with the request:', error);
+            });
+        }
+    </script>
 </body>
 </html>
