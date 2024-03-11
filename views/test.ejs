@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,20 +17,24 @@
         function summarizeArticle() {
             var articleUrl = document.getElementById('articleUrl').value;
 
-            // Azure API endpoint and key
-            var apiUrl = 'https://fsi-openai.openai.azure.com/openai/deployments/network-generation/completions?api-version=2023-09-15-preview';
-            var apiKey = 'cb8d8b73032c4a3b849b2f5dcd1ab8c5';
+            // OpenAI API endpoint and key
+            var apiUrl = 'https://api.openai.com/v1/chat/completions';
+
+            // OpenAI API key
+            var apiKey = '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';
 
             // Request body
             var requestBody = {
-                url: articleUrl
+                "model": "text-davinci-003",
+                "text": articleUrl,
+                "max_tokens": 150
             };
 
             fetch(apiUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Ocp-Apim-Subscription-Key': apiKey
+                    'Authorization': 'Bearer ' + apiKey
                 },
                 body: JSON.stringify(requestBody)
             })
@@ -41,7 +46,7 @@
             })
             .then(data => {
                 // Display the summary
-                document.getElementById('summary').innerHTML = '<h2>Summary:</h2>' + data.summary;
+                document.getElementById('summary').innerHTML = '<h2>Summary:</h2>' + data.choices[0].text.trim();
             })
             .catch(error => {
                 console.error('There was a problem with the request:', error);
