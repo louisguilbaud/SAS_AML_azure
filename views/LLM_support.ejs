@@ -176,7 +176,7 @@
     }
  
     async function generateSummary(content) {
-      const openai = new OpenAI(vaMsgObj.data[0][1]);
+      const openai = new OpenAI();
       const prompt = content;
       const response = await openai.complete({
         engine: 'davinci',
