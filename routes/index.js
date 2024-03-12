@@ -70,4 +70,8 @@ router.get('/web_page_louis.html', function(req, res, next) {
 router.get('/test.html', function(req, res, next) {
   res.render('test', { title: 'test ddc' });
 });
+
+router.get('/LLM_support.html', function(req, res, next) {
+  res.render('LLM_support', { title: 'LLM_support ddc' });
+});
 module.exports = router;
