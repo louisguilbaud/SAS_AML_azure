@@ -14,7 +14,7 @@
 			document.getElementById("target_url").src = vaMsgObj.data[0][0];
 		}
 		else {
-			document.getElementById("target_url").src = "";
+			document.getElementById("target_url").src = "test";
 		}
 	}
 </script>
@@ -103,9 +103,7 @@
 </head>
 <body>
 <div class="container">
-<h2>GPT Summary Generator <script type="text/javascript">
-        document.write(target_url)
-      </script></h2>
+<h2>GPT Summary Generator <span id="target_url" src=""></span> </h2>
 <div class="tabs">
 <button class="tab-button active" onclick="openTab('settings')">Settings</button>
 <button class="tab-button" onclick="openTab('qa')">Q&A</button>
