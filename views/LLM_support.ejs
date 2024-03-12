@@ -119,6 +119,7 @@
  
   <script src="https://cdn.jsdelivr.net/npm/@openai/gpt-3.5"></script>
 <script>
+    console.log(vaMsgObj.data[0][1]);
     function openTab(tabName) {
       const tabs = document.querySelectorAll('.tab-button');
       tabs.forEach(tab => tab.classList.remove('active'));
@@ -176,7 +177,6 @@
  
     async function generateSummary(content) {
       const openai = new OpenAI(vaMsgObj.data[0][1]);
-      console.log(vaMsgObj.data[0][1]);
       const prompt = content;
       const response = await openai.complete({
         engine: 'davinci',
