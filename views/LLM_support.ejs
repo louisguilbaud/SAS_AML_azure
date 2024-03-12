@@ -3,10 +3,11 @@
 <head>
 <script src='./javascripts/sas/util/messagingUtil.js'></script>
 <script src="./javascripts/jquery/jquery.min.js"></script>
-    function onDataReceived(resultData)
+<script>function onDataReceived(resultData)
             {
                 document.getElementById('mainForm').elements['API_key'].value = resultData.data[0][1];
             }
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GPT Summary Generator</title>
