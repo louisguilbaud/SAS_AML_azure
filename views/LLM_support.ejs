@@ -3,7 +3,10 @@
 <head>
 <script src='./javascripts/sas/util/messagingUtil.js'></script>
 <script src="./javascripts/jquery/jquery.min.js"></script>
-<script> function onDataReceived(resultData)
+<script type="text/javascript">
+"use strict";
+va.messagingUtil.setOnDataReceivedCallback(onDataReceived);
+function onDataReceived(resultData)
             {
                 document.getElementById('mainForm').elements['API_key'].value = resultData.data[0][1];
             }
