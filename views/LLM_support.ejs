@@ -119,12 +119,10 @@
  
   <script src="https://cdn.jsdelivr.net/npm/@openai/gpt-3.5"></script>
 <script>
-    console.log(vaMsgObj.data[0][1]);
     function onDataReceived(resultData)
         {
-            test = resultData.data[0][0];
+            document.getElementById('mainForm').elements['API_key'].value = resultData.data[0][1];
         }
-    console.log(test);
     function openTab(tabName) {
       const tabs = document.querySelectorAll('.tab-button');
       tabs.forEach(tab => tab.classList.remove('active'));
@@ -196,5 +194,6 @@
       return response.data.choices[0].text.trim();
     }
 </script>
+<input type="hidden" name="API_key" id="API_key">
 </body>
 </html>
