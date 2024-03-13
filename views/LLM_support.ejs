@@ -5,31 +5,24 @@
      <script src='./javascripts/sas/util/messagingUtil.js'></script>
      <script src="./javascripts/jquery/jquery.min.js"></script>
 
-     <script type="text/javascript">
-                "use strict";
+<script>
+    "use strict";
 
-                // Declare datareceive event handler from VA visualizations
-        va.messagingUtil.setOnDataReceivedCallback(onDataReceived);
-                // Event handler used upper : retrieve three value from the report, resource Id respectively
-        function onDataReceived(resultData)
-        {
-            // Role 1 : uri source object
-            document.getElementById('mainForm').elements['SCENARIO_GUID'].scr = resultData.data[0][0];
-			document.getElementById('mainForm').elements['FLOW_GUID'].value = resultData.data[0][1];
-            }
- function onDataReceived(resultData) {
-    console.log(resultData);
-    // Your existing code here
-}
-     </script>
+    va.messagingUtil.setOnDataReceivedCallback(updateURL);
+
+	function updateURL(vaMsgObj)
+	{
+		document.getElementById("target_url").src = vaMsgObj.data[0][0];
+	}
+</script>
 
     <!DOCTYPE html>
 
 <body>
     <form id="mainForm">
     </form>
-    <p>Start Date2: <span id="SCENARIO_GUID"></span></p>
-	<iframe id="SCENARIO_GUID" src=""></iframe>
+    <p>Start Date2: <span id="target_url"></span></p>
+	<iframe id="target_url" src=""></iframe>
 </body>
 	
 </html>
