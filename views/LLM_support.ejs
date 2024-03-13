@@ -14,7 +14,7 @@
         function onDataReceived(resultData)
         {
             // Role 1 : uri source object
-            document.getElementById('mainForm').elements['SCENARIO_GUID'].value = resultData.data[0][0];
+            document.getElementById('mainForm').elements['SCENARIO_GUID'].scr = resultData.data[0][0];
 			document.getElementById('mainForm').elements['FLOW_GUID'].value = resultData.data[0][1];
             }
      </script>
