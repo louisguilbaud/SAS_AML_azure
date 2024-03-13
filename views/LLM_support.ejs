@@ -16,11 +16,12 @@
             // Role 1 : uri source object
             document.getElementById('mainForm').elements['SCENARIO_GUID'].value = resultData.data[0][0];
 			document.getElementById('mainForm').elements['FLOW_GUID'].value = resultData.data[0][1];
-			var start_date = document.getElementById('mainForm').elements['SCENARIO_GUID'].value;
-        		document.getElementById("start_date_display").innerText = start_date;
             }
      </script>
-
+ function onDataReceived(resultData) {
+    console.log(resultData);
+    // Your existing code here
+}
     <!DOCTYPE html>
 
 <body>
