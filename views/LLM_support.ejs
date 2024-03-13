@@ -1,195 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-	<script src='./javascripts/sas/util/messagingUtil.js'></script>
-	<script src="./javascripts/jquery/jquery.min.js"></script>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GPT Summary Generator</title>
-<style>
-    body {
-      background-color: #f8f9fa;
-      font-family: Arial, sans-serif;
-    }
-    .container {
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-      max-width: 800px;
-      margin: 50px auto;
-    }
-    .tabs {
-      margin-bottom: 20px;
-    }
-    .tab-button {
-      padding: 10px 20px;
-      background-color: #f8f9fa;
-      border: none;
-      border-radius: 4px 4px 0 0;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    .tab-button.active {
-      background-color: #007bff;
-      color: #fff;
-    }
-    .tab-content {
-      display: none;
-      padding: 20px;
-      border: 1px solid #ccc;
-      border-top: none;
-      border-radius: 0 0 4px 4px;
-    }
-    .tab-content.active {
-      display: block;
-    }
-    .form-group {
-      margin-bottom: 20px;
-    }
-    .form-label {
-      font-weight: bold;
-      display: block;
-    }
-    .form-input {
-      width: 100%;
-      padding: 8px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-      resize: vertical;
-    }
-    .form-input-file {
-      padding: 8px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-      width: 100%;
-    }
-    .btn-primary {
-      background-color: #007bff;
-      color: #fff;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .btn-primary:hover {
-      background-color: #0056b3;
-    }
-    #summaryOutput {
-      margin-top: 20px;
-    }
-    #inputText {
-      margin-top: 20px;
-      border: 1px solid #ccc;
-      padding: 10px;
-      border-radius: 4px;
-    }
-</style>
-</head>
+<html>
+  <head>
+     <script type="text/javascript" src="https://gh.frm-rbvimsamd.fnb.co.za/messagingUtil.js"></script>
+     <script type="text/javascript" src="https://gh.frm-rbvimsamd.fnb.co.za/jquery-3.3.1.min.js"></script>
+
+     <script type="text/javascript">
+                "use strict";
+
+                // Declare datareceive event handler from VA visualizations
+        va.messagingUtil.setOnDataReceivedCallback(onDataReceived);
+                // Event handler used upper : retrieve three value from the report, resource Id respectively
+        function onDataReceived(resultData)
+        {
+            // Role 1 : uri source object
+            document.getElementById('mainForm').elements['SCENARIO_GUID'].value = resultData.data[0][0];
+			document.getElementById('mainForm').elements['FLOW_GUID'].value = resultData.data[0][1];
+	document.getElementById("start_date_display").innerText = document.getElementById('mainForm').elements['FLOW_GUID'].value;
+            }
+     </script>
+
+    <!DOCTYPE html>
+
 <body>
-<div class="container">
-<h2>GPT Summary Generator </h2>
-<div class="tabs">
-<button class="tab-button active" onclick="openTab('settings')">Settings</button>
-<button class="tab-button" onclick="openTab('qa')">Q&A</button>
-<button class="tab-button" onclick="openTab('translate')">Translate</button>
-</div>
-<div id="settings" class="tab-content active">
-<form id="summaryForm">
-<div class="form-group">
-<label for="pdfFile" class="form-label">Upload PDF:</label>
-<input type="file" class="form-input-file" id="pdfFile" accept=".pdf">
-</div>
-<div class="form-group">
-<label for="textInput" class="form-label">Text Input:</label>
-<textarea class="form-input" id="textInput" rows="5"></textarea>
-</div>
-<button type="submit" class="btn-primary">Generate Summary</button>
-</form>
-<div id="inputText" style="display:none;"></div>
-</div>
-<div id="qa" class="tab-content">
-<!-- Q&A content goes here -->
-</div>
-<div id="translate" class="tab-content">
-<!-- Translation content goes here -->
-</div>
-<div id="summaryOutput"></div>
-</div>
- 
-  <script src="https://cdn.jsdelivr.net/npm/@openai/gpt-3.5"></script>
-<script>
-    function openTab(tabName) {
-      const tabs = document.querySelectorAll('.tab-button');
-      tabs.forEach(tab => tab.classList.remove('active'));
- 
-      const contents = document.querySelectorAll('.tab-content');
-      contents.forEach(content => content.classList.remove('active'));
- 
-      document.getElementById(tabName).classList.add('active');
-      event.currentTarget.classList.add('active');
-    }
- 
-    const form = document.getElementById('summaryForm');
-    const summaryOutput = document.getElementById('summaryOutput');
-    const inputText = document.getElementById('inputText');
- 
-    form.addEventListener('submit', async function(event) {
-      event.preventDefault();
- 
-      const pdfFile = document.getElementById('pdfFile').files[0];
-      const textInput = document.getElementById('textInput').value;
- 
-      if (!pdfFile && !textInput) {
-        alert('Please upload a PDF file or enter text to summarize.');
-        return;
-      }
- 
-      const content = pdfFile ? await readPDF(pdfFile) : textInput;
- 
-      if (!content) {
-        alert('Failed to read the content.');
-        return;
-      }
- 
-      inputText.innerText = "Input Text: " + content;
-      inputText.style.display = "block";
- 
-      const summary = await generateSummary(content);
-      summaryOutput.innerHTML = `<h4>Summary:</h4><p>${summary}</p>`;
-    });
- 
-    async function readPDF(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          const typedarray = new Uint8Array(event.target.result);
-          const pdfData = typedarray.buffer;
-          resolve(pdfData);
-        };
-        reader.onerror = function(error) {
-          reject(error);
-        };
-        reader.readAsArrayBuffer(file);
-      });
-    }
- 
-    async function generateSummary(content) {
-      const openai = new OpenAI();
-      const prompt = content;
-      const response = await openai.complete({
-        engine: 'davinci',
-        prompt: prompt,
-        maxTokens: 100,
-        temperature: 0.5,
-        topP: 1.0,
-        frequencyPenalty: 0.0,
-        presencePenalty: 0.0,
-        stop: ['\n']
-      });
-      return response.data.choices[0].text.trim();
-    }
-</script>
+    <form id="mainForm">
+    </form>
+    <p>Start Date: <span id="start_date_display"></span></p>
 </body>
+	
 </html>
