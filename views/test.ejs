@@ -40,5 +40,24 @@
 	}
 </script>
 
+<div id="urlContainer">
+    <span id="api_key"></span>
+</div>
+<script>
+    "use strict";
+
+    va.messagingUtil.setOnDataReceivedCallback(updateURL);
+
+	function updateURL(vaMsgObj)
+	{
+		if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
+			document.getElementById("api_key").textContent = vaMsgObj.data[0][1];
+		}
+		else {
+			document.getElementById("api_key").textContent = "No URL available";
+		}
+	}
+</script>
+
 </body>
 </html>
