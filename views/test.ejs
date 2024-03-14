@@ -1,57 +1,44 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Summarizer</title>
+    <script src='./javascripts/sas/util/messagingUtil.js'></script>
+    <script src="./javascripts/jquery/jquery.min.js"></script>
+    <style>
+        html, body {
+            margin: 0px;
+            padding: 0px;
+            height: 100%;
+            overflow: hidden;
+        }
+        #urlContainer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
 </head>
 <body>
-    <h1>News Summarizer</h1>
-    <p>Enter the URL of the newspaper article:</p>
-    <input type="text" id="articleUrl">
-    <button onclick="summarizeArticle()">Summarize</button>
-    <div id="summary"></div>
+<div id="urlContainer">
+    <span id="urlText"></span>
+</div>
 
-    <script>
-        function summarizeArticle() {
-            var articleUrl = document.getElementById('articleUrl').value;
+<script>
+    "use strict";
 
-            // OpenAI API endpoint and key
-            var apiUrl = 'https://api.openai.com/v1/chat/completions';
+    va.messagingUtil.setOnDataReceivedCallback(updateURL);
 
-            // OpenAI API key
-            var apiKey = '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';
+	function updateURL(vaMsgObj)
+	{
+		if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
+			document.getElementById("urlText").textContent = vaMsgObj.data[0][0];
+		}
+		else {
+			document.getElementById("urlText").textContent = "No URL available";
+		}
+	}
+</script>
 
-            // Request body
-            var requestBody = {
-                "model": "text-davinci-003",
-                "text": articleUrl,
-                "max_tokens": 150
-            };
-
-            fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + apiKey
-                },
-                body: JSON.stringify(requestBody)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Display the summary
-                document.getElementById('summary').innerHTML = '<h2>Summary:</h2>' + data.choices[0].text.trim();
-            })
-            .catch(error => {
-                console.error('There was a problem with the request:', error);
-            });
-        }
-    </script>
 </body>
 </html>
