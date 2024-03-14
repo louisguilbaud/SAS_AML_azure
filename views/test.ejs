@@ -34,7 +34,7 @@
 	{
 		if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
 			document.getElementById("urlText").textContent = vaMsgObj.data[0][0];
-			document.getElementById("api_key").textContent = vaMsgObj.parameters[0][0];
+			document.getElementById("api_key").textContent = vaMsgObj.parameter[0][0];
 		}
 		else {
 			document.getElementById("urlText").textContent = "No URL available";
