@@ -32,7 +32,7 @@
 	function updateURL(vaMsgObj)
 	{
 		if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
-			document.getElementById("urlText").textContent = vaMsgObj.data[1][0];
+			document.getElementById("urlText").textContent = vaMsgObj.data[0][1];
 		}
 		else {
 			document.getElementById("urlText").textContent = "No URL available";
