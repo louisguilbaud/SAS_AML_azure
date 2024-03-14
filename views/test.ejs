@@ -31,12 +31,15 @@
     "use strict";
 
     va.messagingUtil.setOnDataReceivedCallback(updateURL);
-
+    va.contentUtil.getVAParameters(resultData)
+    function resultData(vaMsgpar)
+	{
+		document.getElementById("api_key").textContent = vaMsgpar.parameters[0];
+	}
 	function updateURL(vaMsgObj)
 	{
 		if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
 			document.getElementById("urlText").textContent = vaMsgObj.data[0][0];
-			document.getElementById("api_key").textContent = vaMsgObj.parameters[0];
 			document.getElementById("api_key1").textContent = vaMsgObj.columns[0];
 			document.getElementById("api_key2").textContent = vaMsgObj.data[0][1];
 		}
