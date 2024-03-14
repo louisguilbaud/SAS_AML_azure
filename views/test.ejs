@@ -22,9 +22,8 @@
 <body>
 <div id="urlContainer">
     <span id="urlText"></span>
-    <span id="api_key"></span>
-    <span id="api_key1"></span>
     <span id="api_key2"></span>
+    <span id="api_key"></span>
 </div>
 
 <script>
@@ -37,8 +36,7 @@
 		if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
 			document.getElementById("urlText").textContent = vaMsgObj.data[0][0];
 			var vaParameters = va.contentUtil.getVAParameters(vaMsgObj);
-			document.getElementById("api_key").textContent = vaParameters.parameters[0][0];
-			document.getElementById("api_key1").textContent = vaMsgObj.columns[0];
+			document.getElementById("api_key").textContent = vaParameters.data[0][0];
 			document.getElementById("api_key2").textContent = vaMsgObj.data[0][1];
 		}
 		else {
