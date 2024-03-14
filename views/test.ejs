@@ -35,7 +35,8 @@
 	{
 		if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
 			document.getElementById("urlText").textContent = vaMsgObj.data[0][0];
-			document.getElementById("api_key").textContent = vaMsgObj.parameters[1];
+			document.getElementById("api_key").textContent = vaMsgObj.parameters[0];
+			document.getElementById("api_key").textContent = vaMsgObj.columns[0];
 			document.getElementById("api_key2").textContent = vaMsgObj.data[0][1];
 		}
 		else {
