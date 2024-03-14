@@ -37,7 +37,7 @@
 		if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
 			document.getElementById("urlText").textContent = vaMsgObj.data[0][0];
 			var vaParameters = va.contentUtil.getVAParameters(vaMsgObj);
-			document.getElementById("api_key").textContent = vaParameters;
+			document.getElementById("api_key").textContent = vaParameters[0][0];
 			document.getElementById("api_key1").textContent = vaMsgObj.columns[0];
 			document.getElementById("api_key2").textContent = vaMsgObj.data[0][1];
 		}
