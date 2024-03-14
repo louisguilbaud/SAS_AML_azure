@@ -23,6 +23,7 @@
 <div id="urlContainer">
     <span id="urlText"></span>
     <span id="api_key"></span>
+    <span id="api_key2"></span>
 </div>
 
 <script>
@@ -34,7 +35,8 @@
 	{
 		if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
 			document.getElementById("urlText").textContent = vaMsgObj.data[0][0];
-			document.getElementById("api_key").textContent = vaMsgObj.parameters[0][1];
+			document.getElementById("api_key").textContent = vaMsgObj.parameters[0][0];
+			document.getElementById("api_key2").textContent = vaMsgObj.data[0][0];
 		}
 		else {
 			document.getElementById("urlText").textContent = "No URL available";
