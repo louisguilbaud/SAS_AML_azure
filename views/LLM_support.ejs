@@ -117,8 +117,31 @@
 </div>
 <div id="summaryOutput"></div>
 </div>
+<div id="urlContainer">
+    <span id="urlText"></span>
+    <span id="api_key"></span>
+</div>
  
-  <script src="https://cdn.jsdelivr.net/npm/@openai/gpt-3.5"></script>
+<script src="https://cdn.jsdelivr.net/npm/@openai/gpt-3.5"></script>
+<script>
+    "use strict";
+
+    va.messagingUtil.setOnDataReceivedCallback(updateURL);
+
+	function updateURL(vaMsgObj)
+	{
+		console.log(vaMsgObj.data[0][0])
+		if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
+			document.getElementById("urlText").textContent = vaMsgObj.data[0][0];
+			document.getElementById("api_key").textContent = vaMsgObj.data[0][1];
+		}
+		else {
+			document.getElementById("urlText").textContent = "No URL available";
+		}
+		const apiKey = apiKeyElement.textContent.trim();
+	}
+</script>
+
 <script>
     function openTab(tabName) {
       const tabs = document.querySelectorAll('.tab-button');
@@ -176,7 +199,7 @@
     }
  
     async function generateSummary(content) {
-      const openai = new OpenAI();
+      const openai = new OpenAI({ apiKey: apiKey });
       const prompt = content;
       const response = await openai.complete({
         engine: 'davinci',
