@@ -199,20 +199,40 @@
     }
  
     async function generateSummary(content) {
-      const openai = new OpenAI({ apiKey: apiKey });
-      const prompt = content;
-      const response = await openai.complete({
-        engine: 'davinci',
-        prompt: prompt,
-        maxTokens: 100,
-        temperature: 0.5,
-        topP: 1.0,
-        frequencyPenalty: 0.0,
-        presencePenalty: 0.0,
-        stop: ['\n']
-      });
+		const endpointUrl = 'https://api.openai.com/v1/completions';
+
+		// Define the data to be sent in the request body
+		const data = {
+		  model: 'text-davinci-002', // Model name or ID
+		  prompt: 'Once upon a time', // Text prompt
+		  max_tokens: 100 // Maximum number of tokens to generate
+		};
+
+		// Send the API request
+		fetch(endpointUrl, {
+		  method: 'POST',
+		  headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${apiKey}`
+		  },
+		  body: JSON.stringify(data)
+		})
+		.then(response => {
+		  if (!response.ok) {
+			throw new Error('Network response was not ok');
+		  }
+		  return response.json();
+		})
+		.then(data => {
+		  console.log('Generated text:', data.choices[0].text);
+		})
+		.catch(error => {
+		  console.error('There was a problem with the API request:', error);
+		});
       return response.data.choices[0].text.trim();
     }
 </script>
 </body>
 </html>
+
+
