@@ -36,6 +36,7 @@
             // Construct API call
             var apiUrl = "https://api.openai.com/v1/completions";
             var prompt = "hello, how are you?";
+		var model = "text-davinci-003";
 
             // Make API call
             fetch(apiUrl, {
@@ -45,7 +46,8 @@
                     "Authorization": "Bearer " + apiKey
                 },
                 body: JSON.stringify({
-                    prompt: prompt
+                    prompt: prompt,
+			model: model
                 })
             })
             .then(response => response.json())
