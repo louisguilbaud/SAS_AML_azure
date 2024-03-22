@@ -14,25 +14,8 @@
 	<button class="tab-button" onclick="openTab('qa')">Q&A</button>
 	<button class="tab-button" onclick="openTab('translate')">Translate</button>
 	</div>
-	<div id="settings" class="tab-content active">
-	<form id="summaryForm">
-	<div class="form-group">
-	<label for="pdfFile" class="form-label">Upload PDF:</label>
-	<input type="file" class="form-input-file" id="pdfFile" accept=".pdf">
-	</div>
-	<div class="form-group">
-	<label for="textInput" class="form-label">Text Input:</label>
-	<textarea class="form-input" id="textInput" rows="5"></textarea>
-	</div>
+	<div>
 	<button type="submit" class="btn-primary" id="callApiButton">Call API</button>
-	</form>
-	<div id="inputText" style="display:none;"></div>
-	</div>
-	<div id="qa" class="tab-content">
-	<!-- Q&A content goes here -->
-	</div>
-	<div id="translate" class="tab-content">
-	<!-- Translation content goes here -->
 	</div>
         <p>URL:     <span id="urlText"></span></p>
         <p>API Key:     <span id="api_key"></span></p>
