@@ -105,7 +105,7 @@
 <label for="textInput" class="form-label">Text Input:</label>
 <textarea class="form-input" id="textInput" rows="5"></textarea>
 </div>
-<button type="submit" class="btn-primary">Generate Summary</button>
+<button type="submit" class="btn-primary" id="callApiButton">Generate Summary</button>
 </form>
 <div id="inputText" style="display:none;"></div>
 </div>
@@ -116,6 +116,7 @@
 <!-- Translation content goes here -->
 </div>
 <div id="summaryOutput"></div>
+<span id="apiResponse"></span>
 </div>
 <div id="urlContainer">
     <span id="urlText"></span>
@@ -140,82 +141,37 @@
 	}
 </script>
 <script>
-   async function callChatGPT(message) {
-        const endpoint = 'https://api.openai.com/v1/chat/completions';
-        const apiKey = document.getElementById("api_key").textContent.trim(); // Get the API key
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
-        };
+        document.getElementById("callApiButton").addEventListener("click", function() {
+            // Get API key from the span element
+            var apiKey = document.getElementById("api_key").textContent;
 
-        const body = JSON.stringify({
-            model: 'text-davinci-003', // Change the model to the one you prefer
-            messages: [
-                {
-                    role: 'user',
-                    content: message
-                }
-            ]
-        });
+            // Construct API call
+            var apiUrl = "https://api.openai.com/v1/chat/completions";
+            var prompt = "hello, how are you?";
+		var model = "text-davinci-002";
 
-        try {
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: headers,
-                body: body
+            // Make API call
+             fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + apiKey
+                },
+                body: JSON.stringify({
+			"model": "gpt-3.5-turbo",
+			"messages": [{"role": "user", "content": "Hello!"}]
+                   
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("apiResponse").textContent = JSON.stringify(data);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById("apiResponse").textContent = "Error occurred while fetching API data.";
             });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch response from ChatGPT API');
-            }
-
-            const data = await response.json();
-            return data.choices[0].message.content;
-        } catch (error) {
-            console.error('Error:', error);
-            return null;
-        }
-    }
-
-    document.getElementById('summaryForm').addEventListener('submit', async function(event) {
-        event.preventDefault();
-        const pdfFile = document.getElementById('pdfFile').files[0]; // Get the uploaded PDF file
-        const textInput = document.getElementById('textInput').value; // Get the text input
-        const summaryOutput = document.getElementById('summaryOutput');
-
-        let textToGenerateSummary = '';
-
-        if (pdfFile) {
-            // If a PDF file is uploaded, you can extract text from it using a PDF processing library
-            // Here, I'm assuming you have a function named 'extractTextFromPDF' to extract text from the PDF file
-            textToGenerateSummary = await extractTextFromPDF(pdfFile);
-        } else {
-            // If no PDF file is uploaded, use the text input
-            textToGenerateSummary = textInput;
-        }
-
-        try {
-            const summary = await callChatGPT(textToGenerateSummary);
-            summaryOutput.innerText = summary;
-        } catch (error) {
-            console.error('Error:', error);
-            summaryOutput.innerText = 'Error generating summary. Please try again later.';
-        }
-    });
-
-    function openTab(tabName) {
-        var i, tabContent;
-        tabContent = document.getElementsByClassName('tab-content');
-        for (i = 0; i < tabContent.length; i++) {
-            tabContent[i].style.display = 'none';
-        }
-        document.getElementById(tabName).style.display = 'block';
-        var tabButtons = document.getElementsByClassName('tab-button');
-        for (i = 0; i < tabButtons.length; i++) {
-            tabButtons[i].className = tabButtons[i].className.replace(' active', '');
-        }
-        document.querySelector('button[data-tab="' + tabName + '"]').className += ' active';
-    }
+        });
 </script>
 </body>
 </html>
