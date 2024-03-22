@@ -65,9 +65,6 @@
 
 
     <script>
-	const llmAPIUrl2 = "https://fsi-openai.openai.azure.com/openai/deployments/network-generation/completions?api-version=2023-09-15-preview"; 
-	const maxDocLength2 = 5000; /* You need to adjust this param based on how fast and memory rich your backend server is. Longer the document, more GPU and memory is required. */
-	const maxTokens2 = 1000;
 
         "use strict";
 
@@ -86,11 +83,9 @@
         document.getElementById("callApiButton").addEventListener("click", function() {
             // Get API key from the span element
             var apiKey = document.getElementById("api_key").textContent;
-
+		var url_Text = document.getElementById("urlText").textContent;
             // Construct API call
             var apiUrl = "https://api.openai.com/v1/chat/completions";
-            var prompt = "hello, how are you?";
-		var model = "text-davinci-002";
 
             // Make API call
              fetch(apiUrl, {
@@ -101,7 +96,7 @@
                 },
                 body: JSON.stringify({
 			"model": "gpt-3.5-turbo",
-			"messages": [{"role": "user", "content": "Hello!"}]
+			"messages": [{"role": "user", "content": "Create a short summary of the article in this link:" url_Text }]
                    
                 })
             })
