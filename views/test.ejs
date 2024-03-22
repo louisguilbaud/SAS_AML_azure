@@ -7,11 +7,37 @@
     <title>API Call Example</title>
 </head>
 <body>
+<div class="container">
+	<h2>GPT Summary Generator </h2>
+	<div class="tabs">
+	<button class="tab-button active" onclick="openTab('settings')">Settings</button>
+	<button class="tab-button" onclick="openTab('qa')">Q&A</button>
+	<button class="tab-button" onclick="openTab('translate')">Translate</button>
+	</div>
+	<div id="settings" class="tab-content active">
+	<form id="summaryForm">
+	<div class="form-group">
+	<label for="pdfFile" class="form-label">Upload PDF:</label>
+	<input type="file" class="form-input-file" id="pdfFile" accept=".pdf">
+	</div>
+	<div class="form-group">
+	<label for="textInput" class="form-label">Text Input:</label>
+	<textarea class="form-input" id="textInput" rows="5"></textarea>
+	</div>
+	</form>
+	<div id="inputText" style="display:none;"></div>
+	</div>
+	<div id="qa" class="tab-content">
+	<!-- Q&A content goes here -->
+	</div>
+	<div id="translate" class="tab-content">
+	<!-- Translation content goes here -->
+	</div>
         <p>URL:     <span id="urlText"></span></p>
         <p>API Key:     <span id="api_key"></span></p>
         <button type="submit" class="btn-primary" id="callApiButton">Call API</button>
         <p>API Response: <span id="apiResponse"></span></p>
-    </div>
+
 
     <script>
 	const llmAPIUrl2 = "https://fsi-openai.openai.azure.com/openai/deployments/network-generation/completions?api-version=2023-09-15-preview"; 
