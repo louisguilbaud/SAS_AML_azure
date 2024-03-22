@@ -121,12 +121,9 @@
 <script src='./javascripts/sas/util/messagingUtil.js'></script>
 	<script src="./javascripts/jquery/jquery.min.js"></script>
     <script>
-	const llmAPIUrl2 = "https://fsi-openai.openai.azure.com/openai/deployments/network-generation/completions?api-version=2023-09-15-preview"; 
-	const maxDocLength2 = 5000; /* You need to adjust this param based on how fast and memory rich your backend server is. Longer the document, more GPU and memory is required. */
-	const maxTokens2 = 1000;
-
         "use strict";
 
+        document.addEventListener("DOMContentLoaded", function() {
         va.messagingUtil.setOnDataReceivedCallback(updateURL);
 
         function updateURL(vaMsgObj) {
@@ -170,5 +167,6 @@
                 document.getElementById("apiResponse").textContent = "Error occurred while fetching API data.";
             });
         });
+	});
     </script>
 </html>
