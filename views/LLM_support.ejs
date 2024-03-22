@@ -123,7 +123,6 @@
     <script>
         "use strict";
 
-        document.addEventListener("DOMContentLoaded", function() {
         va.messagingUtil.setOnDataReceivedCallback(updateURL);
 
         function updateURL(vaMsgObj) {
@@ -136,6 +135,7 @@
             }
         }
 
+	 document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("callApiButton").addEventListener("click", function() {
             // Get API key from the span element
             var apiKey = document.getElementById("api_key").textContent;
