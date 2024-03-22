@@ -112,15 +112,13 @@
 	<!-- Translation content goes here -->
 	</div>
 	<div>
-	<p>API Response: <span id="apiResponse"></span></p>
+	<p>API Responses: <span id="apiResponse"></span></p>
 	</div>
-	</div>
-	<div id="urlContainer">
-	    <span id="urlText"></span>
-	    <span id="api_key"></span>
 	</div>
 
-	<script src='./javascripts/sas/util/messagingUtil.js'></script>
+</body>
+
+<script src='./javascripts/sas/util/messagingUtil.js'></script>
 	<script src="./javascripts/jquery/jquery.min.js"></script>
     <script>
 	const llmAPIUrl2 = "https://fsi-openai.openai.azure.com/openai/deployments/network-generation/completions?api-version=2023-09-15-preview"; 
@@ -141,7 +139,6 @@
             }
         }
 
-	window.onload = function() {
         document.getElementById("callApiButton").addEventListener("click", function() {
             // Get API key from the span element
             var apiKey = document.getElementById("api_key").textContent;
@@ -173,7 +170,5 @@
                 document.getElementById("apiResponse").textContent = "Error occurred while fetching API data.";
             });
         });
-	};
     </script>
-</body>
 </html>
