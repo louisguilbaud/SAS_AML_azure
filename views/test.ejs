@@ -15,6 +15,10 @@
     </div>
 
     <script>
+	const llmAPIUrl2 = "https://fsi-openai.openai.azure.com/openai/deployments/network-generation/completions?api-version=2023-09-15-preview"; 
+	const maxDocLength2 = 5000; /* You need to adjust this param based on how fast and memory rich your backend server is. Longer the document, more GPU and memory is required. */
+	const maxTokens2 = 1000;
+
         "use strict";
 
         va.messagingUtil.setOnDataReceivedCallback(updateURL);
@@ -34,25 +38,27 @@
             var apiKey = document.getElementById("api_key").textContent;
 
             // Construct API call
-            var apiUrl = "https://api.openai.com/v1/completions";
+            var apiUrl = "https://fsi-openai.openai.azure.com/openai/deployments/network-generation/completions?api-version=2023-09-15-preview";
             var prompt = "hello, how are you?";
 		var model = "text-davinci-002";
 
             // Make API call
             fetch(apiUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + apiKey
-                },
-                body: JSON.stringify({
-                    messages: [{
-                        role: "system",
-                        content: prompt
-                    }],
-                    model: model
-                })
-            })
+				"prompt": "hello, how are you?"
+				"temperature": 0,
+				"top_p": 1,
+				"frequency_penalty": 2,
+				"presence_penalty": 0,
+				"max_tokens": maxTokens2,
+				"stop": null
+			},
+			{responseType: 'json',
+						headers: {
+							'Content-Type': 'application/json;charset=utf-8',
+							'Accept': 'application/json',
+							'Access-Control-Allow-Origin': '*',
+							'api-key': azureAIKey2
+						}})
             .then(response => response.json())
             .then(data => {
                 document.getElementById("apiResponse").textContent = JSON.stringify(data);
