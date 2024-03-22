@@ -123,24 +123,25 @@
     <span id="api_key"></span>
 </div>
  
-<script>
-    "use strict";
+    <script>
+	const llmAPIUrl2 = "https://fsi-openai.openai.azure.com/openai/deployments/network-generation/completions?api-version=2023-09-15-preview"; 
+	const maxDocLength2 = 5000; /* You need to adjust this param based on how fast and memory rich your backend server is. Longer the document, more GPU and memory is required. */
+	const maxTokens2 = 1000;
 
-    va.messagingUtil.setOnDataReceivedCallback(updateURL);
+        "use strict";
 
-	function updateURL(vaMsgObj)
-	{
-		console.log(vaMsgObj.data[0][0])
-		if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
-			document.getElementById("urlText").textContent = vaMsgObj.data[0][0];
-			document.getElementById("api_key").textContent = vaMsgObj.data[0][1];
-		}
-		else {
-			document.getElementById("urlText").textContent = "No URL available";
-		}
-	}
-</script>
-<script>
+        va.messagingUtil.setOnDataReceivedCallback(updateURL);
+
+        function updateURL(vaMsgObj) {
+            console.log(vaMsgObj.data[0][0]);
+            if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
+                document.getElementById("urlText").textContent = vaMsgObj.data[0][0];
+                document.getElementById("api_key").textContent = vaMsgObj.data[0][1];
+            } else {
+                document.getElementById("urlText").textContent = "No URL available";
+            }
+        }
+
         document.getElementById("callApiButton").addEventListener("click", function() {
             // Get API key from the span element
             var apiKey = document.getElementById("api_key").textContent;
@@ -172,7 +173,7 @@
                 document.getElementById("apiResponse").textContent = "Error occurred while fetching API data.";
             });
         });
-</script>
+    </script>
 </body>
 </html>
 
