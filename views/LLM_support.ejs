@@ -1,8 +1,7 @@
 
 <!DOCTYPE html>
 <html>
-    <script src='./javascripts/sas/util/messagingUtil.js'></script>
-	<script src="./javascripts/jquery/jquery.min.js"></script>
+
 <head>
     <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -121,6 +120,8 @@
 	    <span id="api_key"></span>
 	</div>
 
+	<script src='./javascripts/sas/util/messagingUtil.js'></script>
+	<script src="./javascripts/jquery/jquery.min.js"></script>
     <script>
 	const llmAPIUrl2 = "https://fsi-openai.openai.azure.com/openai/deployments/network-generation/completions?api-version=2023-09-15-preview"; 
 	const maxDocLength2 = 5000; /* You need to adjust this param based on how fast and memory rich your backend server is. Longer the document, more GPU and memory is required. */
@@ -140,6 +141,7 @@
             }
         }
 
+	window.onload = function() {
         document.getElementById("callApiButton").addEventListener("click", function() {
             // Get API key from the span element
             var apiKey = document.getElementById("api_key").textContent;
@@ -171,6 +173,7 @@
                 document.getElementById("apiResponse").textContent = "Error occurred while fetching API data.";
             });
         });
+	};
     </script>
 </body>
 </html>
