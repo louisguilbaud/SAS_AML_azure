@@ -36,7 +36,7 @@
             // Construct API call
             var apiUrl = "https://api.openai.com/v1/completions";
             var prompt = "hello, how are you?";
-		var model = "text-davinci-003";
+		var model = "text-davinci-002";
 
             // Make API call
             fetch(apiUrl, {
@@ -46,8 +46,11 @@
                     "Authorization": "Bearer " + apiKey
                 },
                 body: JSON.stringify({
-                    prompt: prompt,
-			model: "gpt-3.5-turbo"
+                    messages: [{
+                        role: "system",
+                        content: prompt
+                    }],
+                    model: model
                 })
             })
             .then(response => response.json())
