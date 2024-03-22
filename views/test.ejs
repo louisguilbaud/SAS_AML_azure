@@ -2,50 +2,59 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script src='./javascripts/sas/util/messagingUtil.js'></script>
-    <script src="./javascripts/jquery/jquery.min.js"></script>
-    <script src="./javascripts/sas/util/contentUtil.min.js"></script>
-    <style>
-        html, body {
-            margin: 0px;
-            padding: 0px;
-            height: 100%;
-            overflow: hidden;
-        }
-        #urlContainer {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-    </style>
+    <title>API Call Example</title>
 </head>
 <body>
-<div id="urlContainer">
-    <span id="urlText"></span>
-    <span id="api_key2"></span>
-    <span id="api_key"></span>
-</div>
+    <div>
+        <p>URL: <span id="urlText">No URL available</span></p>
+        <p>API Key: <span id="api_key">API Key will be displayed here</span></p>
+        <button id="callApiButton">Call API</button>
+        <p>API Response: <span id="apiResponse">API response will be displayed here</span></p>
+    </div>
 
-<script>
-    "use strict";
+    <script>
+        "use strict";
 
-    va.messagingUtil.setOnDataReceivedCallback(updateURL);
+        va.messagingUtil.setOnDataReceivedCallback(updateURL);
 
-	function updateURL(vaMsgObj)
-	{
-		if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
-			document.getElementById("urlText").textContent = vaMsgObj.data[0][0];
-			var vaParameters = va.contentUtil.getVAParameters(vaMsgObj);
-			document.getElementById("dynamic_img").textContent=vaParameters.parameters[0];
-			document.getElementById("api_key2").textContent = vaMsgObj.data[0][1];
-		}
-		else {
-			document.getElementById("urlText").textContent = "No URL available";
-		}
-	}
-</script>
+        function updateURL(vaMsgObj) {
+            console.log(vaMsgObj.data[0][0]);
+            if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
+                document.getElementById("urlText").textContent = vaMsgObj.data[0][0];
+                document.getElementById("api_key").textContent = vaMsgObj.data[0][1];
+            } else {
+                document.getElementById("urlText").textContent = "No URL available";
+            }
+        }
 
+        document.getElementById("callApiButton").addEventListener("click", function() {
+            // Get API key from the span element
+            var apiKey = document.getElementById("api_key").textContent;
 
+            // Construct API call
+            var apiUrl = "https://api.openai.com/v1/completions";
+            var prompt = "hello, how are you?";
+
+            // Make API call
+            fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + apiKey
+                },
+                body: JSON.stringify({
+                    prompt: prompt
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("apiResponse").textContent = JSON.stringify(data);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById("apiResponse").textContent = "Error occurred while fetching API data.";
+            });
+        });
+    </script>
 </body>
 </html>
