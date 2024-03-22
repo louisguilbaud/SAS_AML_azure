@@ -83,7 +83,7 @@
         document.getElementById("callApiButton").addEventListener("click", function() {
             // Get API key from the span element
             var apiKey = document.getElementById("api_key").textContent;
-		var url_Text = document.getElementById("urlText").textContent;
+		var urlText = document.getElementById("urlText").textContent;
             // Construct API call
             var apiUrl = "https://api.openai.com/v1/chat/completions";
 
@@ -96,7 +96,7 @@
                 },
                 body: JSON.stringify({
 			"model": "gpt-3.5-turbo",
-			"messages": [{"role": "user", "content": "Create a short summary of the article in this link: https://www.theguardian.com/business/2021/apr/09/serious-office-conducts-raids-over-scheme-by-buy2let-cars-owner" }]
+			"messages": [{"role": "user", "content": "Create a short summary of the article in this link:" + urlText }]
                    
                 })
             })
