@@ -102,7 +102,9 @@
             })
             .then(response => response.json())
             .then(data => {
-                document.getElementById("apiResponse").textContent = JSON.stringify(data);
+                var content = data.choices[0].message.content;
+
+		    document.getElementById("apiResponse").textContent = content;
             })
             .catch(error => {
                 console.error("Error:", error);
