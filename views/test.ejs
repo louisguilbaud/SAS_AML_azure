@@ -50,15 +50,25 @@
 	<div class="container">
 	<h2>GPT Summary Generator </h2>
 	<div class="tabs">
-	<button class="tab-button active" onclick="openTab('settings')">Settings</button>
+	<button class="tab-button active" onclick="openTab('summary')">Summary</button>
 	<button class="tab-button" onclick="openTab('qa')">Q&A</button>
 	<button class="tab-button" onclick="openTab('translate')">Translate</button>
 	</div>
-	<div>
-	<button type="submit" class="btn-primary" id="callApiButton">Call API</button>
 	</div>
-	<p>API Response: <span id="apiResponse"></span></p>
-	</div>
+	    <div id="summary" class="tab-content active">
+	        <button type="submit" class="btn-primary" id="callApiButtonSettings">Summarize the negative news</button>
+	        <p>API Response for Settings: <span id="apiResponseSettings"></span></p>
+	    </div>
+	    <div id="qa" class="tab-content">
+		<label for="textInput" class="form-label">Text Input:</label>
+		<textarea class="form-input" id="textInput" rows="5"></textarea>
+	        <button type="submit" class="btn-primary" id="callApiButtonQa">Call API for Q&A</button>
+	        <p>API Response for Q&A: <span id="apiResponseQa"></span></p>
+	    </div>
+	    <div id="translate" class="tab-content">
+	        <button type="submit" class="btn-primary" id="callApiButtonTranslate">Call API for Translate</button>
+	        <p>API Response for Translate: <span id="apiResponseTranslate"></span></p>
+	    </div>
         <p>URL:     <span id="urlText"></span></p>
         <p>API Key:     <span id="api_key"></span></p>
         <p>API Response: <span id="apiResponse"></span></p>
