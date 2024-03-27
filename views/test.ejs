@@ -81,8 +81,10 @@
 	<button class="tab-button" onclick="openTab('translate')">Translate</button>
 	</div>
 	    <div id="summary" class="tab-content active">
-		<p>Choose the number of sentences you want in your summary:</p>
-		<input type="number" id="numSentencesInput" min="1" value="3"><br />
+		<div class="input-container">
+            		<p>Choose the number of sentences you want in your summary:</p>
+           		<input type="number" id="numSentencesInput" min="1" value="3">
+        	</div>
 	        <button type="submit" class="btn-primary" id="callApiButton">Summarize the negative news</button>
 		<p>Summary of the Negative News:</p>
 		<div class="api-response-box"> 
