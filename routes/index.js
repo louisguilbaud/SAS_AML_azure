@@ -74,4 +74,9 @@ router.get('/test.html', function(req, res, next) {
 router.get('/LLM_support.html', function(req, res, next) {
   res.render('LLM_support', { title: 'LLM_support ddc' });
 });
+
+router.get('/LLM_test.html', function(req, res, next) {
+  res.render('LLM_test', { title: 'LLM_test ddc' });
+});
+
 module.exports = router;
