@@ -80,7 +80,8 @@
 	<button class="tab-button" onclick="openTab('translate')">Translate</button>
 	</div>
 	    <div id="summary" class="tab-content active">
-		<input type="number" id="numSentencesInput" min="1" value="3">
+		<p>Choose the number of sentences you want in your summary:</p>
+		<input type="number" id="numSentencesInput" min="1" value="3"><br />
 	        <button type="submit" class="btn-primary" id="callApiButton">Summarize the negative news</button>
 		<p>Summary of the Negative News:</p>
 		<div class="api-response-box"> 
@@ -123,6 +124,7 @@
             if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
                 document.getElementById("urlText").textContent = vaMsgObj.data[0][0];
                 document.getElementById("api_key").textContent = vaMsgObj.data[0][1];
+		document.getElementById("title").textContent = vaMsgObj.data[0][2];
             } else {
                 document.getElementById("urlText").textContent = "No URL available";
             }
@@ -132,6 +134,7 @@
 
             var apiKey = document.getElementById("api_key").textContent;
 	    var urlText = document.getElementById("urlText").textContent;
+	    var title = document.getElementById("title").textContent;
             // Construct API call
             var apiUrl = "https://api.openai.com/v1/chat/completions";
 
@@ -152,7 +155,7 @@
             .then(data => {
                 var content = data.choices[0].message.content;
 
-		    document.getElementById("apiResponse").textContent = content;
+		    document.getElementById("apiResponse").textContent = title + content;
             })
             .catch(error => {
                 console.error("Error:", error);
