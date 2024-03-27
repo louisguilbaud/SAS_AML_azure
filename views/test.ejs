@@ -118,8 +118,11 @@
 
         document.getElementById("callApiButton").addEventListener("click", function() {
             // Get API key from the span element
+	    document.getElementById("urlText").textContent = vaMsgObj.data[0][0];
+            document.getElementById("api_key").textContent = vaMsgObj.data[0][1];
+
             var apiKey = document.getElementById("api_key").textContent;
-		var urlText = document.getElementById("urlText").textContent;
+	    var urlText = document.getElementById("urlText").textContent;
             // Construct API call
             var apiUrl = "https://api.openai.com/v1/chat/completions";
 
