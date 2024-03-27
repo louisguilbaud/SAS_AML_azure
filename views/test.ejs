@@ -156,7 +156,7 @@
             .then(data => {
                 var content = data.choices[0].message.content;
 
-		    document.getElementById("apiResponse").textContent = "<strong>Title:</strong> " + title + "<br><br>" + content;
+		    document.getElementById("apiResponse").innerHTML = "<strong>Title:</strong> " + title + "<br><br>" + content;
             })
             .catch(error => {
                 console.error("Error:", error);
