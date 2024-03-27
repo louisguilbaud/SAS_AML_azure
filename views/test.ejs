@@ -54,6 +54,11 @@
         .tab-content.active {
             display: block;
         }
+	.tab-button.active,
+        .tab-button.active.clicked {
+        background-color: #0056b3;
+        color: #fff;
+        }
     </style>
 </head>
 	<body>
@@ -86,25 +91,26 @@
 
         "use strict";
 
-	 function openTab(tabName) {
-        // Hide all tab contents
-        var tabContents = document.getElementsByClassName("tab-content");
-        for (var i = 0; i < tabContents.length; i++) {
-            tabContents[i].classList.remove("active");
-        }
-
-        // Deactivate all tab buttons
-        var tabButtons = document.getElementsByClassName("tab-button");
-        for (var i = 0; i < tabButtons.length; i++) {
-            tabButtons[i].classList.remove("active");
-        }
-
-        // Show the selected tab content
-        document.getElementById(tabName).classList.add("active");
-
-        // Activate the selected tab button
-        document.querySelector(".tab-button[data-tab='" + tabName + "']").classList.add("active");
-    	}
+	function openTab(tabName) {
+	    // Hide all tab contents
+	    var tabContents = document.getElementsByClassName("tab-content");
+	    for (var i = 0; i < tabContents.length; i++) {
+	        tabContents[i].classList.remove("active");
+	    }
+	
+	    // Deactivate all tab buttons
+	    var tabButtons = document.getElementsByClassName("tab-button");
+	    for (var i = 0; i < tabButtons.length; i++) {
+	        tabButtons[i].classList.remove("active", "clicked"); // Remove "clicked" class as well
+	    }
+	
+	    // Show the selected tab content
+	    document.getElementById(tabName).classList.add("active");
+	
+	    // Activate the selected tab button
+	    var selectedTabButton = document.querySelector(".tab-button[data-tab='" + tabName + "']");
+	    selectedTabButton.classList.add("active", "clicked"); // Add "clicked" class
+	}
 
         va.messagingUtil.setOnDataReceivedCallback(updateURL);
 
