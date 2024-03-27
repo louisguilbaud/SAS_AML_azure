@@ -61,6 +61,14 @@
         .btn-primary:hover {
             background-color: #0056b3;
         }
+	/* Added style for the API response box */
+        .api-response-box {
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 20px;
+        }
     </style>
 </head>
 	<body>
@@ -73,7 +81,9 @@
 	</div>
 	    <div id="summary" class="tab-content active">
 	        <button type="submit" class="btn-primary" id="callApiButton">Summarize the negative news</button>
-	        <p>API Response for Settings: <span id="apiResponse"></span></p>
+		<div class="api-response-box"> <!-- API response box -->
+	            <p>API Response for Settings: <span id="apiResponse"></span></p>
+	        </div>
 	    </div>
 	    <div id="qa" class="tab-content">
 		<label for="textInput" class="form-label">Text Input:</label>
