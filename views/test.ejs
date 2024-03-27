@@ -92,25 +92,15 @@
         "use strict";
 
 	function openTab(tabName) {
-	    // Deactivate all tab buttons
-	    var tabButtons = document.getElementsByClassName("tab-button");
-	    for (var i = 0; i < tabButtons.length; i++) {
-	        tabButtons[i].classList.remove("active", "clicked");
+	      const tabs = document.querySelectorAll('.tab-button');
+	      tabs.forEach(tab => tab.classList.remove('active'));
+	 
+	      const contents = document.querySelectorAll('.tab-content');
+	      contents.forEach(content => content.classList.remove('active'));
+	 
+	      document.getElementById(tabName).classList.add('active');
+	      event.currentTarget.classList.add('active');
 	    }
-	
-	    // Hide all tab contents
-	    var tabContents = document.getElementsByClassName("tab-content");
-	    for (var i = 0; i < tabContents.length; i++) {
-	        tabContents[i].classList.remove("active");
-	    }
-	
-	    // Show the selected tab content
-	    document.getElementById(tabName).classList.add("active");
-	
-	    // Activate the selected tab button
-	    var selectedTabButton = document.querySelector(".tab-button[data-tab='" + tabName + "']");
-	    selectedTabButton.classList.add("active", "clicked");
-	}
 
         va.messagingUtil.setOnDataReceivedCallback(updateURL);
 
