@@ -79,6 +79,8 @@
 	        <p>API Response for Translate: <span id="apiResponseTranslate"></span></p>
 	    </div>
 	</div>
+		<p hidden> <span id="urlText"></span></p>
+   	 	<p hidden><span id="api_key"></span> </p>
 
     <script>
 
@@ -117,17 +119,6 @@
         }
 
         document.getElementById("callApiButton").addEventListener("click", function() {
-            va.messagingUtil.setOnDataReceivedCallback(updateURL);
-
-	        function updateURL(vaMsgObj) {
-	            console.log(vaMsgObj.data[0][0]);
-	            if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
-	                document.getElementById("urlText").textContent = vaMsgObj.data[0][0];
-	                document.getElementById("api_key").textContent = vaMsgObj.data[0][1];
-	            } else {
-	                document.getElementById("urlText").textContent = "No URL available";
-	            }
-	        }
 
             var apiKey = document.getElementById("api_key").textContent;
 	    var urlText = document.getElementById("urlText").textContent;
