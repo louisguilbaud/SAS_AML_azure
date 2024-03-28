@@ -224,18 +224,8 @@
 	        })
 	        .then(response => response.json())
 	        .then(data => {
-	            var entities = data.entities; // Retrieve the entities from the API response
-	            var entityList = document.getElementById("entityList"); // Get the list element
-	            entityList.innerHTML = ""; // Clear previous entries
-	            // Display each entity as a list item with a checkbox
-	            entities.forEach(entity => {
-	                var listItem = document.createElement("li");
-	                var checkbox = document.createElement("input");
-	                checkbox.type = "checkbox";
-	                checkbox.value = entity.text;
-	                listItem.appendChild(checkbox);
-	                listItem.appendChild(document.createTextNode(entity.text));
-	                entityList.appendChild(listItem);
+	            var entities = data.choices[0].message.content; // Retrieve the entities from the API response
+	            document.getElementById("entityList").textContent = entities;
 	            });
 	        })
 	        .catch(error => {
