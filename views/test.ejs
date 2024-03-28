@@ -218,7 +218,8 @@
 	                "Authorization": "Bearer " + apiKey
 	            },
 	            body: JSON.stringify({
-	                "text": urlText
+	                "model": "gpt-3.5-turbo",
+	                "messages": [{"role": "user", "content": "Extract the entities that are in this article in this link:" + urlText}]
 	            })
 	        })
 	        .then(response => response.json())
