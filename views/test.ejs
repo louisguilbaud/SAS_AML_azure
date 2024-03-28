@@ -174,41 +174,6 @@
             });
         });
 
-	// API call for the Q&A
-	document.getElementById("callApiButtonQa").addEventListener("click", function() {
-
-            var apiKey = document.getElementById("api_key").textContent;
-	    var urlText = document.getElementById("urlText").textContent;
-	    var title = document.getElementById("title").textContent;
-	    var textInputValue = document.getElementById("textInput").value;
-
-            // Construct API call
-            var apiUrl = "https://api.openai.com/v1/chat/completions";
-
-            // Make API call
-             fetch(apiUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + apiKey
-                },
-                body: JSON.stringify({
-			"model": "gpt-3.5-turbo",
-			"messages": [{"role": "user", "content": "based on the article in this link:" + urlText "answer this question:" +textInputValue}]
-                   
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                var content = data.choices[0].message.content;
-
-		    document.getElementById("apiResponseQ&A").innerHTML = "<strong>Title:</strong> " + title + "<br><br>" + content;
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                document.getElementById("apiResponseQ&A").textContent = "Error occurred while fetching API data.";
-            });
-        });
 
     </script>
 </body>
