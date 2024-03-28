@@ -204,6 +204,57 @@
 	        });
 	    });
 
+	document.getElementById("callApiButtonEntity").addEventListener("click", function() {
+	    var apiKey = document.getElementById("api_key").textContent;
+	    var urlText = document.getElementById("urlText").textContent;
+	    
+	    // Construct API call
+	    var apiUrl = "https://api.openai.com/v1/chat/completions";
+	    
+	    // Make API call to extract entities
+	    fetch(apiUrl, {
+	        method: "POST",
+	        headers: {
+	            "Content-Type": "application/json",
+	            "Authorization": "Bearer " + apiKey
+	        },
+	        body: JSON.stringify({
+	            "prompt": "Extract entities from the text in this link: " + urlText
+	        })
+	    })
+	    .then(response => response.json())
+	    .then(data => {
+	        // Extracted entities
+	        var entities = data.choices[0].text.split("\n").filter(Boolean);
+	        
+	        // Display entities as a list with checkboxes
+	        var entityList = document.getElementById("entityList");
+	        entityList.innerHTML = ""; // Clear previous entities
+	        
+	        entities.forEach(entity => {
+	            var checkbox = document.createElement("input");
+	            checkbox.type = "checkbox";
+	            checkbox.value = entity;
+	            checkbox.id = entity;
+	            
+	            var label = document.createElement("label");
+	            label.htmlFor = entity;
+	            label.appendChild(document.createTextNode(entity));
+	            
+	            var listItem = document.createElement("div");
+	            listItem.classList.add("entity-item");
+	            listItem.appendChild(checkbox);
+	            listItem.appendChild(label);
+	            
+	            entityList.appendChild(listItem);
+	        });
+	    })
+	    .catch(error => {
+	        console.error("Error:", error);
+	        document.getElementById("entityList").textContent = "Error occurred while fetching entities.";
+	    });
+	});
+
 
 
     </script>
