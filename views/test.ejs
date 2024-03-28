@@ -224,13 +224,13 @@
 	        })
 	        .then(response => response.json())
 	        .then(data => {
-	            var entities = data.choices[0].message.content; // Retrieve the entities from the API response
+	            var entities = data.choices[0].message.content; 
 	            document.getElementById("entityList").textContent = entities;
 	            });
 	        })
 	        .catch(error => {
 	            console.error("Error:", error);
-	            alert("Error occurred while fetching API data.");
+	            document.getElementById("entityList").textContent ="Error occurred while fetching API data.";
 	        });
 	});
     </script>
