@@ -103,10 +103,11 @@
 	            <p><span id="apiResponseQ&A"></span></p>
 	        </div>
 	    </div>
-	    <div id="EntityExtraction" class="tab-content">
-	        <button type="submit" class="btn-primary" id="callApiButtonEntity">Call API for Translate</button>
-	        <p>API Response for Translate: <span id="apiResponseTranslate"></span></p>
-	    </div>
+	   <div id="EntityExtraction" class="tab-content">
+		    <button type="submit" class="btn-primary" id="callApiButtonEntity">Extract Entities</button>
+		    <p>List of Entities:</p>
+		    <ul id="entityList"></ul>
+	   </div>
 	</div>
 		<p hidden> <span id="urlText"></span></p>
    	 	<p hidden><span id="api_key"></span> </p>
@@ -175,33 +176,100 @@
         });
 
 	document.getElementById("callApiButtonQa").addEventListener("click", function() {
-        var apiKey = document.getElementById("api_key").textContent;
-        var urlText = document.getElementById("urlText").textContent;
-        var question = document.getElementById("textInput").value; // Retrieve the question from the textarea
-        // Construct API call
-        var apiUrl = "https://api.openai.com/v1/chat/completions";
-        // Make API call
-        fetch(apiUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + apiKey
-            },
-            body: JSON.stringify({
-                "model": "gpt-3.5-turbo",
-                "messages": [{"role": "user", "content": "Answer the question: " + question + "\nBased on the article in this link: " + urlText}]
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            var answer = data.choices[0].message.content; // Retrieve the answer from the API response
-            document.getElementById("apiResponseQ&A").textContent = answer; // Display the answer
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            document.getElementById("apiResponseQ&A").textContent = "Error occurred while fetching API data.";
-        });
-    });
+	        var apiKey = document.getElementById("api_key").textContent;
+	        var urlText = document.getElementById("urlText").textContent;
+	        var question = document.getElementById("textInput").value; // Retrieve the question from the textarea
+	        // Construct API call
+	        var apiUrl = "https://api.openai.com/v1/chat/completions";
+	        // Make API call
+	        fetch(apiUrl, {
+	            method: "POST",
+	            headers: {
+	                "Content-Type": "application/json",
+	                "Authorization": "Bearer " + apiKey
+	            },
+	            body: JSON.stringify({
+	                "model": "gpt-3.5-turbo",
+	                "messages": [{"role": "user", "content": "Answer the question: " + question + "\nBased on the article in this link: " + urlText}]
+	            })
+	        })
+	        .then(response => response.json())
+	        .then(data => {
+	            var answer = data.choices[0].message.content; // Retrieve the answer from the API response
+	            document.getElementById("apiResponseQ&A").textContent = answer; // Display the answer
+	        })
+	        .catch(error => {
+	            console.error("Error:", error);
+	            document.getElementById("apiResponseQ&A").textContent = "Error occurred while fetching API data.";
+	        });
+	    });
+
+	document.getElementById("callApiButtonEntity").addEventListener("click", function() {
+	        var apiKey = document.getElementById("api_key").textContent;
+	        var urlText = document.getElementById("urlText").textContent;
+	        var question = document.getElementById("textInput").value; // Retrieve the question from the textarea
+	        // Construct API call
+	        var apiUrl = "https://api.openai.com/v1/chat/completions";
+	        // Make API call
+	        fetch(apiUrl, {
+	            method: "POST",
+	            headers: {
+	                "Content-Type": "application/json",
+	                "Authorization": "Bearer " + apiKey
+	            },
+	            body: JSON.stringify({
+	                "model": "gpt-3.5-turbo",
+	                "messages": [{"role": "user", "content": "Answer the question: " + question + "\nBased on the article in this link: " + urlText}]
+	            })
+	        })
+	        .then(response => response.json())
+	        .then(data => {
+	            var answer = data.choices[0].message.content; // Retrieve the answer from the API response
+	            document.getElementById("apiResponseQ&A").textContent = answer; // Display the answer
+	        })
+	        .catch(error => {
+	            console.error("Error:", error);
+	            document.getElementById("apiResponseQ&A").textContent = "Error occurred while fetching API data.";
+	        });
+	    });
+
+	document.getElementById("callApiButtonEntity").addEventListener("click", function() {
+	        var apiKey = document.getElementById("api_key").textContent;
+	        var urlText = document.getElementById("urlText").textContent;
+	        // Construct API call
+	        var apiUrl = "https://api.openai.com/v1/extract-entities";
+	        // Make API call
+	        fetch(apiUrl, {
+	            method: "POST",
+	            headers: {
+	                "Content-Type": "application/json",
+	                "Authorization": "Bearer " + apiKey
+	            },
+	            body: JSON.stringify({
+	                "text": urlText
+	            })
+	        })
+	        .then(response => response.json())
+	        .then(data => {
+	            var entities = data.entities; // Retrieve the entities from the API response
+	            var entityList = document.getElementById("entityList"); // Get the list element
+	            entityList.innerHTML = ""; // Clear previous entries
+	            // Display each entity as a list item with a checkbox
+	            entities.forEach(entity => {
+	                var listItem = document.createElement("li");
+	                var checkbox = document.createElement("input");
+	                checkbox.type = "checkbox";
+	                checkbox.value = entity.text;
+	                listItem.appendChild(checkbox);
+	                listItem.appendChild(document.createTextNode(entity.text));
+	                entityList.appendChild(listItem);
+	            });
+	        })
+	        .catch(error => {
+	            console.error("Error:", error);
+	            alert("Error occurred while fetching API data.");
+	        });
+	});
     </script>
 </body>
 </html>
