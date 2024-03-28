@@ -218,7 +218,8 @@
 	            "Content-Type": "application/json",
 	            "Authorization": "Bearer " + apiKey
 	        },
-	        "model": "gpt-3.5-turbo",
+		 body: JSON.stringify({
+	        	"model": "gpt-3.5-turbo",
 	                "messages": [{"role": "user", "content": "Extract entities from the text in this link: " + urlText}]
 	        })
 	    })
