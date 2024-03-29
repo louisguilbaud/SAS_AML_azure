@@ -41,42 +41,37 @@ function fetchApiData() {
             return response.json();
         })
         .then(data => {
-            // Display document names
-            displayDocumentNames(data);
+            // Display API result
+            displayResult(data);
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
-            document.getElementById('documentSelect').innerHTML = '<option value="">Error fetching data from the API</option>';
+            document.getElementById('apiResult').textContent = 'Error fetching data from the API';
         });
 }
 
-// Function to display document names in a dropdown list
-function displayDocumentNames(data) {
-    var documentSelect = document.getElementById('documentSelect');
-    var selectedOptionValue = documentSelect.value;
-    documentSelect.innerHTML = '<option value="">Select a document</option>';
-    data.items.forEach(item => {
-        var option = document.createElement('option');
-        option.value = item.id; // You can assign any unique identifier here
-        option.textContent = item.name;
-        if (item.id === selectedOptionValue) {
-            option.selected = true; // Retain the selected option after refresh
+// Function to display API result
+function displayResult(data) {
+    var dropdownHTML = '<select id="documentSelect">';
+    dropdownHTML += '<option value="">Select a document</option>';
+    data.items.forEach(function(item) {
+        dropdownHTML += '<option value="' + item.id + '">' + item.name + '</option>';
+    });
+    dropdownHTML += '</select>';
+    document.getElementById('apiResult').innerHTML = dropdownHTML;
+
+    // Event listener to handle document selection
+    document.getElementById('documentSelect').addEventListener('change', function(event) {
+        selectedDocumentId = event.target.value; // Storing the selected document ID in the variable
+        if (selectedDocumentId) {
+            // Do something with the selected document ID
+            console.log('Selected document ID:', selectedDocumentId);
+        } else {
+            // No document selected
+            console.log('No document selected');
         }
-        documentSelect.appendChild(option);
     });
 }
-
-// Function to handle document selection
-document.getElementById('documentSelect').addEventListener('change', function(event) {
-    selectedDocumentId = event.target.value;
-    if (selectedDocumentId) {
-        // Do something with the selected document ID
-        console.log('Selected document ID:', selectedDocumentId);
-    } else {
-        // No document selected
-        console.log('No document selected');
-    }
-});
 
 // Initial fetch when the page loads
 fetchApiData();
@@ -87,17 +82,6 @@ const pollingInterval = 5000; // 5 seconds
 // Set up polling
 setInterval(fetchApiData, pollingInterval);
 
-// Function to handle document selection
-document.getElementById('documentSelect').addEventListener('change', function(event) {
-    selectedDocumentId = event.target.value; // Storing the selected document ID in the variable
-    if (selectedDocumentId) {
-        // Do something with the selected document ID
-        console.log('Selected document ID:', selectedDocumentId);
-    } else {
-        // No document selected
-        console.log('No document selected');
-    }
-});
 
 </script>
 
