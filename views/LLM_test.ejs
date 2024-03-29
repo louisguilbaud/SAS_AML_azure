@@ -25,6 +25,8 @@
 
 <div id="selectedDocumentId"></div>
 
+<iframe id="documentViewer" sandbox="allow-downloads"></iframe>
+
 <script>
 // Global variable to store selected document ID
 var selectedDocumentId = '';
@@ -84,6 +86,7 @@ document.getElementById('downloadButton').addEventListener('click', function() {
     if (selectedDocumentId) {
         // Construct download URL
         var downloadUrl = 'https://sasserver.demo.sas.com/svi-datahub/documents/alerts/146319a9-d567-421b-b246-3a1b9cdcdc55/files/' + selectedDocumentId + '/content';
+        document.getElementById('documentViewer').src = downloadUrl;
         console.log('Download URL:', downloadUrl); // Log the download URL
 
         // Create a temporary anchor element
