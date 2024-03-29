@@ -67,6 +67,7 @@ function displayDocumentNames(data) {
 // Function to handle document selection
 document.getElementById('documentSelect').addEventListener('change', function(event) {
     selectedDocumentId = event.target.value;
+    console.log('Selected Document ID:', selectedDocumentId); // Log the selected document ID
     if (selectedDocumentId) {
         // Display selected document ID
         document.getElementById('selectedDocumentId').textContent = 'Selected Document ID: ' + selectedDocumentId;
@@ -78,9 +79,12 @@ document.getElementById('documentSelect').addEventListener('change', function(ev
 
 // Function to handle document download
 document.getElementById('downloadButton').addEventListener('click', function() {
+    console.log('Download Button Clicked');
+    console.log('Selected Document ID:', selectedDocumentId); // Log the selected document ID
     if (selectedDocumentId) {
         // Initiate download
         var downloadUrl = 'https://sasserver.demo.sas.com/svi-datahub/documents/alerts/146319a9-d567-421b-b246-3a1b9cdcdc55/files/' + selectedDocumentId + '/content';
+        console.log('Download URL:', downloadUrl); // Log the download URL
         window.open(downloadUrl, '_blank');
     } else {
         // No document selected, show alert
