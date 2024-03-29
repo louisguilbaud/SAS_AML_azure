@@ -17,7 +17,7 @@
 
 <div class="container" id="resultContainer">
     <h2>Select a Document</h2>
-    <select id="documentSelect" onchange="selectDocument(event)">
+    <select id="documentSelect">
         <option value="">Select a document</option>
     </select>
 </div>
@@ -56,9 +56,8 @@ function displayDocumentNames(data) {
 }
 
 // Function to handle document selection
-function selectDocument(event) {
-    event.preventDefault(); // Prevent default form submission behavior
-    var selectedDocumentId = document.getElementById('documentSelect').value;
+document.getElementById('documentSelect').addEventListener('change', function(event) {
+    var selectedDocumentId = event.target.value;
     if (selectedDocumentId) {
         // Do something with the selected document ID
         console.log('Selected document ID:', selectedDocumentId);
@@ -66,7 +65,7 @@ function selectDocument(event) {
         // No document selected
         console.log('No document selected');
     }
-}
+});
 
 // Initial fetch when the page loads
 fetchApiData();
