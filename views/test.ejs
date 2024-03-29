@@ -230,25 +230,6 @@
 	        
 	        // Display entities as a list with checkboxes
 	        var entityList = document.getElementById("entityList");
-	        entityList.innerHTML = ""; // Clear previous entities
-	        
-	        entities.forEach(entity => {
-	            var checkbox = document.createElement("input");
-	            checkbox.type = "checkbox";
-	            checkbox.value = entity;
-	            checkbox.id = entity;
-	            
-	            var label = document.createElement("label");
-	            label.htmlFor = entity;
-	            label.appendChild(document.createTextNode(entity));
-	            
-	            var listItem = document.createElement("div");
-	            listItem.classList.add("entity-item");
-	            listItem.appendChild(checkbox);
-	            listItem.appendChild(label);
-	            
-	            entityList.appendChild(listItem);
-	        });
 	    })
 	    .catch(error => {
 	        console.error("Error:", error);
