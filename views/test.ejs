@@ -234,17 +234,17 @@
 	        // Clear previous content
 	        document.getElementById("entityList").innerHTML = '';
 	
-	        // Append checkbox for each entity
-	        entities.forEach(entity => {
+	        // Append checkbox for each entity starting from the second line
+	        for (var i = 1; i < entities.length; i++) {
 	            var divItem = document.createElement('div');
 	            var checkbox = document.createElement('input');
 	            checkbox.type = 'checkbox';
 	            var label = document.createElement('label');
-	            label.textContent = entity.trim();
+	            label.textContent = entities[i].trim();
 	            divItem.appendChild(checkbox);
 	            divItem.appendChild(label);
 	            document.getElementById("entityList").appendChild(divItem);
-	        });
+	        }
 	    })
 	    .catch(error => {
 	        console.error("Error:", error);
