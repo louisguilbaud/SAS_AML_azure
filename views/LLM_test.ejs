@@ -86,8 +86,17 @@ document.getElementById('downloadButton').addEventListener('click', function() {
         var downloadUrl = 'https://sasserver.demo.sas.com/svi-datahub/documents/alerts/146319a9-d567-421b-b246-3a1b9cdcdc55/files/' + selectedDocumentId + '/content';
         console.log('Download URL:', downloadUrl); // Log the download URL
 
-        // Open download URL in a new tab/window
-        window.open(downloadUrl, '_blank');
+        // Create a temporary anchor element
+        var downloadLink = document.createElement('a');
+        downloadLink.href = downloadUrl;
+        downloadLink.download = ''; // This should prompt the browser to download the file with its original name
+        document.body.appendChild(downloadLink);
+
+        // Trigger the click event on the anchor element
+        downloadLink.click();
+
+        // Clean up - remove the anchor element
+        document.body.removeChild(downloadLink);
     } else {
         // No document selected, show alert
         alert('Please select a document first.');
