@@ -229,7 +229,7 @@
 	        var entities =  data.choices[0].message.content;
 	        
 	        // Display entities as a list with checkboxes
-	        var entityList = document.getElementById("entityList");
+		document.getElementById("entityList").textContent = entities;
 	    })
 	    .catch(error => {
 	        console.error("Error:", error);
