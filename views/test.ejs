@@ -220,7 +220,7 @@
 	        },
 		 body: JSON.stringify({
 	        	"model": "gpt-3.5-turbo",
-	                "messages": [{"role": "user", "content": "Extract entities from the text in this link: " + urlText}]
+	                "messages": [{"role": "user", "content": "Extract entities from the text in this link: " + urlText + "\nI want to extract company names, person names and addresses"}]
 	        })
 	    })
 	    .then(response => response.json())
