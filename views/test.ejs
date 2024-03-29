@@ -225,7 +225,7 @@
 	    })
 	    .then(response => response.json())
 	    .then(data => {
-		// Extracted entities
+	        // Extracted entities
 	        var entitiesString =  data.choices[0].message.content;
 	        
 	        // Split the string by newline characters
@@ -234,11 +234,16 @@
 	        // Clear previous content
 	        document.getElementById("entityList").innerHTML = '';
 	
-	        // Append formatted entities to the list
-	        entities.forEach((entity, index) => {
-	            var listItem = document.createElement('p');
-	            listItem.textContent = `${index + 1}. ${entity.trim()}`;
-	            document.getElementById("entityList").appendChild(listItem);
+	        // Append checkbox for each entity
+	        entities.forEach(entity => {
+	            var divItem = document.createElement('div');
+	            var checkbox = document.createElement('input');
+	            checkbox.type = 'checkbox';
+	            var label = document.createElement('label');
+	            label.textContent = entity.trim();
+	            divItem.appendChild(checkbox);
+	            divItem.appendChild(label);
+	            document.getElementById("entityList").appendChild(divItem);
 	        });
 	    })
 	    .catch(error => {
