@@ -60,6 +60,40 @@ const pollingInterval = 5000; // 5 seconds
 // Set up polling
 setInterval(fetchApiData, pollingInterval);
 
+// Assuming 'data' contains the JSON data provided
+
+// Function to create HTML elements for each attachment
+function createAttachmentElement(attachment) {
+    var attachmentElement = document.createElement('div');
+    attachmentElement.classList.add('attachment');
+
+    var nameElement = document.createElement('p');
+    nameElement.textContent = 'Name: ' + attachment.name;
+    attachmentElement.appendChild(nameElement);
+
+    var categoryElement = document.createElement('p');
+    categoryElement.textContent = 'Category: ' + attachment.category;
+    attachmentElement.appendChild(categoryElement);
+
+    // Add more details as needed
+
+    return attachmentElement;
+}
+
+// Function to display attachments
+function displayAttachments(data) {
+    var attachmentsContainer = document.getElementById('attachmentsContainer');
+    attachmentsContainer.innerHTML = ''; // Clear previous content
+
+    data.items.forEach(function(attachment) {
+        var attachmentElement = createAttachmentElement(attachment);
+        attachmentsContainer.appendChild(attachmentElement);
+    });
+}
+
+// Display attachments when the page loads
+displayAttachments(data);
+
 // Function to create <option> elements for each document name
 function createOptionElement(name) {
     var optionElement = document.createElement('option');
