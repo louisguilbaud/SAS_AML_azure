@@ -21,7 +21,8 @@
 </div>
 
 <script>
-    // Make API call and display result
+// Function to fetch API data
+function fetchApiData() {
     fetch('https://sasserver.demo.sas.com/svi-datahub/documents/alerts/146319a9-d567-421b-b246-3a1b9cdcdc55/attachments')
         .then(response => {
             if (!response.ok) {
@@ -37,13 +38,23 @@
             console.error('There was a problem with the fetch operation:', error);
             document.getElementById('apiResult').textContent = 'Error fetching data from the API';
         });
+}
 
-    // Function to display API result
-    function displayResult(data) {
-        // Assuming the API returns JSON data, you can format and display it here
-        var resultHtml = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
-        document.getElementById('apiResult').innerHTML = resultHtml;
-    }
+// Function to display API result
+function displayResult(data) {
+    var resultHtml = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+    document.getElementById('apiResult').innerHTML = resultHtml;
+}
+
+// Initial fetch when the page loads
+fetchApiData();
+
+// Polling interval (in milliseconds)
+const pollingInterval = 5000; // 5 seconds
+
+// Set up polling
+setInterval(fetchApiData, pollingInterval);
+
 </script>
 
 </body>
