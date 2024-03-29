@@ -17,7 +17,7 @@
 
 <div class="container" id="resultContainer">
     <h2>Select a Document</h2>
-    <select id="documentSelect" onchange="selectDocument()">
+    <select id="documentSelect" onchange="selectDocument(event)">
         <option value="">Select a document</option>
     </select>
 </div>
@@ -56,7 +56,8 @@ function displayDocumentNames(data) {
 }
 
 // Function to handle document selection
-function selectDocument() {
+function selectDocument(event) {
+    event.preventDefault(); // Prevent default form submission behavior
     var selectedDocumentId = document.getElementById('documentSelect').value;
     if (selectedDocumentId) {
         // Do something with the selected document ID
