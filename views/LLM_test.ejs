@@ -24,6 +24,9 @@
 
 
 <script>
+// Global variable to store selected document ID
+var selectedDocumentId = '';
+
 // Function to fetch API data
 function fetchApiData() {
     fetch('https://sasserver.demo.sas.com/svi-datahub/documents/alerts/146319a9-d567-421b-b246-3a1b9cdcdc55/attachments')
@@ -46,18 +49,22 @@ function fetchApiData() {
 // Function to display document names in a dropdown list
 function displayDocumentNames(data) {
     var documentSelect = document.getElementById('documentSelect');
+    var selectedOptionValue = documentSelect.value;
     documentSelect.innerHTML = '<option value="">Select a document</option>';
     data.items.forEach(item => {
         var option = document.createElement('option');
         option.value = item.id; // You can assign any unique identifier here
         option.textContent = item.name;
+        if (item.id === selectedOptionValue) {
+            option.selected = true; // Retain the selected option after refresh
+        }
         documentSelect.appendChild(option);
     });
 }
 
 // Function to handle document selection
 document.getElementById('documentSelect').addEventListener('change', function(event) {
-    var selectedDocumentId = event.target.value;
+    selectedDocumentId = event.target.value;
     if (selectedDocumentId) {
         // Do something with the selected document ID
         console.log('Selected document ID:', selectedDocumentId);
