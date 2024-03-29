@@ -16,14 +16,10 @@
 <body>
 
 <div class="container" id="resultContainer">
-    <h2>API Result</h2>
-    <div id="apiResult"></div>
+    <h2>Document Names</h2>
+    <div id="documentNames"></div>
 </div>
 
-    <h1>Document Names</h1>
-    <select id="documentNames">
-        <!-- Document names will be populated here dynamically -->
-    </select>
 
 <script>
 // Function to fetch API data
@@ -36,19 +32,19 @@ function fetchApiData() {
             return response.json();
         })
         .then(data => {
-            // Display API result
-            displayResult(data);
+            // Display document names
+            displayDocumentNames(data);
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
-            document.getElementById('apiResult').textContent = 'Error fetching data from the API';
+            document.getElementById('documentNames').textContent = 'Error fetching data from the API';
         });
 }
 
-// Function to display API result
-function displayResult(data) {
-    var resultHtml = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
-    document.getElementById('apiResult').innerHTML = resultHtml;
+// Function to display document names
+function displayDocumentNames(data) {
+    var documentNames = data.items.map(item => item.name).join('<br>');
+    document.getElementById('documentNames').innerHTML = documentNames;
 }
 
 // Initial fetch when the page loads
@@ -59,62 +55,6 @@ const pollingInterval = 5000; // 5 seconds
 
 // Set up polling
 setInterval(fetchApiData, pollingInterval);
-
-// Assuming 'data' contains the JSON data provided
-
-// Function to create HTML elements for each attachment
-function createAttachmentElement(attachment) {
-    var attachmentElement = document.createElement('div');
-    attachmentElement.classList.add('attachment');
-
-    var nameElement = document.createElement('p');
-    nameElement.textContent = 'Name: ' + attachment.name;
-    attachmentElement.appendChild(nameElement);
-
-    var categoryElement = document.createElement('p');
-    categoryElement.textContent = 'Category: ' + attachment.category;
-    attachmentElement.appendChild(categoryElement);
-
-    // Add more details as needed
-
-    return attachmentElement;
-}
-
-// Function to display attachments
-function displayAttachments(data) {
-    var attachmentsContainer = document.getElementById('attachmentsContainer');
-    attachmentsContainer.innerHTML = ''; // Clear previous content
-
-    data.items.forEach(function(attachment) {
-        var attachmentElement = createAttachmentElement(attachment);
-        attachmentsContainer.appendChild(attachmentElement);
-    });
-}
-
-// Display attachments when the page loads
-displayAttachments(data);
-
-// Function to create <option> elements for each document name
-function createOptionElement(name) {
-    var optionElement = document.createElement('option');
-    optionElement.value = name;
-    optionElement.textContent = name;
-    return optionElement;
-}
-
-// Function to display document names in a dropdown list
-function displayDocumentNames(data) {
-    var selectElement = document.getElementById('documentNames');
-    selectElement.innerHTML = ''; // Clear previous content
-
-    data.items.forEach(function(attachment) {
-        var optionElement = createOptionElement(attachment.name);
-        selectElement.appendChild(optionElement);
-    });
-}
-
-// Display document names in the dropdown list when the page loads
-displayDocumentNames(data);
 
 </script>
 
