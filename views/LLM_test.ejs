@@ -16,8 +16,10 @@
 <body>
 
 <div class="container" id="resultContainer">
-    <h2>Document Names</h2>
-    <div id="documentNames"></div>
+    <h2>Select a Document</h2>
+    <select id="documentSelect" onchange="selectDocument()">
+        <option value="">Select a document</option>
+    </select>
 </div>
 
 
@@ -37,14 +39,32 @@ function fetchApiData() {
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
-            document.getElementById('documentNames').textContent = 'Error fetching data from the API';
+            document.getElementById('documentSelect').innerHTML = '<option value="">Error fetching data from the API</option>';
         });
 }
 
-// Function to display document names
+// Function to display document names in a dropdown list
 function displayDocumentNames(data) {
-    var documentNames = data.items.map(item => item.name).join('<br>');
-    document.getElementById('documentNames').innerHTML = documentNames;
+    var documentSelect = document.getElementById('documentSelect');
+    documentSelect.innerHTML = '<option value="">Select a document</option>';
+    data.items.forEach(item => {
+        var option = document.createElement('option');
+        option.value = item.id; // You can assign any unique identifier here
+        option.textContent = item.name;
+        documentSelect.appendChild(option);
+    });
+}
+
+// Function to handle document selection
+function selectDocument() {
+    var selectedDocumentId = document.getElementById('documentSelect').value;
+    if (selectedDocumentId) {
+        // Do something with the selected document ID
+        console.log('Selected document ID:', selectedDocumentId);
+    } else {
+        // No document selected
+        console.log('No document selected');
+    }
 }
 
 // Initial fetch when the page loads
