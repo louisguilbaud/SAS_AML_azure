@@ -225,18 +225,21 @@
 	    })
 	    .then(response => response.json())
 	    .then(data => {
-		var entitiesString =  data.choices[0].message.content;
-        
+		// Extracted entities
+	        var entitiesString =  data.choices[0].message.content;
+	        
 	        // Split the string by newline characters
 	        var entities = entitiesString.split('\n');
-
-	        // Format the entities with numbers
-	        var formattedEntities = entities.map((entity, index) => {
-	            return `${index + 1}. ${entity.trim()}`;
-	        }).join('\n');
-        
-	        // Display formatted entities
-	        document.getElementById("entityList").textContent = formattedEntities;
+	
+	        // Clear previous content
+	        document.getElementById("entityList").innerHTML = '';
+	
+	        // Append formatted entities to the list
+	        entities.forEach((entity, index) => {
+	            var listItem = document.createElement('p');
+	            listItem.textContent = `${index + 1}. ${entity.trim()}`;
+	            document.getElementById("entityList").appendChild(listItem);
+	        });
 	    })
 	    .catch(error => {
 	        console.error("Error:", error);
