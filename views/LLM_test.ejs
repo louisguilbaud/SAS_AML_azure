@@ -20,6 +20,11 @@
     <div id="apiResult"></div>
 </div>
 
+    <h1>Document Names</h1>
+    <select id="documentNames">
+        <!-- Document names will be populated here dynamically -->
+    </select>
+
 <script>
 // Function to fetch API data
 function fetchApiData() {
@@ -54,6 +59,28 @@ const pollingInterval = 5000; // 5 seconds
 
 // Set up polling
 setInterval(fetchApiData, pollingInterval);
+
+// Function to create <option> elements for each document name
+function createOptionElement(name) {
+    var optionElement = document.createElement('option');
+    optionElement.value = name;
+    optionElement.textContent = name;
+    return optionElement;
+}
+
+// Function to display document names in a dropdown list
+function displayDocumentNames(data) {
+    var selectElement = document.getElementById('documentNames');
+    selectElement.innerHTML = ''; // Clear previous content
+
+    data.items.forEach(function(attachment) {
+        var optionElement = createOptionElement(attachment.name);
+        selectElement.appendChild(optionElement);
+    });
+}
+
+// Display document names in the dropdown list when the page loads
+displayDocumentNames(data);
 
 </script>
 
