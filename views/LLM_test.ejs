@@ -1,211 +1,50 @@
 <!DOCTYPE html>
 <html>
-    <script src='./javascripts/sas/util/messagingUtil.js'></script>
-	<script src="./javascripts/jquery/jquery.min.js"></script>
 <head>
     <title>API Call Example</title>
     <style>
-/* tab style CSS */
-{
-  box-sizing: border-box;
-}
-body {
-  font-family: "Open Sans";
-  background: #2c3e50;
-  color: #ecf0f1;
-  line-height: 1.618em;
-}
-.wrapper {
-  max-width: 50rem;
-  width: 100%;
-  margin: 0 auto;
-}
-.tabs {
-  position: relative;
-  margin: 3rem 0;
-  background: #1abc9c;
-  height: 14.75rem;
-}
-.tabs::before,
-.tabs::after {
-  content: "";
-  display: table;
-}
-.tabs::after {
-  clear: both;
-}
-.tab {
-  float: left;
-}
-.tab-switch {
-  display: none;
-}
-.tab-label {
-  position: relative;
-  display: block;
-  line-height: 2.75em;
-  height: 3em;
-  padding: 0 1.618em;
-  background: #1abc9c;
-  border-right: 0.125rem solid #16a085;
-  color: #fff;
-  cursor: pointer;
-  top: 0;
-  transition: all 0.25s;
-}
-.tab-label:hover {
-  top: -0.25rem;
-  transition: top 0.25s;
-}
-.tab-content {
-  height: 12rem;
-  position: absolute;
-  z-index: 1;
-  top: 2.75em;
-  left: 0;
-  padding: 1.618rem;
-  background: #fff;
-  color: #2c3e50;
-  border-bottom: 0.25rem solid #bdc3c7;
-  opacity: 0;
-  transition: all 0.35s;
-}
-.tab-switch:checked + .tab-label {
-  background: #fff;
-  color: #2c3e50;
-  border-bottom: 0;
-  border-right: 0.125rem solid #fff;
-  transition: all 0.35s;
-  z-index: 1;
-  top: -0.0625rem;
-}
-.tab-switch:checked + label + .tab-content {
-  z-index: 2;
-  opacity: 1;
-  transition: all 0.35s;
-}
-/* end tab style css */
         body {
-            background-color: #f8f9fa;
             font-family: Arial, sans-serif;
         }
         .container {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 20px;
             max-width: 800px;
-            margin: 50px auto;
-        }
-        .btn-primary {
-            background-color: #007bff;
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }    
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-        .tab-content {
-            display: none;
+            margin: 0 auto;
             padding: 20px;
-            border: 1px solid #ccc;
-            border-top: none;
-            border-radius: 0 0 4px 4px;
-        }
-	.tab-button.active,
-        .tab-button.active.clicked {
-        background-color: #0056b3;
-        color: #fff;
         }
     </style>
 </head>
-	<body>
-	<div class="container">
-	<h2>GPT Summary Generator </h2>
-	<div class="tabs">
-	<button class="tab-button active" onclick="openTab('summary')">Summary</button>
-	<button class="tab-button" onclick="openTab('qa')">Q&A</button>
-	<button class="tab-button" onclick="openTab('translate')">Translate</button>
-	</div>
-	    <div id="summary" class="tab-content active">
-	        <button type="submit" class="btn-primary" id="callApiButton">Summarize the negative news</button>
-	        <p>API Response for Settings: <span id="apiResponse"></span></p>
-	    </div>
-	    <div id="qa" class="tab-content">
-		<label for="textInput" class="form-label">Text Input:</label>
-		<textarea class="form-input" id="textInput" rows="5"></textarea>
-	        <button type="submit" class="btn-primary" id="callApiButtonQa">Call API for Q&A</button>
-	        <p>API Response for Q&A: <span id="apiResponseQa"></span></p>
-	    </div>
-	    <div id="translate" class="tab-content">
-	        <button type="submit" class="btn-primary" id="callApiButtonTranslate">Call API for Translate</button>
-	        <p>API Response for Translate: <span id="apiResponseTranslate"></span></p>
-	    </div>
-	</div>
-		<p hidden> <span id="urlText"></span></p>
-   	 	<p hidden><span id="api_key"></span> </p>
+<body>
 
-    <script>
+<div class="container" id="resultContainer">
+    <h2>API Result</h2>
+    <div id="apiResult"></div>
+</div>
 
-        "use strict";
-
-	function openTab(tabName) {
-	      const tabs = document.querySelectorAll('.tab-button');
-	      tabs.forEach(tab => tab.classList.remove('active'));
-	 
-	      const contents = document.querySelectorAll('.tab-content');
-	      contents.forEach(content => content.classList.remove('active'));
-	 
-	      document.getElementById(tabName).classList.add('active');
-	      event.currentTarget.classList.add('active');
-	    }
-
-        va.messagingUtil.setOnDataReceivedCallback(updateURL);
-
-        function updateURL(vaMsgObj) {
-            console.log(vaMsgObj.data[0][0]);
-            if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
-                document.getElementById("urlText").textContent = vaMsgObj.data[0][0];
-                document.getElementById("api_key").textContent = vaMsgObj.data[0][1];
-            } else {
-                document.getElementById("urlText").textContent = "No URL available";
+<script>
+    // Make API call and display result
+    fetch('https://sasserver.demo.sas.com/svi-datahub/documents/alerts/146319a9-d567-421b-b246-3a1b9cdcdc55/attachments')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
-        }
-
-        document.getElementById("callApiButton").addEventListener("click", function() {
-
-            var apiKey = document.getElementById("api_key").textContent;
-	    var urlText = document.getElementById("urlText").textContent;
-            // Construct API call
-            var apiUrl = "https://api.openai.com/v1/chat/completions";
-
-            // Make API call
-             fetch(apiUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + apiKey
-                },
-                body: JSON.stringify({
-			"model": "gpt-3.5-turbo",
-			"messages": [{"role": "user", "content": "Create a short summary of the article in this link:" + urlText }]
-                   
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                var content = data.choices[0].message.content;
-
-		    document.getElementById("apiResponse").textContent = content;
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                document.getElementById("apiResponse").textContent = "Error occurred while fetching API data.";
-            });
+            return response.json();
+        })
+        .then(data => {
+            // Display API result
+            displayResult(data);
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+            document.getElementById('apiResult').textContent = 'Error fetching data from the API';
         });
-    </script>
+
+    // Function to display API result
+    function displayResult(data) {
+        // Assuming the API returns JSON data, you can format and display it here
+        var resultHtml = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+        document.getElementById('apiResult').innerHTML = resultHtml;
+    }
+</script>
+
 </body>
 </html>
