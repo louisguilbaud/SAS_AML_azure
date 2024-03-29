@@ -20,6 +20,7 @@
     <select id="documentSelect">
         <option value="">Select a document</option>
     </select>
+    <button id="downloadButton">Download Document</button>
 </div>
 
 <div id="selectedDocumentId"></div>
@@ -72,6 +73,18 @@ document.getElementById('documentSelect').addEventListener('change', function(ev
     } else {
         // No document selected
         document.getElementById('selectedDocumentId').textContent = '';
+    }
+});
+
+// Function to handle document download
+document.getElementById('downloadButton').addEventListener('click', function() {
+    if (selectedDocumentId) {
+        // Initiate download
+        var downloadUrl = 'https://sasserver.demo.sas.com/svi-datahub/documents/alerts/146319a9-d567-421b-b246-3a1b9cdcdc55/files/' + selectedDocumentId + '/content';
+        window.open(downloadUrl, '_blank');
+    } else {
+        // No document selected, show alert
+        alert('Please select a document first.');
     }
 });
 
