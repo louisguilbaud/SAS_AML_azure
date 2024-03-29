@@ -82,9 +82,11 @@ document.getElementById('downloadButton').addEventListener('click', function() {
     console.log('Download Button Clicked');
     console.log('Selected Document ID:', selectedDocumentId); // Log the selected document ID
     if (selectedDocumentId) {
-        // Initiate download
+        // Construct download URL
         var downloadUrl = 'https://sasserver.demo.sas.com/svi-datahub/documents/alerts/146319a9-d567-421b-b246-3a1b9cdcdc55/files/' + selectedDocumentId + '/content';
         console.log('Download URL:', downloadUrl); // Log the download URL
+
+        // Open download URL in a new tab/window
         window.open(downloadUrl, '_blank');
     } else {
         // No document selected, show alert
