@@ -83,6 +83,18 @@ const pollingInterval = 5000; // 5 seconds
 // Set up polling
 setInterval(fetchApiData, pollingInterval);
 
+// Function to handle document selection
+document.getElementById('documentSelect').addEventListener('change', function(event) {
+    selectedDocumentId = event.target.value; // Storing the selected document ID in the variable
+    if (selectedDocumentId) {
+        // Do something with the selected document ID
+        console.log('Selected document ID:', selectedDocumentId);
+    } else {
+        // No document selected
+        console.log('No document selected');
+    }
+});
+
 </script>
 
 </body>
