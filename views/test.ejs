@@ -226,7 +226,7 @@
 	    .then(response => response.json())
 	    .then(data => {
 	        // Extracted entities
-	        var entities = data.choices[0].text.split("\n").filter(Boolean);
+	        var entities =  data.choices[0].message.content;
 	        
 	        // Display entities as a list with checkboxes
 	        var entityList = document.getElementById("entityList");
