@@ -134,6 +134,7 @@
 	   <div id="EntityExtraction" class="tab-content">
 		    <button type="submit" class="btn-primary" id="callApiButtonEntity">Extract Entities</button>
 		    <p>List of Entities:</p>
+		<p><span id="entitiesString"></span></p>
 		    <p><span id="entityList"></span></p>
 	   </div>
 	</div>
@@ -248,7 +249,16 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
         },
         body: JSON.stringify({
             "model": "gpt-3.5-turbo",
-            "messages": [{"role": "user", "content": "Extract entities from the text in this link: " + urlText + "\nI want to extract company names, person names and addresses"}]
+            "messages": [{"role": "user", "content": "Using the text in this link: " + urlText + "\n generate a list of Person entities, a list of Company entities, 
+							a list of Address entities, and the relationships between those entities, in valid json format.
+							Use a 32 character hexademical globally unique identifier as the unique identifier for each entity. 
+							Generate a relationship object in json for relationships between Person to Company, 
+							Person to Address, Company to Address, and Person to Person. Each relationship type should be 
+							in a separate list.  Keep address information out of the Person object, and in it's own Address object.   
+							There can be many addresses for one person.  A Person to Person relationship should specify the 
+							relationship type if possible.Be sure to use valid json format in your response, where 
+							each property is quoted, and each object is delineated with an open { and a close }.The entire response 
+							should be a json compliant string, there should be no extraneous verbiage in your response. "}]
         })
     })
     .then(response => response.json())
@@ -262,8 +272,8 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
         // Clear previous content
         document.getElementById("entityList").innerHTML = '';
 
-        // Variable to track whether the current line is an entity or an entity type
-        var isBoldEntity = false;
+        // Variable to track if the current entity is the first one
+        var isFirstEntity = true;
 
         // Append content for each entity
         for (var i = 0; i < entities.length; i++) {
@@ -272,24 +282,27 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
                 continue;
             }
 
-            // Check if it's bold text (entity)
-            if (entities[i].includes("<strong>") && entities[i].includes("</strong>")) {
-                // Bold text (entity)
-                isBoldEntity = true;
+            // Check if it's a header or an entity
+            if (entities[i].match(/^\d+\.\s/)) {
+                // Header (entity type)
+                if (!isFirstEntity) {
+                    // Add a line break if it's not the first entity
+                    document.getElementById("entityList").appendChild(document.createElement('br'));
+                }
+                var header = document.createElement('h4');
+                header.textContent = entities[i].trim().replace(/^\d+\.\s/, ''); // Remove index
+                document.getElementById("entityList").appendChild(header);
+            } else {
+                // Entity
                 var entity = document.createElement('div');
                 var checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
                 var label = document.createElement('label');
-                label.textContent = entities[i].replace(/<\/?strong>/g, '').trim(); // Remove <strong> tags
+                label.textContent = entities[i].trim();
                 entity.appendChild(checkbox);
                 entity.appendChild(label);
                 document.getElementById("entityList").appendChild(entity);
-            } else {
-                // Non-bold text (entity type)
-                isBoldEntity = false;
-                var header = document.createElement('h4');
-                header.textContent = entities[i].trim().replace(/^\d+\.\s/, ''); // Remove index
-                document.getElementById("entityList").appendChild(header);
+                isFirstEntity = false;
             }
         }
     })
@@ -298,6 +311,7 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
         document.getElementById("entityList").textContent = "Error occurred while fetching entities.";
     });
 });
+
 
 
 
