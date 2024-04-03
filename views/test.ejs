@@ -277,8 +277,13 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
                 document.getElementById("entityList").appendChild(header);
             } else {
                 // Entity
-                var entity = document.createElement('p');
-                entity.textContent = entities[i].trim();
+                var entity = document.createElement('div');
+                var checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                var label = document.createElement('label');
+                label.textContent = entities[i].trim();
+                entity.appendChild(checkbox);
+                entity.appendChild(label);
                 document.getElementById("entityList").appendChild(entity);
             }
         }
@@ -288,6 +293,7 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
         document.getElementById("entityList").textContent = "Error occurred while fetching entities.";
     });
 });
+
 
 
 
