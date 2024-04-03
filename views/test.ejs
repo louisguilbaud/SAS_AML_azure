@@ -271,7 +271,7 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
 
             // Check if it's a header or an entity
             if (entities[i].match(/^\d+\.\s/)) {
-                // Header
+                // Header (entity type)
                 var header = document.createElement('h4');
                 header.textContent = entities[i].trim().replace(/^\d+\.\s/, ''); // Remove index
                 document.getElementById("entityList").appendChild(header);
@@ -293,10 +293,6 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
         document.getElementById("entityList").textContent = "Error occurred while fetching entities.";
     });
 });
-
-
-
-
 
 
     </script>
