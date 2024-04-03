@@ -265,7 +265,7 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
     .then(data => {
         // Extracted entities
         var entitiesString =  data.choices[0].message.content;
-	document.getElementById("test").textContent = entitiesString
+	document.getElementById("test").textContent = entitiesString;
 	})
     .catch(error => {
         console.error("Error:", error);
