@@ -3,6 +3,7 @@
 <html>
     <script src='./javascripts/sas/util/messagingUtil.js'></script>
 	<script src="./javascripts/jquery/jquery.min.js"></script>
+
 <head>
     <title>API Call Example</title>
     <style>
@@ -134,8 +135,7 @@
 	   <div id="EntityExtraction" class="tab-content">
 		    <button type="submit" class="btn-primary" id="callApiButtonEntity">Extract Entities</button>
 		    <p>List of Entities:</p>
-			<p><span id="test"></span></p>
-
+		    <p><span id="entityList"></span></p>
 	   </div>
 	</div>
 		<p hidden> <span id="urlText"></span></p>
@@ -233,47 +233,60 @@
 	        });
 	    });
 
-document.getElementById("callApiButtonEntity").addEventListener("click", function() {
-    var apiKey = document.getElementById("api_key").textContent;
-    var urlText = document.getElementById("urlText").textContent;
-    
-    // Construct API call
-    var apiUrl = "https://api.openai.com/v1/chat/completions";
-    
-    // Make API call to extract entities
-    fetch(apiUrl, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + apiKey
-        },
-        body: JSON.stringify({
-            "model": "gpt-3.5-turbo",
-            "messages": [{"role": "user", "content": "Using the text in this link: " + urlText + "\n generate a list of Person entities, a list of Company entities, 
-							a list of Address entities, and the relationships between those entities, in valid json format.
-							Use a 32 character hexademical globally unique identifier as the unique identifier for each entity. 
-							Generate a relationship object in json for relationships between Person to Company, 
-							Person to Address, Company to Address, and Person to Person. Each relationship type should be 
-							in a separate list.  Keep address information out of the Person object, and in it's own Address object.   
-							There can be many addresses for one person.  A Person to Person relationship should specify the 
-							relationship type if possible.Be sure to use valid json format in your response, where 
-							each property is quoted, and each object is delineated with an open { and a close }.The entire response 
-							should be a json compliant string, there should be no extraneous verbiage in your response. "}]
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Extracted entities
-        var entitiesString =  data.choices[0].message.content;
-	document.getElementById("test").textContent = entitiesString;
-	})
-    .catch(error => {
-        console.error("Error:", error);
-        document.getElementById("entityList").textContent = "Error occurred while fetching entities.";
-    });
-});
-
-
+	document.getElementById("callApiButtonEntity").addEventListener("click", function() {
+	    var apiKey = document.getElementById("api_key").textContent;
+	    var urlText = document.getElementById("urlText").textContent;
+	    
+	    // Construct API call
+	    var apiUrl = "https://api.openai.com/v1/chat/completions";
+	    
+	    // Make API call to extract entities
+	    fetch(apiUrl, {
+	        method: "POST",
+	        headers: {
+	            "Content-Type": "application/json",
+	            "Authorization": "Bearer " + apiKey
+	        },
+		 body: JSON.stringify({
+	        	"model": "gpt-3.5-turbo",
+	                "messages": [{"role": "user", "content": "Extract entities from the text in this link: " + urlText + "\nI want to extract company names, person names and addresses"}]
+	        })
+	    })
+	    .then(response => response.json())
+	    .then(data => {
+			// Extracted entities
+		        var entitiesString =  data.choices[0].message.content;
+		        
+		        // Split the string by newline characters
+		        var entities = entitiesString.split('\n');
+		
+		        // Clear previous content
+		        document.getElementById("entityList").innerHTML = '';
+		
+		        // Check if the first line contains a valid entity
+		        var startIndex = 0;
+		        if (!entities[0].trim().match(/^\d+\.\s/)) {
+		            // If the first line is not a valid entity, skip it
+		            startIndex = 1;
+		        }
+		
+		        // Append checkbox for each entity starting from startIndex
+		        for (var i = startIndex; i < entities.length; i++) {
+		            var divItem = document.createElement('div');
+		            var checkbox = document.createElement('input');
+		            checkbox.type = 'checkbox';
+		            var label = document.createElement('label');
+		            label.textContent = entities[i].trim();
+		            divItem.appendChild(checkbox);
+		            divItem.appendChild(label);
+		            document.getElementById("entityList").appendChild(divItem);
+		        }
+		    })
+	    .catch(error => {
+	        console.error("Error:", error);
+	        document.getElementById("entityList").textContent = "Error occurred while fetching entities.";
+	    });
+	});
 
 
 
