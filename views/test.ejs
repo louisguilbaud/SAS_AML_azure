@@ -246,46 +246,48 @@
 	            "Content-Type": "application/json",
 	            "Authorization": "Bearer " + apiKey
 	        },
-		 body: JSON.stringify({
-	        	"model": "gpt-3.5-turbo",
-	                "messages": [{"role": "user", "content": "Extract entities from the text in this link: " + urlText + "\nI want to extract company names, person names and addresses"}]
+	        body: JSON.stringify({
+	            "model": "gpt-3.5-turbo",
+	            "messages": [{"role": "user", "content": "Extract entities from the text in this link: " + urlText + "\nI want to extract company names, person names and addresses"}]
 	        })
 	    })
 	    .then(response => response.json())
 	    .then(data => {
-			// Extracted entities
-		        var entitiesString =  data.choices[0].message.content;
-		        
-		        // Split the string by newline characters
-		        var entities = entitiesString.split('\n');
-		
-		        // Clear previous content
-		        document.getElementById("entityList").innerHTML = '';
-		
-		        // Check if the first line contains a valid entity
-		        var startIndex = 0;
-		        if (!entities[0].trim().match(/^\d+\.\s/)) {
-		            // If the first line is not a valid entity, skip it
-		            startIndex = 1;
-		        }
-		
-		        // Append checkbox for each entity starting from startIndex
-		        for (var i = startIndex; i < entities.length; i++) {
-		            var divItem = document.createElement('div');
-		            var checkbox = document.createElement('input');
-		            checkbox.type = 'checkbox';
-		            var label = document.createElement('label');
-		            label.textContent = entities[i].trim();
-		            divItem.appendChild(checkbox);
-		            divItem.appendChild(label);
-		            document.getElementById("entityList").appendChild(divItem);
-		        }
-		    })
+	        // Extracted entities
+	        var entitiesString =  data.choices[0].message.content;
+	        
+	        // Split the string by newline characters
+	        var entities = entitiesString.split('\n');
+	
+	        // Clear previous content
+	        document.getElementById("entityList").innerHTML = '';
+	
+	        // Check if the first line contains a valid entity
+	        var startIndex = 0;
+	        if (!entities[0].trim().match(/^\d+\.\s/)) {
+	            // If the first line is not a valid entity, skip it
+	            startIndex = 1;
+	        }
+	
+	        // Append checkbox for each entity starting from startIndex
+	        for (var i = startIndex; i < entities.length; i++) {
+	            var divItem = document.createElement('div');
+	            var checkbox = document.createElement('input');
+	            checkbox.type = 'checkbox';
+	            var label = document.createElement('label');
+	            label.textContent = entities[i].trim();
+	            divItem.appendChild(checkbox);
+	            divItem.appendChild(label);
+	            divItem.appendChild(document.createElement('br')); // Add line break after each entity
+	            document.getElementById("entityList").appendChild(divItem);
+	        }
+	    })
 	    .catch(error => {
 	        console.error("Error:", error);
 	        document.getElementById("entityList").textContent = "Error occurred while fetching entities.";
 	    });
 	});
+
 
 
 
