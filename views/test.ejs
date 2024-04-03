@@ -262,24 +262,25 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
         // Clear previous content
         document.getElementById("entityList").innerHTML = '';
 
-        // Check if the first line contains a valid entity
-        var startIndex = 0;
-        if (!entities[0].trim().match(/^\d+\.\s/)) {
-            // If the first line is not a valid entity, skip it
-            startIndex = 1;
-        }
+        // Append content for each entity
+        for (var i = 0; i < entities.length; i++) {
+            // Skip empty lines
+            if (entities[i].trim() === "") {
+                continue;
+            }
 
-        // Append checkbox for each entity starting from startIndex
-        for (var i = startIndex; i < entities.length; i++) {
-            var divItem = document.createElement('div');
-            var checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            var label = document.createElement('label');
-            var entityName = entities[i].trim();
-            label.innerHTML = entityName.replace(/(?:\r\n|\r|\n)/g, '<br>'); // Insert line breaks
-            divItem.appendChild(checkbox);
-            divItem.appendChild(label);
-            document.getElementById("entityList").appendChild(divItem);
+            // Check if it's a header or an entity
+            if (entities[i].match(/^\d+\.\s/)) {
+                // Header
+                var header = document.createElement('h4');
+                header.textContent = entities[i].trim().replace(/^\d+\.\s/, ''); // Remove index
+                document.getElementById("entityList").appendChild(header);
+            } else {
+                // Entity
+                var entity = document.createElement('p');
+                entity.textContent = entities[i].trim();
+                document.getElementById("entityList").appendChild(entity);
+            }
         }
     })
     .catch(error => {
@@ -287,6 +288,7 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
         document.getElementById("entityList").textContent = "Error occurred while fetching entities.";
     });
 });
+
 
 
 
