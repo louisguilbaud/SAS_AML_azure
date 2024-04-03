@@ -262,6 +262,9 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
         // Clear previous content
         document.getElementById("entityList").innerHTML = '';
 
+        // Variable to track if the current entity is the first one
+        var isFirstEntity = true;
+
         // Append content for each entity
         for (var i = 0; i < entities.length; i++) {
             // Skip empty lines
@@ -272,6 +275,10 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
             // Check if it's a header or an entity
             if (entities[i].match(/^\d+\.\s/)) {
                 // Header (entity type)
+                if (!isFirstEntity) {
+                    // Add a line break if it's not the first entity
+                    document.getElementById("entityList").appendChild(document.createElement('br'));
+                }
                 var header = document.createElement('h4');
                 header.textContent = entities[i].trim().replace(/^\d+\.\s/, ''); // Remove index
                 document.getElementById("entityList").appendChild(header);
@@ -285,6 +292,7 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
                 entity.appendChild(checkbox);
                 entity.appendChild(label);
                 document.getElementById("entityList").appendChild(entity);
+                isFirstEntity = false;
             }
         }
     })
@@ -293,6 +301,7 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
         document.getElementById("entityList").textContent = "Error occurred while fetching entities.";
     });
 });
+
 
 
     </script>
