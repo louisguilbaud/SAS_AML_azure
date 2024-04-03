@@ -263,7 +263,7 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
         document.getElementById("entityList").innerHTML = '';
 
         // Variable to track whether the current line is an entity or an entity type
-        var isEntity = false;
+        var isBoldEntity = false;
 
         // Append content for each entity
         for (var i = 0; i < entities.length; i++) {
@@ -272,30 +272,24 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
                 continue;
             }
 
-            // Check if it's a header or an entity
-            if (entities[i].match(/^\d+\.\s/)) {
-                // Header (entity type)
-                isEntity = false;
-                var header = document.createElement('h4');
-                header.textContent = entities[i].trim().replace(/^\d+\.\s/, ''); // Remove index
-                document.getElementById("entityList").appendChild(header);
-            } else {
-                // Entity
-                if (!isEntity) {
-                    // Add a line break before the first entity in a group
-                    if (i !== 0) {
-                        document.getElementById("entityList").appendChild(document.createElement('br'));
-                    }
-                    isEntity = true;
-                }
+            // Check if it's bold text (entity)
+            if (entities[i].includes("<strong>") && entities[i].includes("</strong>")) {
+                // Bold text (entity)
+                isBoldEntity = true;
                 var entity = document.createElement('div');
                 var checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
                 var label = document.createElement('label');
-                label.textContent = entities[i].trim();
+                label.textContent = entities[i].replace(/<\/?strong>/g, '').trim(); // Remove <strong> tags
                 entity.appendChild(checkbox);
                 entity.appendChild(label);
                 document.getElementById("entityList").appendChild(entity);
+            } else {
+                // Non-bold text (entity type)
+                isBoldEntity = false;
+                var header = document.createElement('h4');
+                header.textContent = entities[i].trim().replace(/^\d+\.\s/, ''); // Remove index
+                document.getElementById("entityList").appendChild(header);
             }
         }
     })
