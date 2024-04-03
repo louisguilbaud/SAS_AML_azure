@@ -262,8 +262,8 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
         // Clear previous content
         document.getElementById("entityList").innerHTML = '';
 
-        // Variable to track if the current entity is the first one
-        var isFirstEntity = true;
+        // Variable to track whether the current line is an entity or an entity type
+        var isEntity = false;
 
         // Append content for each entity
         for (var i = 0; i < entities.length; i++) {
@@ -275,15 +275,19 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
             // Check if it's a header or an entity
             if (entities[i].match(/^\d+\.\s/)) {
                 // Header (entity type)
-                if (!isFirstEntity) {
-                    // Add a line break if it's not the first entity
-                    document.getElementById("entityList").appendChild(document.createElement('br'));
-                }
+                isEntity = false;
                 var header = document.createElement('h4');
                 header.textContent = entities[i].trim().replace(/^\d+\.\s/, ''); // Remove index
                 document.getElementById("entityList").appendChild(header);
             } else {
                 // Entity
+                if (!isEntity) {
+                    // Add a line break before the first entity in a group
+                    if (i !== 0) {
+                        document.getElementById("entityList").appendChild(document.createElement('br'));
+                    }
+                    isEntity = true;
+                }
                 var entity = document.createElement('div');
                 var checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
@@ -292,7 +296,6 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
                 entity.appendChild(checkbox);
                 entity.appendChild(label);
                 document.getElementById("entityList").appendChild(entity);
-                isFirstEntity = false;
             }
         }
     })
@@ -301,6 +304,7 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
         document.getElementById("entityList").textContent = "Error occurred while fetching entities.";
     });
 });
+
 
 
 
