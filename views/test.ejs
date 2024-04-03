@@ -134,8 +134,8 @@
 	   <div id="EntityExtraction" class="tab-content">
 		    <button type="submit" class="btn-primary" id="callApiButtonEntity">Extract Entities</button>
 		    <p>List of Entities:</p>
-		<p><span id="entitiesString"></span></p>
-		    <p><span id="entityList"></span></p>
+			<p><span id="test"></span></p>
+
 	   </div>
 	</div>
 		<p hidden> <span id="urlText"></span></p>
@@ -265,47 +265,8 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
     .then(data => {
         // Extracted entities
         var entitiesString =  data.choices[0].message.content;
-        
-        // Split the string by newline characters
-        var entities = entitiesString.split('\n');
+	document.getElementById("test").textContent = entitiesString
 
-        // Clear previous content
-        document.getElementById("entityList").innerHTML = '';
-
-        // Variable to track if the current entity is the first one
-        var isFirstEntity = true;
-
-        // Append content for each entity
-        for (var i = 0; i < entities.length; i++) {
-            // Skip empty lines
-            if (entities[i].trim() === "") {
-                continue;
-            }
-
-            // Check if it's a header or an entity
-            if (entities[i].match(/^\d+\.\s/)) {
-                // Header (entity type)
-                if (!isFirstEntity) {
-                    // Add a line break if it's not the first entity
-                    document.getElementById("entityList").appendChild(document.createElement('br'));
-                }
-                var header = document.createElement('h4');
-                header.textContent = entities[i].trim().replace(/^\d+\.\s/, ''); // Remove index
-                document.getElementById("entityList").appendChild(header);
-            } else {
-                // Entity
-                var entity = document.createElement('div');
-                var checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                var label = document.createElement('label');
-                label.textContent = entities[i].trim();
-                entity.appendChild(checkbox);
-                entity.appendChild(label);
-                document.getElementById("entityList").appendChild(entity);
-                isFirstEntity = false;
-            }
-        }
-    })
     .catch(error => {
         console.error("Error:", error);
         document.getElementById("entityList").textContent = "Error occurred while fetching entities.";
