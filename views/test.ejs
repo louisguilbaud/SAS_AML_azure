@@ -238,54 +238,63 @@
 	        });
 	    });
 
-	document.getElementById("callApiButtonEntity").addEventListener("click", function() {
-	    var apiKey = document.getElementById("api_key").textContent;
-	    var urlText = document.getElementById("urlText").textContent;
-	    
-	    // Construct API call
-	    var apiUrl = "https://api.openai.com/v1/chat/completions";
-	    
-	    // Make API call to extract entities
-	    fetch(apiUrl, {
-	        method: "POST",
-	        headers: {
-	            "Content-Type": "application/json",
-	            "Authorization": "Bearer " + apiKey
-	        },
-	        body: JSON.stringify({
-	            "model": "gpt-3.5-turbo",
-	            "messages": [{"role": "user", "content": "Extract entities from the text in this link: " + urlText + "\nI want to extract company names, person names and addresses"}]
-	        })
-	    })
-	    .then(response => response.json())
-	    .then(data => {
-	        // Extracted entities
-	        var entitiesString = data.choices[0].message.content;
-	        
-	        // Split the string by newline characters
-	        var entities = entitiesString.split('\n');
-	        
-	        // Clear previous content
-	        var entityList = document.getElementById("entityList");
-	        entityList.innerHTML = ''; // Clear previous content
-	        
-	        // Create and append a list for entities
-	        var ul = document.createElement('ul');
-	        entities.forEach(entity => {
-	            entity = entity.trim(); // Trim any leading or trailing whitespace
-	            if (entity !== "") { // Check if the entity is not empty
-	                var li = document.createElement('li');
-	                li.textContent = entity;
-	                ul.appendChild(li);
-	            }
-	        });
-	        entityList.appendChild(ul);
-	    })
-	    .catch(error => {
-	        console.error("Error:", error);
-	        document.getElementById("entityList").textContent = "Error occurred while fetching entities.";
-	    });
-	});
+document.getElementById("callApiButtonEntity").addEventListener("click", function() {
+    var apiKey = document.getElementById("api_key").textContent;
+    var urlText = document.getElementById("urlText").textContent;
+    
+    // Construct API call
+    var apiUrl = "https://api.openai.com/v1/chat/completions";
+    
+    // Make API call to extract entities
+    fetch(apiUrl, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + apiKey
+        },
+        body: JSON.stringify({
+            "model": "gpt-3.5-turbo",
+            "messages": [{"role": "user", "content": "Extract entities from the text in this link: " + urlText + "\nI want to extract company names, person names and addresses"}]
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Extracted entities
+        var entitiesString = data.choices[0].message.content;
+        
+        // Split the string by newline characters
+        var entities = entitiesString.split('\n');
+        
+        // Clear previous content
+        var entityList = document.getElementById("entityList");
+        entityList.innerHTML = ''; // Clear previous content
+        
+        // Create and append a list for entities
+        var ul = document.createElement('ul');
+        var lastEntityType = ''; // Track the last non-empty entity type
+        entities.forEach(entity => {
+            entity = entity.trim(); // Trim any leading or trailing whitespace
+            if (entity !== "") { // Check if the entity is not empty
+                // Add a space if this is not the first non-empty entity type
+                if (lastEntityType !== '') {
+                    var spaceLi = document.createElement('li');
+                    spaceLi.textContent = ''; // Add a space
+                    ul.appendChild(spaceLi);
+                }
+                var li = document.createElement('li');
+                li.textContent = entity;
+                ul.appendChild(li);
+                lastEntityType = entity; // Update the last non-empty entity type
+            }
+        });
+        entityList.appendChild(ul);
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        document.getElementById("entityList").textContent = "Error occurred while fetching entities.";
+    });
+});
+
 
 
 
