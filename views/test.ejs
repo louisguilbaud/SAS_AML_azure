@@ -268,21 +268,12 @@
 		        // Clear previous content
 		        document.getElementById("entityList").innerHTML = '';
 		
-		        // Check if the first line contains a valid entity
-		        var startIndex = 0;
-		        if (!entities[0].trim().match(/^\d+\.\s/)) {
-		            // If the first line is not a valid entity, skip it
-		            startIndex = 1;
-		        }
 		
 		        // Append checkbox for each entity starting from startIndex
 		        for (var i = startIndex; i < entities.length; i++) {
 		            var divItem = document.createElement('div');
-		            var checkbox = document.createElement('input');
-		            checkbox.type = 'checkbox';
 		            var label = document.createElement('label');
 		            label.textContent = entities[i].trim();
-		            divItem.appendChild(checkbox);
 		            divItem.appendChild(label);
 		            document.getElementById("entityList").appendChild(divItem);
 		        }
