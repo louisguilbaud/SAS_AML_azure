@@ -272,9 +272,12 @@
 	        // Create and append a list for entities
 	        var ul = document.createElement('ul');
 	        entities.forEach(entity => {
-	            var li = document.createElement('li');
-	            li.textContent = entity.trim();
-	            ul.appendChild(li);
+	            entity = entity.trim(); // Trim any leading or trailing whitespace
+	            if (entity !== "") { // Check if the entity is not empty
+	                var li = document.createElement('li');
+	                li.textContent = entity;
+	                ul.appendChild(li);
+	            }
 	        });
 	        entityList.appendChild(ul);
 	    })
