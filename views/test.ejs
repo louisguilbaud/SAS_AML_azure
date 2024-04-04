@@ -271,20 +271,17 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
         
         // Create and append a list for entities
         var ul = document.createElement('ul');
-        var lastEntityType = ''; // Track the last non-empty entity type
         entities.forEach(entity => {
             entity = entity.trim(); // Trim any leading or trailing whitespace
             if (entity !== "") { // Check if the entity is not empty
-                // Add a space if this is not the first non-empty entity type
-                if (lastEntityType !== '') {
-                    var spaceLi = document.createElement('li');
-                    spaceLi.textContent = ''; // Add a space
-                    ul.appendChild(spaceLi);
-                }
                 var li = document.createElement('li');
                 li.textContent = entity;
                 ul.appendChild(li);
-                lastEntityType = entity; // Update the last non-empty entity type
+
+                // Insert a blank list item after each entity
+                var blankLi = document.createElement('li');
+                blankLi.textContent = ''; // Empty content for a blank line
+                ul.appendChild(blankLi);
             }
         });
         entityList.appendChild(ul);
