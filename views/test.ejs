@@ -252,32 +252,32 @@
 	            "Content-Type": "application/json",
 	            "Authorization": "Bearer " + apiKey
 	        },
-		 body: JSON.stringify({
-	        	"model": "gpt-3.5-turbo",
-	                "messages": [{"role": "user", "content": "Extract entities from the text in this link: " + urlText + "\nI want to extract company names, person names and addresses"}]
+	        body: JSON.stringify({
+	            "model": "gpt-3.5-turbo",
+	            "messages": [{"role": "user", "content": "Extract entities from the text in this link: " + urlText + "\nI want to extract company names, person names and addresses"}]
 	        })
 	    })
 	    .then(response => response.json())
 	    .then(data => {
-			// Extracted entities
-		        var entitiesString =  data.choices[0].message.content;
-		        
-		        // Split the string by newline characters
-		        var entities = entitiesString.split('\n');
-		
-		        // Clear previous content
-		        document.getElementById("entityList").innerHTML = '';
-		
-		
-		        // Append checkbox for each entity starting from startIndex
-		        for (var i = startIndex; i < entities.length; i++) {
-		            var divItem = document.createElement('div');
-		            var label = document.createElement('label');
-		            label.textContent = entities[i].trim();
-		            divItem.appendChild(label);
-		            document.getElementById("entityList").appendChild(divItem);
-		        }
-		    })
+	        // Extracted entities
+	        var entitiesString = data.choices[0].message.content;
+	        
+	        // Split the string by newline characters
+	        var entities = entitiesString.split('\n');
+	        
+	        // Clear previous content
+	        var entityList = document.getElementById("entityList");
+	        entityList.innerHTML = ''; // Clear previous content
+	        
+	        // Create and append a list for entities
+	        var ul = document.createElement('ul');
+	        entities.forEach(entity => {
+	            var li = document.createElement('li');
+	            li.textContent = entity.trim();
+	            ul.appendChild(li);
+	        });
+	        entityList.appendChild(ul);
+	    })
 	    .catch(error => {
 	        console.error("Error:", error);
 	        document.getElementById("entityList").textContent = "Error occurred while fetching entities.";
