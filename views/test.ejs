@@ -180,6 +180,7 @@
 	    var language = document.getElementById("summaryLanguageSelect").textContent;
             // Construct API call
             var apiUrl = "https://api.openai.com/v1/chat/completions";
+	    document.getElementById("apiResponse").innerHTML = "";
 
             // Make API call
              fetch(apiUrl, {
