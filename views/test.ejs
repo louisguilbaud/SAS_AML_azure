@@ -104,9 +104,9 @@
 		<div class="summary-size-container">
 		    <label for="summarySizeSelect">Choose the size of the summary:</label>
 		    <select id="summarySizeSelect">
-		        <option value="small">Small</option>
-		        <option value="medium">Medium</option>
-		        <option value="large">Large</option>
+		        <option value="5">Short</option>
+		        <option value="10">Medium</option>
+		        <option value="15">Long</option>
 		    </select>
 		</div>
 		<div class="summary-size-container">
@@ -188,7 +188,7 @@
                 },
                 body: JSON.stringify({
 			"model": "gpt-3.5-turbo",
-			"messages": [{"role": "user", "content": "Create a short summary of the article in this link:" + urlText }]
+			"messages": [{"role": "user", "content": "Create a summary of" + summarySizeSelect +"\nsentences  in "+summaryLanguageSelect+"of the article in this link:" + urlText }]
                    
                 })
             })
