@@ -122,7 +122,7 @@
 		<div class="api-response-box"> 
 	            <p><span id="apiResponse"></span></p>
 	        </div>
-		<p><span id="language"></span></p>
+		<p><span id="test"></span></p>
 	    </div>
 	    <div id="qa" class="tab-content">
 		<label for="textInput" class="form-label">Enter your question:</label>
@@ -166,6 +166,8 @@
                 document.getElementById("urlText").textContent = vaMsgObj.data[0][0];
                 document.getElementById("api_key").textContent = vaMsgObj.data[0][1];
 		document.getElementById("title").textContent = vaMsgObj.data[0][2];
+		var language = document.getElementById("summaryLanguageSelect").textContent;
+		document.getElementById("test").textContent = language
             } else {
                 document.getElementById("urlText").textContent = "No URL available";
             }
