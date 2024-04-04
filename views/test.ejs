@@ -166,7 +166,7 @@
                 document.getElementById("urlText").textContent = vaMsgObj.data[0][0];
                 document.getElementById("api_key").textContent = vaMsgObj.data[0][1];
 		document.getElementById("title").textContent = vaMsgObj.data[0][2];
-		var language = document.getElementById("summaryLanguageSelect").textContent;
+		var language = document.getElementById("summaryLanguageSelect").value;
 		document.getElementById("test").textContent = language
             } else {
                 document.getElementById("urlText").textContent = "No URL available";
