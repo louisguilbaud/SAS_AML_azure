@@ -240,7 +240,7 @@
 	    });
 
 document.getElementById("callApiButtonEntity").addEventListener("click", function() {
-    
+    var apiKey = document.getElementById("api_key").textContent;
     // Construct API call
     var apiUrl = "https://api.openai.com/v1/chat/completions";
     
