@@ -240,8 +240,6 @@
 	    });
 
 document.getElementById("callApiButtonEntity").addEventListener("click", function() {
-    var apiKey = document.getElementById("api_key").textContent;
-    var urlText = document.getElementById("urlText").textContent;
     
     // Construct API call
     var apiUrl = "https://api.openai.com/v1/chat/completions";
@@ -267,68 +265,56 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
         // Split the string by newline characters
         var entities = entitiesString.split('\n');
         
-        // Clear previous content
-        var entityList = document.getElementById("entityList");
-        entityList.innerHTML = ''; // Clear previous content
+        // Initialize arrays to store person names and company names
+        var personNames = [];
+        var companyNames = [];
         
-        // Initialize variables to track entity types
-        var companyNamesExist = false;
-        var personNamesExist = false;
-        var addressesExist = false;
-        
-        // Iterate through entities to determine which types exist
+        // Iterate through entities to extract person names and company names
         entities.forEach(entity => {
             entity = entity.trim(); // Trim any leading or trailing whitespace
-            if (entity.startsWith("Company Names:")) {
-                companyNamesExist = true;
-            } else if (entity.startsWith("Person Names:")) {
-                personNamesExist = true;
-            } else if (entity.startsWith("Addresses:")) {
-                addressesExist = true;
+            if (entity.startsWith("Person Names:")) {
+                // Extract person names
+                var names = entity.replace("Person Names:", "").trim().split(",");
+                personNames.push(...names);
+            } else if (entity.startsWith("Company Names:")) {
+                // Extract company names
+                var names = entity.replace("Company Names:", "").trim().split(",");
+                companyNames.push(...names);
             }
         });
         
-        // Create and append a list for each entity type if it exists
-        if (companyNamesExist) {
-            var ulCompanyNames = document.createElement('ul');
-            entities.forEach(entity => {
-                entity = entity.trim(); // Trim any leading or trailing whitespace
-                if (entity.startsWith("1. ")) {
-                    var li = document.createElement('li');
-                    li.textContent = entity;
-                    ulCompanyNames.appendChild(li);
-                }
-            });
-            entityList.appendChild(document.createTextNode("Company Names:"));
-            entityList.appendChild(ulCompanyNames);
-        }
+        // Output the extracted person names and company names
+        console.log("Person Names:", personNames);
+        console.log("Company Names:", companyNames);
         
-        if (personNamesExist) {
+        // Display the extracted person names and company names in the HTML
+        var entityList = document.getElementById("entityList");
+        entityList.innerHTML = ""; // Clear previous content
+        
+        if (personNames.length > 0) {
             var ulPersonNames = document.createElement('ul');
-            entities.forEach(entity => {
-                entity = entity.trim(); // Trim any leading or trailing whitespace
-                if (entity.startsWith("1. ")) {
-                    var li = document.createElement('li');
-                    li.textContent = entity;
-                    ulPersonNames.appendChild(li);
-                }
+            personNames.forEach(name => {
+                var li = document.createElement('li');
+                li.textContent = name.trim();
+                ulPersonNames.appendChild(li);
             });
-            entityList.appendChild(document.createTextNode("Person Names:"));
+            var personNamesTitle = document.createElement('p');
+            personNamesTitle.textContent = "Person Names:";
+            entityList.appendChild(personNamesTitle);
             entityList.appendChild(ulPersonNames);
         }
         
-        if (addressesExist) {
-            var ulAddresses = document.createElement('ul');
-            entities.forEach(entity => {
-                entity = entity.trim(); // Trim any leading or trailing whitespace
-                if (entity === "No specific addresses mentioned in the text.") {
-                    var li = document.createElement('li');
-                    li.textContent = entity;
-                    ulAddresses.appendChild(li);
-                }
+        if (companyNames.length > 0) {
+            var ulCompanyNames = document.createElement('ul');
+            companyNames.forEach(name => {
+                var li = document.createElement('li');
+                li.textContent = name.trim();
+                ulCompanyNames.appendChild(li);
             });
-            entityList.appendChild(document.createTextNode("Addresses:"));
-            entityList.appendChild(ulAddresses);
+            var companyNamesTitle = document.createElement('p');
+            companyNamesTitle.textContent = "Company Names:";
+            entityList.appendChild(companyNamesTitle);
+            entityList.appendChild(ulCompanyNames);
         }
     })
     .catch(error => {
@@ -336,6 +322,7 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
         document.getElementById("entityList").textContent = "Error occurred while fetching entities.";
     });
 });
+
 
 
 
