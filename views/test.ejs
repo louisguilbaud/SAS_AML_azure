@@ -165,12 +165,12 @@
             console.log(vaMsgObj.data[0][0]);
 	    console.log(vaMsgObj.data[0][1]);
 	console.log(vaMsgObj.data[0][2]);
-	console.log(vaMsgObj.data[0][3]);
+	//console.log(vaMsgObj.data[0][3]);
             if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
                 document.getElementById("urlText").textContent = vaMsgObj.data[0][0];
                 document.getElementById("api_key").textContent = vaMsgObj.data[0][1];
 		document.getElementById("title").textContent = vaMsgObj.data[0][2];
-		document.getElementById("article_content").textContent = vaMsgObj.data[0][3];
+		//document.getElementById("article_content").textContent = vaMsgObj.data[0][3];
             } else {
                 document.getElementById("urlText").textContent = "No URL available";
             }
@@ -198,7 +198,8 @@
                 },
                 body: JSON.stringify({
 			"model": "gpt-3.5-turbo",
-			"messages": [{"role": "user", "content": "Create a summary of arround" +size+ " words in " +language+ " based on this article:" +article_content
+			"messages": [{"role": "user", "content": "Create a summary of arround" +size+ " words in " +language+ " based on this article: The Serious Fraud Office has made an arrest and raided two residential premises as part of an investigation into a company that operated a car hire investment scheme promising returns of up to 11% a year. The SFO is investigating the activities of Raedex Consortium, which runs a string of companies including Buy2Let Cars, PayGo Cars, Wheels4Sure and Rent2Own Cars. Buy2Let Cars promised annual returns of between 7% and 11% to investors who lent the company a minimum of £7,000 over three years. It claimed there was “a lot of money to be made” in this sector. The company used the money that was invested to buy new cars, which it then leased to people with a poor credit history via Wheels4Sure. Investors received monthly payments over the term of the loan, with interest paid at the end of the term. On 16 March, Buy2Let Cars and its parent company, Raedex, entered administration, weeks after the Financial Conduct Authority told it to stop taking new business. Despite this, at the time of writing, the Buy2
+"
  			}]
                 })
             })
