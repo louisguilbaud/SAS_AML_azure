@@ -163,6 +163,9 @@
 
         function updateURL(vaMsgObj) {
             console.log(vaMsgObj.data[0][0]);
+	    console.log(vaMsgObj.data[0][1]);
+	console.log(vaMsgObj.data[0][2]);
+	console.log(vaMsgObj.data[0][3]);
             if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
                 document.getElementById("urlText").textContent = vaMsgObj.data[0][0];
                 document.getElementById("api_key").textContent = vaMsgObj.data[0][1];
