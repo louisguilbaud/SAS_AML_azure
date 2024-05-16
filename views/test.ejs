@@ -166,6 +166,7 @@
                 document.getElementById("urlText").textContent = vaMsgObj.data[0][0];
                 document.getElementById("api_key").textContent = vaMsgObj.data[0][1];
 		document.getElementById("title").textContent = vaMsgObj.data[0][2];
+		document.getElementById("article_content").textContent = vaMsgObj.data[0][3];
             } else {
                 document.getElementById("urlText").textContent = "No URL available";
             }
@@ -177,6 +178,7 @@
             var apiKey = document.getElementById("api_key").textContent;
 	    var urlText = document.getElementById("urlText").textContent;
 	    var title = document.getElementById("title").textContent;
+	    var article_content = document.getElementById("article_content").textContent;
 	    var size = document.getElementById("summarySizeSelect").value;
 	    var language = document.getElementById("summaryLanguageSelect").value;
             // Construct API call
