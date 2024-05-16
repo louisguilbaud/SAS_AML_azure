@@ -167,7 +167,7 @@
                 document.getElementById("urlText").textContent = vaMsgObj.data[0][0];
                 document.getElementById("api_key").textContent = vaMsgObj.data[0][1];
 		document.getElementById("title").textContent = vaMsgObj.data[0][2];
-		document.getElementById("content").textContent = vaMsgObj.data[0][3];
+		document.getElementById("article_content").textContent = vaMsgObj.data[0][3];
             } else {
                 document.getElementById("urlText").textContent = "No URL available";
             }
@@ -181,7 +181,7 @@
 	    var title = document.getElementById("title").textContent;
 	    var size = document.getElementById("summarySizeSelect").value;
 	    var language = document.getElementById("summaryLanguageSelect").value;
-	    var content = document.getElementById("content").textContent;
+	    var article_content = document.getElementById("article_content").textContent;
             // Construct API call
             var apiUrl = "https://api.openai.com/v1/chat/completions";
 	    document.getElementById("apiResponse").innerHTML = "";
@@ -195,7 +195,7 @@
                 },
                 body: JSON.stringify({
 			"model": "gpt-3.5-turbo",
-			"messages": [{"role": "user", "content": "Create a summary of arround" +size+ " words in " +language+ " based on this article:" +content
+			"messages": [{"role": "user", "content": "Create a summary of arround" +size+ " words in " +language+ " based on this article:" +article_content
  			}]
                 })
             })
@@ -216,7 +216,7 @@
 	        var apiKey = document.getElementById("api_key").textContent;
 	        var urlText = document.getElementById("urlText").textContent;
 	        var question = document.getElementById("textInput").value; // Retrieve the question from the textarea
-		var content = document.getElementById("content").textContent;
+		var article_content = document.getElementById("article_content").textContent;
 	        // Construct API call
 	        var apiUrl = "https://api.openai.com/v1/chat/completions";
 	        // Make API call
@@ -228,7 +228,7 @@
 	            },
 	            body: JSON.stringify({
 	                "model": "gpt-3.5-turbo",
-	                "messages": [{"role": "user", "content": "Answer the question: " + question + "\nBased on the article in this link: " + content}]
+	                "messages": [{"role": "user", "content": "Answer the question: " + question + "\nBased on the article in this link: " + article_content}]
 	            })
 	        })
 	        .then(response => response.json())
@@ -246,7 +246,7 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
     var apiKey = document.getElementById("api_key").textContent;
     // Construct API call
     var apiUrl = "https://api.openai.com/v1/chat/completions";
-    var content = document.getElementById("content").textContent;
+    var article_content = document.getElementById("article_content").textContent;
     
     // Make API call to extract entities
     fetch(apiUrl, {
@@ -257,7 +257,7 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
         },
         body: JSON.stringify({
             "model": "gpt-3.5-turbo",
-            "messages": [{"role": "user", "content": "Extract company names and person names that are in this article:" +content }]
+            "messages": [{"role": "user", "content": "Extract company names and person names that are in this article:" +article_content }]
         })
     })
 .then(response => response.json())
