@@ -198,7 +198,8 @@
                 },
                 body: JSON.stringify({
 			"model": "gpt-3.5-turbo",
-			"messages": [{"role": "user", "content": "Create a summary of " +size+ " words in " +language+ " based on this article:" +article_content}]
+			"messages": [{"role": "user", "content": "Create a summary of " +size+ " words in " +language+ " based on this article:" +article_content
+			}]
                 })
             })
             .then(response => response.json())
