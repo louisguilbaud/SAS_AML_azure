@@ -481,7 +481,7 @@ function renderEntitiesWithCheckboxes(entities, entityType) {
         text += `<input type="checkbox" class="${entityType}" value="${entity.id}" data-name="${nameOrAddress}"> ${nameOrAddress}<br>`;
     });
     container.innerHTML += text;
-}
+};
 
 // Function to filter relationships
   function filterRelationships(relationship, checkedPersons, checkedCompanies, checkedAddresses) {
@@ -504,7 +504,7 @@ function renderEntitiesWithCheckboxes(entities, entityType) {
                 )
             };
             return filteredRelationships;
-        }
+        };
 
 
 
