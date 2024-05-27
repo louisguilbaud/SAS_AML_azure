@@ -219,7 +219,8 @@
 	        var apiKey = document.getElementById("api_key").textContent;
 	        var urlText = document.getElementById("urlText").textContent;
 	        var question = document.getElementById("textInput").value; // Retrieve the question from the textarea
-	        // Construct API call
+	        var article_content = document.getElementById("article_content").textContent;
+		// Construct API call
 	        var apiUrl = "https://api.openai.com/v1/chat/completions";
 	        // Make API call
 	        fetch(apiUrl, {
@@ -245,8 +246,9 @@
 	    });
 
 document.getElementById("callApiButtonEntity").addEventListener("click", function() {
-    var apiKey = document.getElementById("api_key").textContent;
-    var urlText = document.getElementById("urlText").textContent;
+	var apiKey = document.getElementById("api_key").textContent;
+	var urlText = document.getElementById("urlText").textContent;
+	var article_content = document.getElementById("article_content").textContent;
     
     // Construct API call
     var apiUrl = "https://api.openai.com/v1/chat/completions";
@@ -259,87 +261,245 @@ document.getElementById("callApiButtonEntity").addEventListener("click", functio
             "Authorization": "Bearer " + apiKey
         },
         body: JSON.stringify({
-            "model": "gpt-3.5-turbo",
-            "messages": [{"role": "user", "content": "Extract company names and person names that are in this article: +article_content}]
+  "model": "gpt-3.5-turbo",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Using the following text, generate a list of Person entities, a list of Company entities, a list of Address entities, and the relationships between those entities, in valid json format. Use a 32 character hexadecimal globally unique identifier as the unique identifier for each entity. Generate a new json array for relationships between Person to Company under a object name persontocompany, Person to Address under a object name persontoaddress, Company to Address under a object name companytoaddress, and Person to Person under a object name persontoperson. Each relationship type should be in a separate list. Keep address information out of the Person object, and in its own Address object. There can be many addresses for one person. A Person to Person relationship should specify the relationship type if possible. Be sure to use valid json format in your response, where each property is quoted, and each object is delineated with an open { and a close }. The entire response should be a json compliant string, there should be no extraneous verbiage in your response. Here is the text:"  +article_content
+	  }
+  ],
+  "functions": [
+    {
+      "name": "get_json_format",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "Persons": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              },
+              "required": ["id", "name"]
+            }
+          },
+          "Companies": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              },
+              "required": ["id", "name"]
+            }
+          },
+          "Addresses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "location": {
+                  "type": "string"
+                }
+              },
+              "required": ["id", "location"]
+            }
+          },
+          "relationship": {
+            "type": "object",
+            "properties": {
+              "persontocompany": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "personId": {
+                      "type": "string"
+                    },
+                    "companyId": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["personId", "companyId"]
+                }
+              },
+              "persontoaddress": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "personId": {
+                      "type": "string"
+                    },
+                    "addressId": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["personId", "addressId"]
+                }
+              },
+              "companytoaddress": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "companyId": {
+                      "type": "string"
+                    },
+                    "addressId": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["companyId", "addressId"]
+                }
+              },
+              "persontoperson": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "person1Id": {
+                      "type": "string"
+                    },
+                    "person2Id": {
+                      "type": "string"
+                    },
+                    "relationshipType": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["person1Id", "person2Id", "relationshipType"]
+                }
+              }
+            },
+            "required": []
+          }
+        },
+        "required": []
+      }
+    }
+  ]
+
         })
     })
     .then(response => response.json())
     .then(data => {
-        // Extracted entities
-        var entitiesString = data.choices[0].message.content;
-        
-        // Split the string by newline characters
-        var entities = entitiesString.split('\n');
-        
-        // Clear previous content
-        var entityList = document.getElementById("entityList");
-        entityList.innerHTML = ''; // Clear previous content
-        
-        // Initialize variables to track entity types
-        var companyNamesExist = false;
-        var personNamesExist = false;
-        var addressesExist = false;
-        
-        // Iterate through entities to determine which types exist
-        entities.forEach(entity => {
-            entity = entity.trim(); // Trim any leading or trailing whitespace
-            if (entity.startsWith("Company Names:")) {
-                companyNamesExist = true;
-            } else if (entity.startsWith("Person Names:")) {
-                personNamesExist = true;
-            } else if (entity.startsWith("Addresses:")) {
-                addressesExist = true;
+        console.log("API Response:", data); // Log the API response for debugging
+
+        if (data && data.choices && data.choices[0] && data.choices[0].message) {
+            var content = data.choices[0].message.function_call.arguments;
+            try {
+                var entitiesAndRelationships = JSON.parse(content);
+
+                console.log("Parsed Entities and Relationships:", entitiesAndRelationships.Persons); // Log the parsed entities and relationships for debugging
+
+                // Clear previous entities
+                document.getElementById("entityList").innerHTML = "";
+
+                // Render entities with checkboxes
+                if (entitiesAndRelationships.Persons) {
+                    renderEntitiesWithCheckboxes(entitiesAndRelationships.Persons, "Persons");
+                }
+                if (entitiesAndRelationships.Companies) {
+                    renderEntitiesWithCheckboxes(entitiesAndRelationships.Companies, "Companies");
+                }
+                if (entitiesAndRelationships.Addresses) {
+                    renderEntitiesWithCheckboxes(entitiesAndRelationships.Addresses, "Addresses");
+                }
+
+                // Show the "Get Checked Entities" button
+                document.getElementById("getCheckedEntitiesButton").style.display = "block";
+
+                // Event listener for "Get Checked Entities" button
+                document.getElementById("getCheckedEntitiesButton").addEventListener("click", function () {
+                    var checkedPersons = Array.from(document.querySelectorAll("input.Persons:checked")).map(el => ({
+                        id: el.value,
+                        name: el.getAttribute("data-name")
+                    }));
+                    var checkedCompanies = Array.from(document.querySelectorAll("input.Companies:checked")).map(el => ({
+                        id: el.value,
+                        name: el.getAttribute("data-name")
+                    }));
+                    var checkedAddresses = Array.from(document.querySelectorAll("input.Addresses:checked")).map(el => ({
+                        id: el.value,
+                        location: el.getAttribute("data-name")
+                    }));
+
+                    var checkedEntities = {
+                        "Person": checkedPersons,
+                        "Company": checkedCompanies,
+                        "Address": checkedAddresses,
+                        "Relationships": filterRelationships(entitiesAndRelationships.relationship, checkedPersons, checkedCompanies, checkedAddresses) // Filter relationships
+                    };
+
+                    console.log("Checked Entities:", checkedEntities); // Log the checked entities for debugging
+
+                    // Display checked entities in JSON format
+                    document.getElementById("checkedEntities").textContent = JSON.stringify(checkedEntities, null, 2);
+                });
+
+            } catch (e) {
+                console.error("Parsing error:", e);
+                document.getElementById("entityList").textContent = "Error parsing the API response.";
             }
-        });
-        
-        // Create and append a list for each entity type if it exists
-        if (companyNamesExist) {
-            var ulCompanyNames = document.createElement('ul');
-            entities.forEach(entity => {
-                entity = entity.trim(); // Trim any leading or trailing whitespace
-                if (entity.startsWith("1. ")) {
-                    var li = document.createElement('li');
-                    li.textContent = entity;
-                    ulCompanyNames.appendChild(li);
-                }
-            });
-            entityList.appendChild(document.createTextNode("Company Names:"));
-            entityList.appendChild(ulCompanyNames);
-        }
-        
-        if (personNamesExist) {
-            var ulPersonNames = document.createElement('ul');
-            entities.forEach(entity => {
-                entity = entity.trim(); // Trim any leading or trailing whitespace
-                if (entity.startsWith("1. ")) {
-                    var li = document.createElement('li');
-                    li.textContent = entity;
-                    ulPersonNames.appendChild(li);
-                }
-            });
-            entityList.appendChild(document.createTextNode("Person Names:"));
-            entityList.appendChild(ulPersonNames);
-        }
-        
-        if (addressesExist) {
-            var ulAddresses = document.createElement('ul');
-            entities.forEach(entity => {
-                entity = entity.trim(); // Trim any leading or trailing whitespace
-                if (entity === "No specific addresses mentioned in the text.") {
-                    var li = document.createElement('li');
-                    li.textContent = entity;
-                    ulAddresses.appendChild(li);
-                }
-            });
-            entityList.appendChild(document.createTextNode("Addresses:"));
-            entityList.appendChild(ulAddresses);
+        } else {
+            document.getElementById("entityList").textContent = "Unexpected API response format.";
         }
     })
     .catch(error => {
         console.error("Error:", error);
-        document.getElementById("entityList").textContent = "Error occurred while fetching entities.";
+        document.getElementById("entityList").textContent = "Error occurred while fetching API data.";
     });
 });
+
+// Function to render entities with checkboxes
+function renderEntitiesWithCheckboxes(entities, entityType) {
+    var container = document.getElementById("entityList");
+    var text = `<p><strong>${entityType}:</strong></p>`;
+    entities.forEach(entity => {
+        console.log("entity",entity)
+		var nameOrAddress = entity.name || entity.location;
+        text += `<input type="checkbox" class="${entityType}" value="${entity.id}" data-name="${nameOrAddress}"> ${nameOrAddress}<br>`;
+    });
+    container.innerHTML += text;
+}
+
+// Function to filter relationships
+  function filterRelationships(relationship, checkedPersons, checkedCompanies, checkedAddresses) {
+            var filteredRelationships = {
+                "persontocompany": relationship.persontocompany.filter(rel =>
+                    checkedPersons.some(person => person.id === rel.personId) &&
+                    checkedCompanies.some(company => company.id === rel.companyId)
+                ),
+                "persontoaddress": relationship.persontoaddress.filter(rel =>
+                    checkedPersons.some(person => person.id === rel.personId) &&
+                    checkedAddresses.some(address => address.id === rel.addressId)
+                ),
+                "companytoaddress": relationship.companytoaddress.filter(rel =>
+                    checkedCompanies.some(company => company.id === rel.companyId) &&
+                    checkedAddresses.some(address => address.id === rel.addressId)
+                ),
+                "persontoperson": relationship.persontoperson.filter(rel =>
+                    checkedPersons.some(person => person.id === rel.person1Id) &&
+                    checkedPersons.some(person => person.id === rel.person2Id)
+                )
+            };
+            return filteredRelationships;
+        }
 
 
 
