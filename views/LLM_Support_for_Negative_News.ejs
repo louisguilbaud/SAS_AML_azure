@@ -1,0 +1,522 @@
+<!--Page for the LLM support-->
+
+<!DOCTYPE html>
+<html>
+
+	<script src='./javascripts/sas/util/messagingUtil.js'></script>
+	<script src="./javascripts/jquery/jquery.min.js"></script>
+
+	<head>
+		<title>API Call Example</title>
+		<style>
+			body {
+				background-color: #f8f9fa;
+				font-family: Arial, sans-serif;
+				margin: 0;
+				padding: 0;
+			}
+			.container {
+				background-color: #fff;
+				border-radius: 8px;
+				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+				max-width: 800px;
+				margin: 50px auto;
+				overflow: hidden; /* Ensures the container wraps around floated elements */
+			}
+			.tabs {
+				border-bottom: 2px solid #0056b3;
+				display: flex;
+			}
+			.tab-button {
+				background-color: #f8f9fa;
+				border: none;
+				border-bottom: 2px solid transparent; /* Initially transparent */
+				border-radius: 4px 4px 0 0;
+				cursor: pointer;
+				flex: 1; /* Equal width for all tab buttons */
+				padding: 15px 20px;
+				text-align: center;
+				transition: border-bottom-color 0.3s ease;
+			}
+			.tab-button.active {
+				border-bottom-color: #0056b3; /* Blue border for active tab */
+				color: #0056b3; /* Blue text for active tab */
+			}
+			.tab-content {
+				display: none;
+				padding: 20px;
+				border: 1px solid #ccc;
+				border-top: none;
+				border-radius: 0 0 4px 4px;
+			}
+			.tab-content.active {
+				display: block;
+			}
+			.btn-primary {
+				background-color: #007bff;
+				border: none;
+				border-radius: 4px;
+				color: #fff;
+				cursor: pointer;
+				padding: 10px 20px;
+				transition: background-color 0.3s ease;
+			}
+			.btn-primary:hover {
+				
+			}
+			.input-container {
+				margin-bottom: 10px; /* Add margin */
+			}
+			/* Added style for the API response box */
+			.api-response-box {
+				background-color: #f0f0f0;
+				border: 1px solid #ccc;
+				border-radius: 4px;
+				padding: 10px;
+				margin-top: 20px;
+				text-align: justify;
+			}
+			.summary-size-container {
+				display: flex;
+				align-items: center;
+			}
+
+			.summary-size-container label {
+				margin-right: 10px;
+				}
+				select {
+				padding: 8px;
+				border-radius: 4px;
+				border: 1px solid #ccc;
+				font-size: 14px;
+				font-family: Arial, sans-serif;
+				margin-right: 10px; /* Adjust spacing */
+				}
+		</style>
+	</head>
+	
+	<body>
+		<div class="container">
+			<h2 style="text-align: center;">LLM Support for Negative News</h2>
+			
+			<div class="tabs">
+				<button class="tab-button active" onclick="openTab('summary')">Summary</button>
+				<button class="tab-button" onclick="openTab('qa')">Q&A</button>
+				<button class="tab-button" onclick="openTab('EntityExtraction')">Entity Extraction</button>
+			</div>
+			
+			<div id="summary" class="tab-content active">
+				<div class="summary-size-container">
+					<label for="summarySizeSelect">Choose the size of the summary:</label>
+					<select id="summarySizeSelect">
+						<option value="20">Short</option>
+						<option value="40">Medium</option>
+						<option value="60">Long</option>
+					</select>
+				</div>
+				
+				<div class="summary-size-container">
+					<label for="summaryLanguageSelect">Choose the Language of the summary:</label>
+					<select id="summaryLanguageSelect">
+						<option value="english">English</option>
+						<option value="french">Français</option>
+						<option value="spanish">Español</option>
+					</select>
+				</div>
+				
+				<button type="submit" class="btn-primary" id="callApiButton">Summarize the negative news</button>
+				<p>Summary of the Negative News:</p>
+				
+				<div class="api-response-box"> 
+					<p><span id="apiResponse"></span></p>
+				</div>
+				
+				<p><span id="test"></span></p>
+			</div>
+
+			<div id="qa" class="tab-content">
+				<label for="textInput" class="form-label">Enter your question:</label>
+				<textarea class="form-input" id="textInput" rows="5" style="width: calc(100% - 20px); /* Subtract padding */ 
+															padding: 10px; border-radius: 8px; border: 1px solid #ccc; 																
+															background-color: #f8f9fa; font-family: Arial, sans-serif; 
+															resize: vertical;"></textarea>
+				<button type="submit" class="btn-primary" id="callApiButtonQa">Submit the question</button>
+				<p>Answer:</p>
+					
+				<div class="api-response-box"> 
+					<p><span id="apiResponseQ&A"></span></p>
+				</div>
+			</div>
+				
+			<div id="EntityExtraction" class="tab-content">
+				<button type="submit" class="btn-primary" id="callApiButtonEntity">Extract Entities</button>
+				<p>List of Entities:</p>
+					
+				<div id="entityList"></div>
+					<p hidden><button id="getCheckedEntitiesButton" style="display:none;">Get Checked Entities</button></p>
+					<p hidden><pre id="checkedEntities"></pre></p>
+				</div>
+			</div>
+				
+			<p hidden> <span id="urlText"></span></p>
+			<p hidden><span id="api_key"></span> </p>
+			<p hidden><span id="title"></span> </p>
+			<p hidden><span id="article_content"></span> </p>
+
+		<script>
+
+		"use strict";
+
+		function openTab(tabName) {
+			const tabs = document.querySelectorAll('.tab-button');
+			tabs.forEach(tab => tab.classList.remove('active'));
+			const contents = document.querySelectorAll('.tab-content');
+			contents.forEach(content => content.classList.remove('active'));
+				 
+			document.getElementById(tabName).classList.add('active');
+			event.currentTarget.classList.add('active');
+		}
+
+		va.messagingUtil.setOnDataReceivedCallback(updateURL);
+
+		function updateURL(vaMsgObj) {
+			console.log(vaMsgObj.data[0][0]);
+			console.log(vaMsgObj.data[0][1]);
+			console.log(vaMsgObj.data[0][2]);
+			console.log(vaMsgObj.data[0][3]);
+			if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
+				document.getElementById("urlText").textContent = vaMsgObj.data[0][0];
+				document.getElementById("api_key").textContent = vaMsgObj.data[0][1];
+				document.getElementById("title").textContent = vaMsgObj.data[0][2];
+				document.getElementById("article_content").textContent = vaMsgObj.data[0][3];
+			} else {
+				document.getElementById("urlText").textContent = "No URL available";
+			}
+		}
+
+		// API call for the summary
+		document.getElementById("callApiButton").addEventListener("click", function() {
+
+			var apiKey = document.getElementById("api_key").textContent;
+			var urlText = document.getElementById("urlText").textContent;
+			var title = document.getElementById("title").textContent;
+			var article_content = document.getElementById("article_content").textContent;
+			var size = document.getElementById("summarySizeSelect").value;
+			var language = document.getElementById("summaryLanguageSelect").value;
+			
+			// Construct API call
+			var apiUrl = "https://api.openai.com/v1/chat/completions";
+			document.getElementById("apiResponse").innerHTML = "";
+
+			// Make API call
+			fetch(apiUrl, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": "Bearer " + apiKey
+				},
+				body: JSON.stringify({
+					"model": "gpt-3.5-turbo",
+					"messages": [{"role": "user", "content": "Create a summary of " +size+ " words in " +language+ " based on this article:" +article_content
+				}]
+				})
+			})
+			.then(response => response.json())
+			.then(data => {
+				var content = data.choices[0].message.content;
+				document.getElementById("apiResponse").innerHTML = "<strong>Title:</strong> " + title + "<br><br>" + content;
+			})
+			.catch(error => {
+				console.error("Error:", error);
+				document.getElementById("apiResponse").textContent = "Error occurred while fetching API data.";
+			});
+		});
+
+
+		document.getElementById("callApiButtonQa").addEventListener("click", function() {
+			var apiKey = document.getElementById("api_key").textContent;
+			var urlText = document.getElementById("urlText").textContent;
+			var question = document.getElementById("textInput").value; // Retrieve the question from the textarea
+			var article_content = document.getElementById("article_content").textContent;
+			var apiUrl = "https://api.openai.com/v1/chat/completions";
+			
+			// Make API call
+			fetch(apiUrl, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": "Bearer " + apiKey
+				},
+				body: JSON.stringify({
+					"model": "gpt-3.5-turbo",
+					"messages": [{"role": "user", "content": "Answer the question: " + question + "\nBased on the article in this link: " +article_content}]
+				})
+			})
+			.then(response => response.json())
+			.then(data => {
+				var answer = data.choices[0].message.content; // Retrieve the answer from the API response
+				document.getElementById("apiResponseQ&A").textContent = answer; // Display the answer
+			})
+			.catch(error => {
+				console.error("Error:", error);
+				document.getElementById("apiResponseQ&A").textContent = "Error occurred while fetching API data.";
+			});
+		});
+
+		document.getElementById("callApiButtonEntity").addEventListener("click", function() {
+			var apiKey = document.getElementById("api_key").textContent;
+			var urlText = document.getElementById("urlText").textContent;
+			var article_content = document.getElementById("article_content").textContent;
+
+			// Construct API call
+			var apiUrl = "https://api.openai.com/v1/chat/completions";
+
+			// Make API call to extract entities
+			fetch(apiUrl, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": "Bearer " + apiKey
+				},
+				body: JSON.stringify({
+					"model": "gpt-3.5-turbo",
+					"messages": [
+						{
+						"role": "user",
+						"content": "Using the following text, generate a list of Person entities, a list of Company entities, a list of Address entities, and the relationships between those entities, in valid json format. Use a 32 character hexadecimal globally unique identifier as the unique identifier for each entity. Generate a new json array for relationships between Person to Company under a object name persontocompany, Person to Address under a object name persontoaddress, Company to Address under a object name companytoaddress, and Person to Person under a object name persontoperson. Each relationship type should be in a separate list. Keep address information out of the Person object, and in its own Address object. There can be many addresses for one person. A Person to Person relationship should specify the relationship type if possible. Be sure to use valid json format in your response, where each property is quoted, and each object is delineated with an open { and a close }. The entire response should be a json compliant string, there should be no extraneous verbiage in your response. Here is the text:"  +article_content
+						}
+					],
+					"functions": [
+						{"name": "get_json_format","parameters": {
+							"type": "object",
+							"properties": {
+								"Persons": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"id": {
+												"type": "string"
+											},
+										"name": {
+											"type": "string"
+										}
+										},
+										"required": ["id", "name"]
+									}
+								},
+								"Companies": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"id": {
+												"type": "string"
+											},
+											"name": {
+												"type": "string"
+											}
+										},
+										"required": ["id", "name"]
+									}
+								},
+								"Addresses": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"id": {
+												"type": "string"
+											},
+											"location": {
+												"type": "string"
+											}
+										},
+										"required": ["id", "location"]
+									}
+								},
+								"relationship": {
+									"type": "object",
+									"properties": {
+										"persontocompany": {
+											"type": "array",
+											"items": {
+												"type": "object",
+												"properties": {
+													"personId": {
+														"type": "string"
+													},
+													"companyId": {
+														"type": "string"
+													}
+												},
+												"required": ["personId", "companyId"]
+											}
+										},
+										"persontoaddress": {
+											"type": "array",
+											"items": {
+												"type": "object",
+												"properties": {
+													"personId": {
+														"type": "string"
+													},
+													"addressId": {
+														"type": "string"
+													}
+												},
+												"required": ["personId", "addressId"]
+											}
+										},
+										"companytoaddress": {
+											"type": "array",
+											"items": {
+												"type": "object",
+												"properties": {
+													"companyId": {
+														"type": "string"
+													},
+													"addressId": {
+														"type": "string"
+													}
+												},
+												"required": ["companyId", "addressId"]
+											}
+										},
+										"persontoperson": {
+											"type": "array",
+											"items": {
+												"type": "object",
+												"properties": {
+													"person1Id": {
+														"type": "string"
+													},
+													"person2Id": {
+														"type": "string"
+													},
+													"relationshipType": {
+														"type": "string"
+													}
+												},
+												"required": ["person1Id", "person2Id", "relationshipType"]
+											}
+										}
+									},
+									"required": []
+								}
+							},
+							"required": []
+						}
+						}
+					]
+				})
+			})
+			.then(response => response.json())
+			.then(data => {
+				console.log("API Response:", data); // Log the API response for debugging
+
+				if (data && data.choices && data.choices[0] && data.choices[0].message) {
+				var content = data.choices[0].message.function_call.arguments;
+				try {
+					var entitiesAndRelationships = JSON.parse(content);
+					console.log("Parsed Entities and Relationships:", entitiesAndRelationships.Persons); // Log the parsed entities and relationships for debugging
+
+						// Clear previous entities
+						document.getElementById("entityList").innerHTML = "";
+
+						// Render entities with checkboxes
+						if (entitiesAndRelationships.Persons) {
+						renderEntitiesWithCheckboxes(entitiesAndRelationships.Persons, "Persons");
+						}
+						if (entitiesAndRelationships.Companies) {
+						renderEntitiesWithCheckboxes(entitiesAndRelationships.Companies, "Companies");
+						}
+						if (entitiesAndRelationships.Addresses) {
+						renderEntitiesWithCheckboxes(entitiesAndRelationships.Addresses, "Addresses");
+						}
+
+						// Show the "Get Checked Entities" button
+						document.getElementById("getCheckedEntitiesButton").style.display = "block";
+
+						// Event listener for "Get Checked Entities" button
+						document.getElementById("getCheckedEntitiesButton").addEventListener("click", function () {
+							var checkedPersons = Array.from(document.querySelectorAll("input.Persons:checked")).map(el => ({
+								id: el.value,
+								name: el.getAttribute("data-name")
+							}));
+							
+							var checkedCompanies = Array.from(document.querySelectorAll("input.Companies:checked")).map(el => ({
+								id: el.value,
+								name: el.getAttribute("data-name")
+							}));
+							
+							var checkedAddresses = Array.from(document.querySelectorAll("input.Addresses:checked")).map(el => ({
+								id: el.value,
+								location: el.getAttribute("data-name")
+							}));
+
+							var checkedEntities = {
+								"Person": checkedPersons,
+								"Company": checkedCompanies,
+								"Address": checkedAddresses,
+								"Relationships": filterRelationships(entitiesAndRelationships.relationship, checkedPersons, checkedCompanies, checkedAddresses) // Filter relationships
+							};
+
+							console.log("Checked Entities:", checkedEntities); // Log the checked entities for debugging
+
+							// Display checked entities in JSON format
+							document.getElementById("checkedEntities").textContent = JSON.stringify(checkedEntities, null, 2);
+						});
+
+					} catch (e) {
+						console.error("Parsing error:", e);
+						document.getElementById("entityList").textContent = "Error parsing the API response.";
+					}
+					} else {
+						document.getElementById("entityList").textContent = "Unexpected API response format.";
+					}
+			})
+			.catch(error => {
+				console.error("Error:", error);
+				document.getElementById("entityList").textContent = "Error occurred while fetching API data.";
+			});
+		});
+
+		// Function to render entities with checkboxes
+		function renderEntitiesWithCheckboxes(entities, entityType) {
+			var container = document.getElementById("entityList");
+			var text = `<p><strong>${entityType}:</strong></p>`;
+			entities.forEach(entity => {
+				console.log("entity",entity)
+				var nameOrAddress = entity.name || entity.location;
+				text += `<input type="checkbox" class="${entityType}" value="${entity.id}" data-name="${nameOrAddress}"> ${nameOrAddress}<br>`;
+			});
+			container.innerHTML += text;
+		};
+
+		// Function to filter relationships
+		function filterRelationships(relationship, checkedPersons, checkedCompanies, checkedAddresses) {
+			var filteredRelationships = {
+				"persontocompany": relationship.persontocompany.filter(rel =>
+				checkedPersons.some(person => person.id === rel.personId) &&
+				checkedCompanies.some(company => company.id === rel.companyId)
+				),
+				"persontoaddress": relationship.persontoaddress.filter(rel =>
+				checkedPersons.some(person => person.id === rel.personId) &&
+				checkedAddresses.some(address => address.id === rel.addressId)
+				),
+				"companytoaddress": relationship.companytoaddress.filter(rel =>
+				checkedCompanies.some(company => company.id === rel.companyId) &&
+				checkedAddresses.some(address => address.id === rel.addressId)
+				),
+				"persontoperson": relationship.persontoperson.filter(rel =>
+				checkedPersons.some(person => person.id === rel.person1Id) &&
+				checkedPersons.some(person => person.id === rel.person2Id)
+				)
+			};
+			return filteredRelationships;
+		};
+
+		</script>
+	</body>
+</html>
