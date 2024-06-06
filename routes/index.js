@@ -79,4 +79,8 @@ router.get('/LLM_test.html', function(req, res, next) {
   res.render('LLM_test', { title: 'LLM_test ddc' });
 });
 
+router.get('/network_test.html', function(req, res, next) {
+  res.render('network_test', { title: 'network_test ddc' });
+});
+
 module.exports = router;
