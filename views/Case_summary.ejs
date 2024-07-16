@@ -10,6 +10,8 @@
     <div id="response"></div>
     <h2>Current Alerting Event Details</h2>
     <div id="currentAlertingEventResponse"></div>
+    <h2>Transaction Details</h2>
+    <div id="transactionDetails"></div>
 
     <script>
         // Function to fetch the initial API response
@@ -39,9 +41,12 @@ const cookie = 'sas-ingress-nginx=065cb3791bb3583f0df2865f6eeb8a3a|f0e9e5d83f1b4
                 displayResponse('response', result);
 
                 const currentAlertingEventId = result.currentAlertingEventId;
+                const actionableEntityId = result.actionableEntityId;
                 console.log('Current Alerting Event ID:', currentAlertingEventId);
+                console.log('Actionable Entity ID:', actionableEntityId);
 
                 fetchCurrentAlertingEvent(currentAlertingEventId);
+                fetchTransactionDetails(actionableEntityId);
             } catch (error) {
                 console.error('There has been a problem with your fetch operation:', error);
             }
@@ -52,6 +57,7 @@ const cookie = 'sas-ingress-nginx=065cb3791bb3583f0df2865f6eeb8a3a|f0e9e5d83f1b4
             const url = `https://sasserver.demo.sas.com/svi-alert/alertingEvents/${eventId}`;
             const token = 'eyJhbGciOiJSUzI1NiIsImprdSI6Imh0dHBzOi8vbG9jYWxob3N0L1NBU0xvZ29uL3Rva2VuX2tleXMiLCJraWQiOiJsZWdhY3ktdG9rZW4ta2V5IiwidHlwIjoiSldUIn0.eyJqdGkiOiI2ODVmZWQ4MmY4Yjg0Yjk2YWEyNTYwNDY5YWE4OWJhMiIsImF1dGhvcml0aWVzIjpbImNzX2ludGVybmFsX2RiX2FjY2VzcyIsInN2aXVzcnMiLCJjc19hbWxfZW1wbG95ZWVfYWNjZXNzIiwiY3NfYW1sX3NjZW5hcmlvX2FuYWx5c3QiLCJjc19lZmlsZXJfZGJfYWNjZXNzIiwiY3NfYW1sX2FkbWluaXN0cmF0b3IiLCJjc19pbnZlc3RpZ2F0b3JfZGJfYWNjZXNzX2VtcCIsImNzX2ludmVzdGlnYXRvcl9kYl9hY2Nlc3MiLCJjc19hbWxfdG1fc3RyYXRfYWNjZXNzIiwiY3NfYW1sX3FhX2FuYWx5c3QiLCJjc19hbWxfYXVkaXRvciIsInN2aWFkbXMiLCJjc19zY2VuYXJpb19hZG1pbmlzdHJhdG9yX2RiX2FjY2VzcyIsImNzX2FtbF9vcGVyYXRpb25zX21hbmFnZXIiLCJjc19jZGRfY3JyX2dyb3VwIiwic3ZpYXVkdCIsImNzX2FtbF9hbmFseXN0IiwiY3NfYW1sX2VmaWxlciIsImNzX2NkZF9oaWdoX3Jpc2tfY3VzdF9zdHJhdF9hY2Nlc3MiLCJjc19jZGRfbWVkaXVtX3Jpc2tfY3VzdF9zdHJhdF9hY2Nlc3MiLCJjc19hbWxfc2NlbmFyaW9fYWRtaW5pc3RyYXRvciIsImNzX2NkZF9hbmFseXN0IiwiY3NfYW1sX2ludmVzdGlnYXRvciIsImNzX2FtbF9kYl9hY2Nlc3MiLCJjc19hbWxfd2xfc3RyYXRfYWNjZXNzIiwiY3NfYW1sX21hbmFnZXIiLCJjc19hbWxldGxfZGJfYWNjZXNzX2VtcCIsInZzZGRuZ3MiLCJTQVNBZG1pbmlzdHJhdG9ycyIsImNzX2NkZF9wcm9tb3RlZF90b19lZGRfc3RyYXRfYWNjZXNzIiwiY3NfYmF0Y2hfZGJfYWNjZXNzX2VtcCIsImNzX2NkZF9sb3dfcmlza19jdXN0X3N0cmF0X2FjY2VzcyIsImNzX2ludGVybmFsX2RiX2FjY2Vzc19lbXAiLCJjc19lZmlsZXJfZGJfYWNjZXNzX2VtcCIsImNzX2FtbF90bV9ncm91cCJdLCJleHRfaWQiOiJ1aWQ9dml5YWFkbWluLG91PVBlb3BsZSxkYz1zYXMsZGM9Y29tIiwic3ViIjoiM2MwZTlkNjItNTY4MC00Y2UzLThjZTAtM2U4ZTE0MjFjZDZlIiwic2NvcGUiOlsiY2xpZW50cy5yZWFkIiwiY2xpZW50cy5zZWNyZXQiLCJ1YWEucmVzb3VyY2UiLCJvcGVuaWQiLCJ1YWEuYWRtaW4iLCJjbGllbnRzLmFkbWluIiwic2NpbS5yZWFkIiwidWFhLnVzZXIiLCJTQVNBZG1pbmlzdHJhdG9ycyIsImNsaWVudHMud3JpdGUiLCJzY2ltLndyaXRlIl0sImNsaWVudF9pZCI6InNhcy5lYyIsImNpZCI6InNhcy5lYyIsImF6cCI6InNhcy5lYyIsImdyYW50X3R5cGUiOiJwYXNzd29yZCIsInVzZXJfaWQiOiIzYzBlOWQ2Mi01NjgwLTRjZTMtOGNlMC0zZThlMTQyMWNkNmUiLCJvcmlnaW4iOiJsZGFwIiwidXNlcl9uYW1lIjoidml5YWFkbWluIiwiZW1haWwiOiJ2aXlhYWRtaW5AdXNlci5mcm9tLmxkYXAuY2YiLCJhdXRoX3RpbWUiOjE3MjExMzg5MjEsInJldl9zaWciOiI0OWY2YmIwNyIsImlhdCI6MTcyMTEzODkyMSwiZXhwIjoxNzIxMTQyNTIxLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0L1NBU0xvZ29uL29hdXRoL3Rva2VuIiwiemlkIjoidWFhIiwiYXVkIjpbInNjaW0iLCJjbGllbnRzIiwidWFhIiwib3BlbmlkIiwic2FzLmVjIl19.eY2p09NokonpdEkcP5kPRqGDxPI81skceDKP_EoIFEuEN-HIy2Ml1Px2AFBpT9nSYzAtzZVJN_y2HNKu73UFrfWiceFSH8CEddHjBn4iWZBt77zGu05IN8h2e7z5EGq9bZNkm5d6leOBoqzx7EAD7hdGhoscOmotIcNbCLbMgoEudHGD4k8D1yv-MqGgMIheqOFNsLByYpFChjNeKiYkQcsdEmj4BEz1GqhIVnFFa-ValPO2DfDil0DRgqcY5pEf_2YU2yTTzcpe72STOSC7Xq7oHh9lyH0CM23uIaWPVTK-xayu_ZXLdHOTNJQXsX4gNTc2QiCMUMrnLYD0WXG_7A';
 const cookie = 'sas-ingress-nginx=065cb3791bb3583f0df2865f6eeb8a3a|f0e9e5d83f1b459459b54939af4feb2b';
+
             const myHeaders = new Headers();
             myHeaders.append("Authorization", `Bearer ${token}`);
             myHeaders.append("Cookie", cookie);
@@ -72,6 +78,37 @@ const cookie = 'sas-ingress-nginx=065cb3791bb3583f0df2865f6eeb8a3a|f0e9e5d83f1b4
                 const result = await response.json();
                 console.log('Current Alerting Event Details:', result);
                 displayResponse('currentAlertingEventResponse', result);
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+            }
+        }
+
+        // Function to fetch the transaction details using the actionableEntityId
+        async function fetchTransactionDetails(actionableEntityId) {
+            const url = `https://sasserver.demo.sas.com/amlCore/transactions?entityLevelCode=PTY&entityNumber=${actionableEntityId}`;
+            const token = 'eyJhbGciOiJSUzI1NiIsImprdSI6Imh0dHBzOi8vbG9jYWxob3N0L1NBU0xvZ29uL3Rva2VuX2tleXMiLCJraWQiOiJsZWdhY3ktdG9rZW4ta2V5IiwidHlwIjoiSldUIn0.eyJqdGkiOiI2ODVmZWQ4MmY4Yjg0Yjk2YWEyNTYwNDY5YWE4OWJhMiIsImF1dGhvcml0aWVzIjpbImNzX2ludGVybmFsX2RiX2FjY2VzcyIsInN2aXVzcnMiLCJjc19hbWxfZW1wbG95ZWVfYWNjZXNzIiwiY3NfYW1sX3NjZW5hcmlvX2FuYWx5c3QiLCJjc19lZmlsZXJfZGJfYWNjZXNzIiwiY3NfYW1sX2FkbWluaXN0cmF0b3IiLCJjc19pbnZlc3RpZ2F0b3JfZGJfYWNjZXNzX2VtcCIsImNzX2ludmVzdGlnYXRvcl9kYl9hY2Nlc3MiLCJjc19hbWxfdG1fc3RyYXRfYWNjZXNzIiwiY3NfYW1sX3FhX2FuYWx5c3QiLCJjc19hbWxfYXVkaXRvciIsInN2aWFkbXMiLCJjc19zY2VuYXJpb19hZG1pbmlzdHJhdG9yX2RiX2FjY2VzcyIsImNzX2FtbF9vcGVyYXRpb25zX21hbmFnZXIiLCJjc19jZGRfY3JyX2dyb3VwIiwic3ZpYXVkdCIsImNzX2FtbF9hbmFseXN0IiwiY3NfYW1sX2VmaWxlciIsImNzX2NkZF9oaWdoX3Jpc2tfY3VzdF9zdHJhdF9hY2Nlc3MiLCJjc19jZGRfbWVkaXVtX3Jpc2tfY3VzdF9zdHJhdF9hY2Nlc3MiLCJjc19hbWxfc2NlbmFyaW9fYWRtaW5pc3RyYXRvciIsImNzX2NkZF9hbmFseXN0IiwiY3NfYW1sX2ludmVzdGlnYXRvciIsImNzX2FtbF9kYl9hY2Nlc3MiLCJjc19hbWxfd2xfc3RyYXRfYWNjZXNzIiwiY3NfYW1sX21hbmFnZXIiLCJjc19hbWxldGxfZGJfYWNjZXNzX2VtcCIsInZzZGRuZ3MiLCJTQVNBZG1pbmlzdHJhdG9ycyIsImNzX2NkZF9wcm9tb3RlZF90b19lZGRfc3RyYXRfYWNjZXNzIiwiY3NfYmF0Y2hfZGJfYWNjZXNzX2VtcCIsImNzX2NkZF9sb3dfcmlza19jdXN0X3N0cmF0X2FjY2VzcyIsImNzX2ludGVybmFsX2RiX2FjY2Vzc19lbXAiLCJjc19lZmlsZXJfZGJfYWNjZXNzX2VtcCIsImNzX2FtbF90bV9ncm91cCJdLCJleHRfaWQiOiJ1aWQ9dml5YWFkbWluLG91PVBlb3BsZSxkYz1zYXMsZGM9Y29tIiwic3ViIjoiM2MwZTlkNjItNTY4MC00Y2UzLThjZTAtM2U4ZTE0MjFjZDZlIiwic2NvcGUiOlsiY2xpZW50cy5yZWFkIiwiY2xpZW50cy5zZWNyZXQiLCJ1YWEucmVzb3VyY2UiLCJvcGVuaWQiLCJ1YWEuYWRtaW4iLCJjbGllbnRzLmFkbWluIiwic2NpbS5yZWFkIiwidWFhLnVzZXIiLCJTQVNBZG1pbmlzdHJhdG9ycyIsImNsaWVudHMud3JpdGUiLCJzY2ltLndyaXRlIl0sImNsaWVudF9pZCI6InNhcy5lYyIsImNpZCI6InNhcy5lYyIsImF6cCI6InNhcy5lYyIsImdyYW50X3R5cGUiOiJwYXNzd29yZCIsInVzZXJfaWQiOiIzYzBlOWQ2Mi01NjgwLTRjZTMtOGNlMC0zZThlMTQyMWNkNmUiLCJvcmlnaW4iOiJsZGFwIiwidXNlcl9uYW1lIjoidml5YWFkbWluIiwiZW1haWwiOiJ2aXlhYWRtaW5AdXNlci5mcm9tLmxkYXAuY2YiLCJhdXRoX3RpbWUiOjE3MjExMzg5MjEsInJldl9zaWciOiI0OWY2YmIwNyIsImlhdCI6MTcyMTEzODkyMSwiZXhwIjoxNzIxMTQyNTIxLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0L1NBU0xvZ29uL29hdXRoL3Rva2VuIiwiemlkIjoidWFhIiwiYXVkIjpbInNjaW0iLCJjbGllbnRzIiwidWFhIiwib3BlbmlkIiwic2FzLmVjIl19.eY2p09NokonpdEkcP5kPRqGDxPI81skceDKP_EoIFEuEN-HIy2Ml1Px2AFBpT9nSYzAtzZVJN_y2HNKu73UFrfWiceFSH8CEddHjBn4iWZBt77zGu05IN8h2e7z5EGq9bZNkm5d6leOBoqzx7EAD7hdGhoscOmotIcNbCLbMgoEudHGD4k8D1yv-MqGgMIheqOFNsLByYpFChjNeKiYkQcsdEmj4BEz1GqhIVnFFa-ValPO2DfDil0DRgqcY5pEf_2YU2yTTzcpe72STOSC7Xq7oHh9lyH0CM23uIaWPVTK-xayu_ZXLdHOTNJQXsX4gNTc2QiCMUMrnLYD0WXG_7A';
+const cookie = 'sas-ingress-nginx=065cb3791bb3583f0df2865f6eeb8a3a|f0e9e5d83f1b459459b54939af4feb2b';
+
+            const myHeaders = new Headers();
+            myHeaders.append("Authorization", `Bearer ${token}`);
+            myHeaders.append("Cookie", cookie);
+
+            const requestOptions = {
+                method: 'GET',
+                headers: myHeaders,
+                redirect: 'follow'
+            };
+
+            try {
+                const response = await fetch(url, requestOptions);
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+
+                const result = await response.json();
+                console.log('Transaction Details:', result);
+                displayResponse('transactionDetails', result);
             } catch (error) {
                 console.error('There has been a problem with your fetch operation:', error);
             }
