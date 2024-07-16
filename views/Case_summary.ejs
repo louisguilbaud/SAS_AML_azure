@@ -14,6 +14,8 @@
     <div id="transactionDetails"></div>
     <h2>PTY Details</h2>
     <div id="ptyDetails"></div>
+    <h1>Scenario Descriptions and Messages</h1>
+    <div id="content"></div>
 
     <script>
         // Function to fetch the initial API response
@@ -43,6 +45,15 @@ const cookie = 'sas-ingress-nginx=065cb3791bb3583f0df2865f6eeb8a3a|f0e9e5d83f1b4
                 const result = await response.json();
                 displayResponse('response', result);
 
+                const scenarioFiredEvents = data.scenarioFiredEvents;
+                const result = scenarioFiredEvents.map(event => {
+                    return {
+                        scenarioDescription: event.scenarioDescription,
+                        messageTemplateText: event.messageTemplateText
+                    };
+                });
+
+
                 const currentAlertingEventId = result.currentAlertingEventId;
                 const actionableEntityId = result.actionableEntityId;
                 console.log('Current Alerting Event ID:', currentAlertingEventId);
@@ -54,6 +65,21 @@ const cookie = 'sas-ingress-nginx=065cb3791bb3583f0df2865f6eeb8a3a|f0e9e5d83f1b4
             } catch (error) {
                 console.error('There has been a problem with your fetch operation:', error);
             }
+        }
+
+function displayResult(result) {
+            const contentDiv = document.getElementById('content');
+            result.forEach(item => {
+                const scenarioDescription = document.createElement('p');
+                scenarioDescription.innerText = `Scenario Description: ${item.scenarioDescription}`;
+                contentDiv.appendChild(scenarioDescription);
+
+                const messageTemplateText = document.createElement('p');
+                messageTemplateText.innerText = `Message Template Text: ${item.messageTemplateText}`;
+                contentDiv.appendChild(messageTemplateText);
+
+                contentDiv.appendChild(document.createElement('hr'));
+            });
         }
 
         // Function to fetch the current alerting event details using the extracted ID
