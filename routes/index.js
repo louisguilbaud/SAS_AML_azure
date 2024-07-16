@@ -83,4 +83,8 @@ router.get('/network_test.html', function(req, res, next) {
   res.render('network_test', { title: 'network_test ddc' });
 });
 
+router.get('/Case_summary.html', function(req, res, next) {
+  res.render('Case_summary', { title: 'Case_summary ddc' });
+});
+
 module.exports = router;
