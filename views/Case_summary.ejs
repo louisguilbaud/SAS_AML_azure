@@ -10,6 +10,8 @@
     <div id="response"></div>
     <h2>Current Alerting Event Details</h2>
     <div id="currentAlertingEventResponse"></div>
+    <h2>Scenario Details</h2>
+    <div id="scenarioDetails"></div>
     <h2>Transaction Details</h2>
     <div id="transactionDetails"></div>
     <h2>PTY Details</h2>
@@ -19,7 +21,7 @@
         // Function to fetch the initial API response
         async function fetchInitialApiResponse() {
             const url = 'https://sasserver.demo.sas.com/svi-alert/alerts/24cc78e4-3cc1-40bb-9a77-2c63b24d8f2e';
-           const token = 'eyJhbGciOiJSUzI1NiIsImprdSI6Imh0dHBzOi8vbG9jYWxob3N0L1NBU0xvZ29uL3Rva2VuX2tleXMiLCJraWQiOiJsZWdhY3ktdG9rZW4ta2V5IiwidHlwIjoiSldUIn0.eyJqdGkiOiI3N2IyMDE3MDhmYjc0MWM3OGI3ZmE2MTAxZmE5NjBhNSIsImF1dGhvcml0aWVzIjpbImNzX2ludGVybmFsX2RiX2FjY2VzcyIsInN2aXVzcnMiLCJjc19hbWxfZW1wbG95ZWVfYWNjZXNzIiwiY3NfYW1sX3NjZW5hcmlvX2FuYWx5c3QiLCJjc19lZmlsZXJfZGJfYWNjZXNzIiwiY3NfYW1sX2FkbWluaXN0cmF0b3IiLCJjc19pbnZlc3RpZ2F0b3JfZGJfYWNjZXNzX2VtcCIsImNzX2ludmVzdGlnYXRvcl9kYl9hY2Nlc3MiLCJjc19hbWxfdG1fc3RyYXRfYWNjZXNzIiwiY3NfYW1sX3FhX2FuYWx5c3QiLCJjc19hbWxfYXVkaXRvciIsInN2aWFkbXMiLCJjc19zY2VuYXJpb19hZG1pbmlzdHJhdG9yX2RiX2FjY2VzcyIsImNzX2FtbF9vcGVyYXRpb25zX21hbmFnZXIiLCJjc19jZGRfY3JyX2dyb3VwIiwic3ZpYXVkdCIsImNzX2FtbF9hbmFseXN0IiwiY3NfYW1sX2VmaWxlciIsImNzX2NkZF9oaWdoX3Jpc2tfY3VzdF9zdHJhdF9hY2Nlc3MiLCJjc19jZGRfbWVkaXVtX3Jpc2tfY3VzdF9zdHJhdF9hY2Nlc3MiLCJjc19hbWxfc2NlbmFyaW9fYWRtaW5pc3RyYXRvciIsImNzX2NkZF9hbmFseXN0IiwiY3NfYW1sX2ludmVzdGlnYXRvciIsImNzX2FtbF9kYl9hY2Nlc3MiLCJjc19hbWxfd2xfc3RyYXRfYWNjZXNzIiwiY3NfYW1sX21hbmFnZXIiLCJjc19hbWxldGxfZGJfYWNjZXNzX2VtcCIsInZzZGRuZ3MiLCJTQVNBZG1pbmlzdHJhdG9ycyIsImNzX2NkZF9wcm9tb3RlZF90b19lZGRfc3RyYXRfYWNjZXNzIiwiY3NfYmF0Y2hfZGJfYWNjZXNzX2VtcCIsImNzX2NkZF9sb3dfcmlza19jdXN0X3N0cmF0X2FjY2VzcyIsImNzX2ludGVybmFsX2RiX2FjY2Vzc19lbXAiLCJjc19lZmlsZXJfZGJfYWNjZXNzX2VtcCIsImNzX2FtbF90bV9ncm91cCJdLCJleHRfaWQiOiJ1aWQ9dml5YWFkbWluLG91PVBlb3BsZSxkYz1zYXMsZGM9Y29tIiwic3ViIjoiM2MwZTlkNjItNTY4MC00Y2UzLThjZTAtM2U4ZTE0MjFjZDZlIiwic2NvcGUiOlsiY2xpZW50cy5yZWFkIiwiY2xpZW50cy5zZWNyZXQiLCJ1YWEucmVzb3VyY2UiLCJvcGVuaWQiLCJ1YWEuYWRtaW4iLCJjbGllbnRzLmFkbWluIiwic2NpbS5yZWFkIiwidWFhLnVzZXIiLCJTQVNBZG1pbmlzdHJhdG9ycyIsImNsaWVudHMud3JpdGUiLCJzY2ltLndyaXRlIl0sImNsaWVudF9pZCI6InNhcy5lYyIsImNpZCI6InNhcy5lYyIsImF6cCI6InNhcy5lYyIsImdyYW50X3R5cGUiOiJwYXNzd29yZCIsInVzZXJfaWQiOiIzYzBlOWQ2Mi01NjgwLTRjZTMtOGNlMC0zZThlMTQyMWNkNmUiLCJvcmlnaW4iOiJsZGFwIiwidXNlcl9uYW1lIjoidml5YWFkbWluIiwiZW1haWwiOiJ2aXlhYWRtaW5AdXNlci5mcm9tLmxkYXAuY2YiLCJhdXRoX3RpbWUiOjE3MjExNDI3NjcsInJldl9zaWciOiI0OWY2YmIwNyIsImlhdCI6MTcyMTE0Mjc2NywiZXhwIjoxNzIxMTQ2MzY3LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0L1NBU0xvZ29uL29hdXRoL3Rva2VuIiwiemlkIjoidWFhIiwiYXVkIjpbInNjaW0iLCJjbGllbnRzIiwidWFhIiwib3BlbmlkIiwic2FzLmVjIl19.cbUJ11Sxpyqzo77jGqfmxyRkyg4VpC9twM-0vOlbYj3YfobRuXUA6hnu_nalsk1_wkRq0ebz97fOjiX5SyOgs44Mk-k7bsPde_25nwBuhqdiuCqvCwnTYmqjDkN3xO1HFfMHCOKpwzgxFw0Gf5wNyca8U8PUvE6ZzOm6OAgT-7NZFgn6DUANczYh-O-ymlawuCfprpUF8hYC_OJCoQC34gsqdGx70cyV_oGvR2x7H9lNu2-jdw4vwuDRm_iyIRhqEt74EI8wUzcbeuL0jCeKj26o6ugMvHV2sSF1WDXm6GnkKYM4l4p_D83tN4-tetskFUJwjQUiaYZtcLc_QjVEvA';
+            const token = 'eyJhbGciOiJSUzI1NiIsImprdSI6Imh0dHBzOi8vbG9jYWxob3N0L1NBU0xvZ29uL3Rva2VuX2tleXMiLCJraWQiOiJsZWdhY3ktdG9rZW4ta2V5IiwidHlwIjoiSldUIn0.eyJqdGkiOiI3N2IyMDE3MDhmYjc0MWM3OGI3ZmE2MTAxZmE5NjBhNSIsImF1dGhvcml0aWVzIjpbImNzX2ludGVybmFsX2RiX2FjY2VzcyIsInN2aXVzcnMiLCJjc19hbWxfZW1wbG95ZWVfYWNjZXNzIiwiY3NfYW1sX3NjZW5hcmlvX2FuYWx5c3QiLCJjc19lZmlsZXJfZGJfYWNjZXNzIiwiY3NfYW1sX2FkbWluaXN0cmF0b3IiLCJjc19pbnZlc3RpZ2F0b3JfZGJfYWNjZXNzX2VtcCIsImNzX2ludmVzdGlnYXRvcl9kYl9hY2Nlc3MiLCJjc19hbWxfdG1fc3RyYXRfYWNjZXNzIiwiY3NfYW1sX3FhX2FuYWx5c3QiLCJjc19hbWxfYXVkaXRvciIsInN2aWFkbXMiLCJjc19zY2VuYXJpb19hZG1pbmlzdHJhdG9yX2RiX2FjY2VzcyIsImNzX2FtbF9vcGVyYXRpb25zX21hbmFnZXIiLCJjc19jZGRfY3JyX2dyb3VwIiwic3ZpYXVkdCIsImNzX2FtbF9hbmFseXN0IiwiY3NfYW1sX2VmaWxlciIsImNzX2NkZF9oaWdoX3Jpc2tfY3VzdF9zdHJhdF9hY2Nlc3MiLCJjc19jZGRfbWVkaXVtX3Jpc2tfY3VzdF9zdHJhdF9hY2Nlc3MiLCJjc19hbWxfc2NlbmFyaW9fYWRtaW5pc3RyYXRvciIsImNzX2NkZF9hbmFseXN0IiwiY3NfYW1sX2ludmVzdGlnYXRvciIsImNzX2FtbF9kYl9hY2Nlc3MiLCJjc19hbWxfd2xfc3RyYXRfYWNjZXNzIiwiY3NfYW1sX21hbmFnZXIiLCJjc19hbWxldGxfZGJfYWNjZXNzX2VtcCIsInZzZGRuZ3MiLCJTQVNBZG1pbmlzdHJhdG9ycyIsImNzX2NkZF9wcm9tb3RlZF90b19lZGRfc3RyYXRfYWNjZXNzIiwiY3NfYmF0Y2hfZGJfYWNjZXNzX2VtcCIsImNzX2NkZF9sb3dfcmlza19jdXN0X3N0cmF0X2FjY2VzcyIsImNzX2ludGVybmFsX2RiX2FjY2Vzc19lbXAiLCJjc19lZmlsZXJfZGJfYWNjZXNzX2VtcCIsImNzX2FtbF90bV9ncm91cCJdLCJleHRfaWQiOiJ1aWQ9dml5YWFkbWluLG91PVBlb3BsZSxkYz1zYXMsZGM9Y29tIiwic3ViIjoiM2MwZTlkNjItNTY4MC00Y2UzLThjZTAtM2U4ZTE0MjFjZDZlIiwic2NvcGUiOlsiY2xpZW50cy5yZWFkIiwiY2xpZW50cy5zZWNyZXQiLCJ1YWEucmVzb3VyY2UiLCJvcGVuaWQiLCJ1YWEuYWRtaW4iLCJjbGllbnRzLmFkbWluIiwic2NpbS5yZWFkIiwidWFhLnVzZXIiLCJTQVNBZG1pbmlzdHJhdG9ycyIsImNsaWVudHMud3JpdGUiLCJzY2ltLndyaXRlIl0sImNsaWVudF9pZCI6InNhcy5lYyIsImNpZCI6InNhcy5lYyIsImF6cCI6InNhcy5lYyIsImdyYW50X3R5cGUiOiJwYXNzd29yZCIsInVzZXJfaWQiOiIzYzBlOWQ2Mi01NjgwLTRjZTMtOGNlMC0zZThlMTQyMWNkNmUiLCJvcmlnaW4iOiJsZGFwIiwidXNlcl9uYW1lIjoidml5YWFkbWluIiwiZW1haWwiOiJ2aXlhYWRtaW5AdXNlci5mcm9tLmxkYXAuY2YiLCJhdXRoX3RpbWUiOjE3MjExNDI3NjcsInJldl9zaWciOiI0OWY2YmIwNyIsImlhdCI6MTcyMTE0Mjc2NywiZXhwIjoxNzIxMTQ2MzY3LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0L1NBU0xvZ29uL29hdXRoL3Rva2VuIiwiemlkIjoidWFhIiwiYXVkIjpbInNjaW0iLCJjbGllbnRzIiwidWFhIiwib3BlbmlkIiwic2FzLmVjIl19.cbUJ11Sxpyqzo77jGqfmxyRkyg4VpC9twM-0vOlbYj3YfobRuXUA6hnu_nalsk1_wkRq0ebz97fOjiX5SyOgs44Mk-k7bsPde_25nwBuhqdiuCqvCwnTYmqjDkN3xO1HFfMHCOKpwzgxFw0Gf5wNyca8U8PUvE6ZzOm6OAgT-7NZFgn6DUANczYh-O-ymlawuCfprpUF8hYC_OJCoQC34gsqdGx70cyV_oGvR2x7H9lNu2-jdw4vwuDRm_iyIRhqEt74EI8wUzcbeuL0jCeKj26o6ugMvHV2sSF1WDXm6GnkKYM4l4p_D83tN4-tetskFUJwjQUiaYZtcLc_QjVEvA';
 const cookie = 'sas-ingress-nginx=065cb3791bb3583f0df2865f6eeb8a3a|f0e9e5d83f1b459459b54939af4feb2b';
 
             const myHeaders = new Headers();
@@ -47,12 +49,11 @@ const cookie = 'sas-ingress-nginx=065cb3791bb3583f0df2865f6eeb8a3a|f0e9e5d83f1b4
                 console.log('Current Alerting Event ID:', currentAlertingEventId);
                 console.log('Actionable Entity ID:', actionableEntityId);
 
-                // Extract and print scenarioDescription and messageTemplateText
+                // Extract and display scenarioDescription and messageTemplateText
                 if (result.scenarioFiredEvents && Array.isArray(result.scenarioFiredEvents)) {
                     result.scenarioFiredEvents.forEach(event => {
                         const { scenarioDescription, messageTemplateText } = event;
-                        console.log('Scenario Description:', scenarioDescription);
-                        console.log('Message Template Text:', messageTemplateText);
+                        displayScenarioDetails(scenarioDescription, messageTemplateText);
                     });
                 }
 
@@ -161,6 +162,18 @@ const cookie = 'sas-ingress-nginx=065cb3791bb3583f0df2865f6eeb8a3a|f0e9e5d83f1b4
         function displayResponse(elementId, data) {
             const responseDiv = document.getElementById(elementId);
             responseDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        }
+
+        // Function to display scenario details in the HTML
+        function displayScenarioDetails(scenarioDescription, messageTemplateText) {
+            const scenarioDetailsDiv = document.getElementById('scenarioDetails');
+            const scenarioElement = document.createElement('div');
+            scenarioElement.innerHTML = `
+                <h3>Scenario</h3>
+                <p><strong>Description:</strong> ${scenarioDescription}</p>
+                <p><strong>Message:</strong> ${messageTemplateText}</p>
+            `;
+            scenarioDetailsDiv.appendChild(scenarioElement);
         }
 
         // Fetch the initial API response when the page loads
