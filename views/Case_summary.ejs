@@ -61,12 +61,12 @@
 
         function displayResponse(id, result) {
             const div = document.getElementById(id);
-            div.innerHTML = <pre>${JSON.stringify(result, null, 2)}</pre>;
+            div.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
         }
 
 
         async function fetchCurrentAlertingEvent(eventId) {
-            const url = https://sasserver.demo.sas.com/svi-alert/alertingEvents/${eventId};
+            const url = `https://sasserver.demo.sas.com/svi-alert/alertingEvents/${eventId}`;
 
             try {
                 const response = await fetch(url, requestOptions);
@@ -81,7 +81,7 @@
         }
 
         async function fetchTransactionDetails(actionableEntityId) {
-            const url = https://sasserver.demo.sas.com/amlCore/transactions?entityLevelCode=PTY&entityNumber=${actionableEntityId};
+            const url = `https://sasserver.demo.sas.com/amlCore/transactions?entityLevelCode=PTY&entityNumber=${actionableEntityId}`;
 
             try {
                 const response = await fetch(url, requestOptions);
@@ -96,7 +96,7 @@
         }
 
         async function fetchPtyDetails(actionableEntityId) {
-            const url = https://sasserver.demo.sas.com/SASVisualInvestigator/pages/PTY/${actionableEntityId};
+            const url = `https://sasserver.demo.sas.com/SASVisualInvestigator/pages/PTY/${actionableEntityId}`;
 
             try {
                 const response = await fetch(url, requestOptions);
