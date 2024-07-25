@@ -74,14 +74,19 @@
                 console.log('Current Alerting Event Details:', result);
                 displayResponse('currentAlertingEventResponse', result);
 
-                const scenariosList = result.botScenarios.map(scenario => ({
-                    scenarioName: scenario.scenarioName,
-                    scenarioDescription: scenario.scenarioDescription,
-                    messageTemplateText: scenario.messageTemplateText
-                }));
+                if (result.botScenarios) {
+                    const scenariosList = result.botScenarios.map(scenario => ({
+                        scenarioName: scenario.scenarioName,
+                        scenarioDescription: scenario.scenarioDescription,
+                        messageTemplateText: scenario.messageTemplateText
+                    }));
 
-                console.log('Bot Scenarios:', scenariosList);
-                displayResult('botScenarios', scenariosList);
+                    console.log('Bot Scenarios:', scenariosList);
+                    displayResult('botScenarios', scenariosList);
+                } else {
+                    console.log('No Bot Scenarios found');
+                    displayResult('botScenarios', []);
+                }
             } catch (error) {
                 console.error('There has been a problem with your fetch operation:', error);
             }
