@@ -113,7 +113,7 @@ const cookie = 'sas-ingress-nginx=065cb3791bb3583f0df2865f6eeb8a3a|f0e9e5d83f1b4
         }
 
         async function fetchPtyDetails(actionableEntityId) {
-            const url = `https://sasserver.demo.sas.com/amlCore/ptys/${actionableEntityId}`;
+            const url = `https://sasserver.demo.sas.com/SASVisualInvestigator/pages/PTY/${actionableEntityId}`;
 
             try {
                 const response = await fetch(url, requestOptions);
