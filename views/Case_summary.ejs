@@ -16,6 +16,8 @@
     <div id="ptyDetails"></div>
     <h2>Scenario Fired Events</h2>
     <div id="scenarioFiredEvents"></div>
+    <h2>Bot Scenarios</h2>
+    <div id="botScenarios"></div>
 
     <script>
         const cookie = 'sas-ingress-nginx=065cb3791bb3583f0df2865f6eeb8a3a|f0e9e5d83f1b459459b54939af4feb2b';
@@ -77,7 +79,7 @@
                     messageTemplateText: scenario.messageTemplateText
                 }));
 
-                displayResult('scenarioFiredEvents', scenariosList);
+                displayResult('botScenarios', scenariosList);
             } catch (error) {
                 console.error('There has been a problem with your fetch operation:', error);
             }
