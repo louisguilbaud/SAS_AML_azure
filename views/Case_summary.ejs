@@ -51,10 +51,11 @@
                 fetchTransactionDetails(actionableEntityId);
                 fetchPtyDetails(actionableEntityId);
 
-                const scenarioFiredEvents = result.scenarioFiredEvents.map(event => ({
+                // Ensure scenarioFiredEvents is an array before using map
+                const scenarioFiredEvents = Array.isArray(result.scenarioFiredEvents) ? result.scenarioFiredEvents.map(event => ({
                     scenarioDescription: event.scenarioDescription,
                     messageTemplateText: event.messageTemplateText
-                }));
+                })) : [];
 
                 console.log('Scenario Fired Events:', scenarioFiredEvents);
                 displayResult('scenarioFiredEvents', scenarioFiredEvents);
@@ -74,7 +75,8 @@
                 console.log('Current Alerting Event Details:', result);
                 displayResponse('currentAlertingEventResponse', result);
 
-                if (result.botScenarios) {
+                // Ensure botScenarios is an array before using map
+                if (Array.isArray(result.botScenarios)) {
                     const scenariosList = result.botScenarios.map(scenario => ({
                         scenarioName: scenario.scenarioName,
                         scenarioDescription: scenario.scenarioDescription,
