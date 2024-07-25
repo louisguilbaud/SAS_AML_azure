@@ -56,6 +56,7 @@
                     messageTemplateText: event.messageTemplateText
                 }));
 
+                console.log('Scenario Fired Events:', scenarioFiredEvents);
                 displayResult('scenarioFiredEvents', scenarioFiredEvents);
             } catch (error) {
                 console.error('There has been a problem with your fetch operation:', error);
@@ -79,6 +80,7 @@
                     messageTemplateText: scenario.messageTemplateText
                 }));
 
+                console.log('Bot Scenarios:', scenariosList);
                 displayResult('botScenarios', scenariosList);
             } catch (error) {
                 console.error('There has been a problem with your fetch operation:', error);
