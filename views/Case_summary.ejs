@@ -16,9 +16,10 @@
     <div id="ptyDetails"></div>
 
     <script>
-        const cookie = 'your-secure-cookie-value'; // Ideally, get this value from a secure storage
+        const cookie = 'sas-ingress-nginx=065cb3791bb3583f0df2865f6eeb8a3a|f0e9e5d83f1b459459b54939af4feb2b';
 
         const myHeaders = new Headers();
+        
         myHeaders.append("Cookie", cookie);
 
         const requestOptions = {
@@ -31,66 +32,82 @@
             const url = 'https://sasserver.demo.sas.com/svi-alert/alerts/b63203ba-d218-410d-b3fe-95108afb5208';
 
             try {
-                const result = await fetchApi(url);
+                const response = await fetch(url, requestOptions);
+                if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
+                
+                const result = await response.json();
                 displayResponse('response', result);
 
-                const { currentAlertingEventId, actionableEntityId, scenarioFiredEvents } = result;
+                const currentAlertingEventId = result.currentAlertingEventId;
+                const actionableEntityId = result.actionableEntityId;
 
                 console.log('Current Alerting Event ID:', currentAlertingEventId);
                 console.log('Actionable Entity ID:', actionableEntityId);
 
-                await Promise.all([
-                    fetchCurrentAlertingEvent(currentAlertingEventId),
-                    fetchTransactionDetails(actionableEntityId),
-                    fetchPtyDetails(actionableEntityId)
-                ]);
+                fetchCurrentAlertingEvent(currentAlertingEventId);
+                fetchTransactionDetails(actionableEntityId);
+                fetchPtyDetails(actionableEntityId);
 
-                const scenarioEvents = scenarioFiredEvents.map(event => ({
+                const scenarioFiredEvents = result.scenarioFiredEvents.map(event => ({
                     scenarioDescription: event.scenarioDescription,
                     messageTemplateText: event.messageTemplateText
                 }));
 
-                displayResponse('response', scenarioEvents);
+                displayResult(scenarioFiredEvents);
             } catch (error) {
-                displayError(error);
+                console.error('There has been a problem with your fetch operation:', error);
             }
-        }
-
-        async function fetchApi(url) {
-            const response = await fetch(url, requestOptions);
-            if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
-            return await response.json();
         }
 
         function displayResponse(id, result) {
             const div = document.getElementById(id);
-            div.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+            div.innerHTML = <pre>${JSON.stringify(result, null, 2)}</pre>;
         }
 
-        function displayError(error) {
-            console.error('There has been a problem with your fetch operation:', error);
-            document.body.innerHTML += `<p style="color:red;">Error: ${error.message}</p>`;
-        }
 
         async function fetchCurrentAlertingEvent(eventId) {
-            const url = `https://sasserver.demo.sas.com/svi-alert/alertingEvents/${eventId}`;
-            const result = await fetchApi(url);
-            console.log('Current Alerting Event Details:', result);
-            displayResponse('currentAlertingEventResponse', result);
+            const url = https://sasserver.demo.sas.com/svi-alert/alertingEvents/${eventId};
+
+            try {
+                const response = await fetch(url, requestOptions);
+                if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
+
+                const result = await response.json();
+                console.log('Current Alerting Event Details:', result);
+                displayResponse('currentAlertingEventResponse', result);
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+            }
         }
 
         async function fetchTransactionDetails(actionableEntityId) {
-            const url = `https://sasserver.demo.sas.com/amlCore/transactions?entityLevelCode=PTY&entityNumber=${actionableEntityId}`;
-            const result = await fetchApi(url);
-            console.log('Transaction Details:', result);
-            displayResponse('transactionDetails', result);
+            const url = https://sasserver.demo.sas.com/amlCore/transactions?entityLevelCode=PTY&entityNumber=${actionableEntityId};
+
+            try {
+                const response = await fetch(url, requestOptions);
+                if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
+
+                const result = await response.json();
+                console.log('Transaction Details:', result);
+                displayResponse('transactionDetails', result);
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+            }
         }
 
         async function fetchPtyDetails(actionableEntityId) {
-            const url = `https://sasserver.demo.sas.com/SASVisualInvestigator/pages/PTY/${actionableEntityId}`;
-            const result = await fetchApi(url);
-            console.log('PTY Details:', result);
-            displayResponse('ptyDetails', result);
+            const url = https://sasserver.demo.sas.com/SASVisualInvestigator/pages/PTY/${actionableEntityId};
+
+            try {
+                const response = await fetch(url, requestOptions);
+                if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
+
+                const result = await response.json();
+                console.log('PTY Details:', result);
+                displayResponse('ptyDetails', result);
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+            }
         }
 
         // Initial fetch call
