@@ -14,6 +14,7 @@
     <div id="transactionDetails"></div>
     <h2>PTY Details</h2>
     <div id="ptyDetails"></div>
+    <div id="content"></div>
 
     <script>
         const cookie = 'sas-ingress-nginx=065cb3791bb3583f0df2865f6eeb8a3a|f0e9e5d83f1b459459b54939af4feb2b';
@@ -78,7 +79,29 @@
             } catch (error) {
                 console.error('There has been a problem with your fetch operation:', error);
             }
+
+             // Extract only the desired properties from scenarioFiredEvents
+            const filteredScenarioFiredEvents = obj.currentAlertingEventResponse.map(event => ({
+                scenarioName: event.scenarioName,
+                scenarioDescription: event.scenarioDescription,
+                messageTemplateText: event.messageTemplateText
+            }));
+    
+            // Convert the filtered data to a formatted JSON string
+            const filteredJson = JSON.stringify(filteredScenarioFiredEvents, null, 2);
+    
+            // Get the container to display the content
+            const contentContainer = document.getElementById('content');
+    
+            // Create a div to display the parsed data in JSON format
+            const parsedDiv = document.createElement('div');
+            parsedDiv.className = 'parsed-container';
+            parsedDiv.textContent = 'Filtered Scenario Fired Events:\n' + filteredJson;
+    
+            // Append the parsed data div to the content container
+            contentContainer.appendChild(parsedDiv);
         }
+
 
         async function fetchTransactionDetails(actionableEntityId) {
             const url = `https://sasserver.demo.sas.com/amlCore/transactions?entityLevelCode=PTY&entityNumber=${actionableEntityId}`;
