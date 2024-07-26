@@ -88,13 +88,13 @@
                 // Get the container to display the content
                 const contentContainer = document.getElementById('content');
 
-                // Create a div to display the parsed data in JSON format
-                const parsedDiv = document.createElement('div');
-                parsedDiv.className = 'parsed-container';
-                parsedDiv.textContent = 'Filtered Scenario Fired Events:\n' + filteredJson;
+                // Create a pre element to display the parsed data in JSON format
+                const parsedPre = document.createElement('pre');
+                parsedPre.className = 'parsed-container';
+                parsedPre.textContent = 'Filtered Scenario Fired Events:\n' + filteredJson;
 
-                // Append the parsed data div to the content container
-                contentContainer.appendChild(parsedDiv);
+                // Append the parsed data pre element to the content container
+                contentContainer.appendChild(parsedPre);
             } catch (error) {
                 console.error('There has been a problem with your fetch operation:', error);
             }
