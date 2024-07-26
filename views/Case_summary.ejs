@@ -5,12 +5,21 @@
     <script src="./javascripts/jquery/jquery.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Key Debugging</title>
+    <title>API Response</title>
 </head>
 <body>
-    <h1>API Key Debugging</h1>
-    <div id="apiKeyContainer">Fetching API Key...</div>
-    <div id="apiResponseQ&A">Fetching OpenAI Response...</div>
+    <h1>API Response</h1>
+    <div id="response"></div>
+    <h2>Current Alerting Event Details</h2>
+    <div id="currentAlertingEventResponse"></div>
+    <h2>Transaction Details</h2>
+    <div id="transactionDetails"></div>
+    <h2>PTY Details</h2>
+    <div id="ptyDetails"></div>
+    <div id="content"></div>
+    <div id="contenttrans"></div>
+    <div id="apiResponseQ&A"></div>
+    <p hidden><span id="api_key"></span></p>
 
     <script>
         "use strict";
@@ -21,15 +30,138 @@
             if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
                 const apiKey = vaMsgObj.data[0][0];
                 console.log('Fetched API Key:', apiKey);
-                document.getElementById("apiKeyContainer").textContent = 'API Key: ' + apiKey;
-                fetchOpenAIResponse(apiKey);
+                document.getElementById("api_key").textContent = apiKey;
+                // Call fetchInitialApiResponse after setting the API key
+                fetchInitialApiResponse(apiKey);
             } else {
-                document.getElementById("apiKeyContainer").textContent = "No API key available";
+                document.getElementById("urlText").textContent = "No URL available";
+            }
+        }
+
+        const cookie = 'sas-ingress-nginx=065cb3791bb3583f0df2865f6eeb8a3a|f0e9e5d83f1b459459b54939af4feb2b';
+        const myHeaders = new Headers();
+        myHeaders.append("Cookie", cookie);
+
+        const requestOptions = {
+            method: 'GET',
+            headers: myHeaders,
+            redirect: 'follow'
+        };
+
+        async function fetchInitialApiResponse(apiKey) {
+            const url = 'https://sasserver.demo.sas.com/svi-alert/alerts/b63203ba-d218-410d-b3fe-95108afb5208';
+            try {
+                const response = await fetch(url, requestOptions);
+                if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
+
+                const result = await response.json();
+                displayResponse('response', result);
+
+                const currentAlertingEventId = result.currentAlertingEventId;
+                const actionableEntityId = result.actionableEntityId;
+
+                console.log('Current Alerting Event ID:', currentAlertingEventId);
+                console.log('Actionable Entity ID:', actionableEntityId);
+
+                await fetchCurrentAlertingEvent(currentAlertingEventId);
+                await fetchTransactionDetails(actionableEntityId);
+                await fetchPtyDetails(actionableEntityId);
+
+                const scenarioFiredEvents = result.scenarioFiredEvents.map(event => ({
+                    scenarioDescription: event.scenarioDescription,
+                    messageTemplateText: event.messageTemplateText
+                }));
+
+                displayResult(scenarioFiredEvents);
+                fetchOpenAIResponse(apiKey);  // Simplified call to test OpenAI API
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+            }
+        }
+
+        function displayResponse(id, result) {
+            const div = document.getElementById(id);
+            div.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+        }
+
+        async function fetchCurrentAlertingEvent(eventId) {
+            const url = `https://sasserver.demo.sas.com/svi-alert/alertingEvents/${eventId}`;
+            try {
+                const response = await fetch(url, requestOptions);
+                if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
+
+                const result = await response.json();
+                console.log('Current Alerting Event Details:', result);
+                displayResponse('currentAlertingEventResponse', result);
+
+                const filteredScenarioFiredEvents = result.scenarioFiredEvents.map(event => ({
+                    scenarioName: event.scenarioName,
+                    scenarioDescription: event.scenarioDescription,
+                    messageTemplateText: event.messageTemplateText
+                }));
+
+                const filteredJson = JSON.stringify(filteredScenarioFiredEvents, null, 2);
+                const contentContainer = document.getElementById('content');
+                const parsedPre = document.createElement('pre');
+                parsedPre.className = 'parsed-container';
+                parsedPre.textContent = 'Filtered Scenario Fired Events:\n' + filteredJson;
+                contentContainer.appendChild(parsedPre);
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+            }
+        }
+
+        async function fetchTransactionDetails(actionableEntityId) {
+            const url = `https://sasserver.demo.sas.com/amlCore/transactions?entityLevelCode=PTY&entityNumber=${actionableEntityId}`;
+            try {
+                const response = await fetch(url, requestOptions);
+                if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
+
+                const result = await response.json();
+                console.log('Transaction Details:', result);
+                displayResponse('transactionDetails', result);
+
+                if (Array.isArray(result.items)) {
+                    const filteredTransactions = result.items.map(transaction => ({
+                        transactionNumber: transaction.transactionNumber,
+                        primaryMediumDesc: transaction.primaryMediumDesc,
+                        secondaryMediumDesc: transaction.secondaryMediumDesc,
+                        mechanismDesc: transaction.mechanismDesc,
+                        currencyAmount: transaction.currencyAmount,
+                        transactionCDIDesc: transaction.transactionCDIDesc,
+                    }));
+
+                    const filteredJsonTrans = JSON.stringify(filteredTransactions, null, 2);
+                    const contentContainerTrans = document.getElementById('contenttrans');
+                    const parsedPreTrans = document.createElement('pre');
+                    parsedPreTrans.className = 'parsed-container';
+                    parsedPreTrans.textContent = 'Filtered Transactions:\n' + filteredJsonTrans;
+                    contentContainerTrans.appendChild(parsedPreTrans);
+                } else {
+                    console.error('Transaction details result.items is not an array:', result.items);
+                }
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+            }
+        }
+
+        async function fetchPtyDetails(actionableEntityId) {
+            const url = `https://sasserver.demo.sas.com/SASVisualInvestigator/pages/PTY/${actionableEntityId}`;
+            try {
+                const response = await fetch(url, requestOptions);
+                if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
+
+                const result = await response.json();
+                console.log('PTY Details:', result);
+                displayResponse('ptyDetails', result);
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
             }
         }
 
         function fetchOpenAIResponse(apiKey) {
             console.log('Using API Key:', apiKey);
+
             fetch('https://api.openai.com/v1/chat/completions', {
                 method: "POST",
                 headers: {
@@ -55,6 +187,9 @@
                 document.getElementById("apiResponseQ&A").textContent = "Error occurred while fetching API data.";
             });
         }
+
+        // Initial fetch call
+        fetchInitialApiResponse();
     </script>
 </body>
 </html>
