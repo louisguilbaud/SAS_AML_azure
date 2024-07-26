@@ -112,9 +112,9 @@
                 console.log('Transaction Details:', result);
                 displayResponse('transactionDetails', result);
 
-                if (Array.isArray(result)) {
+                if (Array.isArray(result.items)) {
                     // Extract only the desired properties from transactions
-                    const filteredTransactions = result.map(transaction => ({
+                    const filteredTransactions = result.items.map(transaction => ({
                         transactionNumber: transaction.transactionNumber,
                         primaryMediumDesc: transaction.primaryMediumDesc,
                         secondaryMediumDesc: transaction.secondaryMediumDesc,
@@ -137,7 +137,7 @@
                     // Append the parsed data pre element to the content container
                     contentContainerTrans.appendChild(parsedPreTrans);
                 } else {
-                    console.error('Transaction details result is not an array:', result);
+                    console.error('Transaction details result.items is not an array:', result.items);
                 }
             } catch (error) {
                 console.error('There has been a problem with your fetch operation:', error);
