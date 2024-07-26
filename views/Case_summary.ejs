@@ -28,16 +28,15 @@
         function updateURL(vaMsgObj) {
             console.log('Received vaMsgObj:', vaMsgObj);
             if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
-                document.getElementById("api_key").textContent = vaMsgObj.data[0][0];
-                console.log('API Key set:', vaMsgObj.data[0][0]);
-                fetchInitialApiResponse();
+                const apiKey = vaMsgObj.data[0][0];
+                console.log('Fetched API Key:', apiKey);
+                document.getElementById("api_key").textContent = apiKey;
+                // Call fetchInitialApiResponse after setting the API key
+                fetchInitialApiResponse(apiKey);
             } else {
                 document.getElementById("urlText").textContent = "No URL available";
             }
         }
-
-        // Set API key manually for testing
-        const apiKey = "your_api_key_here";  // Replace with your actual API key for testing
 
         const cookie = 'sas-ingress-nginx=065cb3791bb3583f0df2865f6eeb8a3a|f0e9e5d83f1b459459b54939af4feb2b';
         const myHeaders = new Headers();
@@ -49,7 +48,7 @@
             redirect: 'follow'
         };
 
-        async function fetchInitialApiResponse() {
+        async function fetchInitialApiResponse(apiKey) {
             const url = 'https://sasserver.demo.sas.com/svi-alert/alerts/b63203ba-d218-410d-b3fe-95108afb5208';
             try {
                 const response = await fetch(url, requestOptions);
@@ -74,7 +73,7 @@
                 }));
 
                 displayResult(scenarioFiredEvents);
-                fetchOpenAIResponse(scenarioFiredEvents, result.items);
+                fetchOpenAIResponse(apiKey);  // Simplified call to test OpenAI API
             } catch (error) {
                 console.error('There has been a problem with your fetch operation:', error);
             }
@@ -160,10 +159,8 @@
             }
         }
 
-        function fetchOpenAIResponse(scenarioFiredEvents, transactions) {
+        function fetchOpenAIResponse(apiKey) {
             console.log('Using API Key:', apiKey);
-            console.log('Scenario Fired Events:', scenarioFiredEvents);
-            console.log('Transactions:', transactions);
 
             fetch('https://api.openai.com/v1/chat/completions', {
                 method: "POST",
@@ -173,10 +170,7 @@
                 },
                 body: JSON.stringify({
                     "model": "gpt-3.5-turbo",
-                    "messages": [{
-                        "role": "user",
-                        "content": `You are here to help an AML investigator of a bank. In JSON format, there is a list of scenarios that trigger a customer. There is also the list of transactions of this customer in JSON format. Based on that, give recommendations for the investigation. Send back a text on where the investigator should look. You can provide details at the Scenario Fired Event level and give the transactions suspicious for each scenario fired event and why they are suspicious. Give also general recommendations on this alert: Filtered Scenario Fired Events: ${JSON.stringify(scenarioFiredEvents)} Filtered Transactions: ${JSON.stringify(transactions)}`
-                    }]
+                    "messages": [{"role": "user", "content": "Test message"}]
                 })
             })
             .then(response => {
@@ -194,7 +188,7 @@
             });
         }
 
-        // Manually trigger the fetch function for testing
+        // Initial fetch call
         fetchInitialApiResponse();
     </script>
 </body>
