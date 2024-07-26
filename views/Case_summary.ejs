@@ -18,8 +18,8 @@
     <div id="ptyDetails"></div>
     <div id="content"></div>
     <div id="contenttrans"></div>
-    <div id="apiResponseQ&A"></div>
-    <p hidden><span id="api_key"></span></p>
+    <div id="apiKeyContainer">Fetching API Key...</div>
+    <div id="apiResponseQ&A">Fetching OpenAI Response...</div>
 
     <script>
         "use strict";
@@ -30,15 +30,15 @@
             if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
                 const apiKey = vaMsgObj.data[0][0];
                 console.log('Fetched API Key:', apiKey);
-                document.getElementById("api_key").textContent = apiKey;
-                // Call fetchInitialApiResponse after setting the API key
+                document.getElementById("apiKeyContainer").textContent = 'API Key: ' + apiKey;
                 fetchInitialApiResponse(apiKey);
             } else {
-                document.getElementById("urlText").textContent = "No URL available";
+                document.getElementById("apiKeyContainer").textContent = "No API key available";
             }
         }
 
         const cookie = 'sas-ingress-nginx=065cb3791bb3583f0df2865f6eeb8a3a|f0e9e5d83f1b459459b54939af4feb2b';
+
         const myHeaders = new Headers();
         myHeaders.append("Cookie", cookie);
 
@@ -50,10 +50,11 @@
 
         async function fetchInitialApiResponse(apiKey) {
             const url = 'https://sasserver.demo.sas.com/svi-alert/alerts/b63203ba-d218-410d-b3fe-95108afb5208';
+
             try {
                 const response = await fetch(url, requestOptions);
                 if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
-
+                
                 const result = await response.json();
                 displayResponse('response', result);
 
@@ -73,7 +74,7 @@
                 }));
 
                 displayResult(scenarioFiredEvents);
-                fetchOpenAIResponse(apiKey);  // Simplified call to test OpenAI API
+                fetchOpenAIResponse(apiKey, scenarioFiredEvents, filteredTransactions);
             } catch (error) {
                 console.error('There has been a problem with your fetch operation:', error);
             }
@@ -86,6 +87,7 @@
 
         async function fetchCurrentAlertingEvent(eventId) {
             const url = `https://sasserver.demo.sas.com/svi-alert/alertingEvents/${eventId}`;
+
             try {
                 const response = await fetch(url, requestOptions);
                 if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
@@ -94,25 +96,36 @@
                 console.log('Current Alerting Event Details:', result);
                 displayResponse('currentAlertingEventResponse', result);
 
+                // Extract only the desired properties from scenarioFiredEvents
                 const filteredScenarioFiredEvents = result.scenarioFiredEvents.map(event => ({
                     scenarioName: event.scenarioName,
                     scenarioDescription: event.scenarioDescription,
                     messageTemplateText: event.messageTemplateText
                 }));
 
+                // Convert the filtered data to a formatted JSON string
                 const filteredJson = JSON.stringify(filteredScenarioFiredEvents, null, 2);
+
+                // Get the container to display the content
                 const contentContainer = document.getElementById('content');
+
+                // Create a pre element to display the parsed data in JSON format
                 const parsedPre = document.createElement('pre');
                 parsedPre.className = 'parsed-container';
                 parsedPre.textContent = 'Filtered Scenario Fired Events:\n' + filteredJson;
+
+                // Append the parsed data pre element to the content container
                 contentContainer.appendChild(parsedPre);
             } catch (error) {
                 console.error('There has been a problem with your fetch operation:', error);
             }
         }
 
+        let filteredTransactions = [];
+
         async function fetchTransactionDetails(actionableEntityId) {
             const url = `https://sasserver.demo.sas.com/amlCore/transactions?entityLevelCode=PTY&entityNumber=${actionableEntityId}`;
+
             try {
                 const response = await fetch(url, requestOptions);
                 if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
@@ -122,7 +135,8 @@
                 displayResponse('transactionDetails', result);
 
                 if (Array.isArray(result.items)) {
-                    const filteredTransactions = result.items.map(transaction => ({
+                    // Extract only the desired properties from transactions
+                    filteredTransactions = result.items.map(transaction => ({
                         transactionNumber: transaction.transactionNumber,
                         primaryMediumDesc: transaction.primaryMediumDesc,
                         secondaryMediumDesc: transaction.secondaryMediumDesc,
@@ -131,11 +145,18 @@
                         transactionCDIDesc: transaction.transactionCDIDesc,
                     }));
 
+                    // Convert the filtered data to a formatted JSON string
                     const filteredJsonTrans = JSON.stringify(filteredTransactions, null, 2);
+
+                    // Get the container to display the content
                     const contentContainerTrans = document.getElementById('contenttrans');
+
+                    // Create a pre element to display the parsed data in JSON format
                     const parsedPreTrans = document.createElement('pre');
                     parsedPreTrans.className = 'parsed-container';
                     parsedPreTrans.textContent = 'Filtered Transactions:\n' + filteredJsonTrans;
+
+                    // Append the parsed data pre element to the content container
                     contentContainerTrans.appendChild(parsedPreTrans);
                 } else {
                     console.error('Transaction details result.items is not an array:', result.items);
@@ -147,6 +168,7 @@
 
         async function fetchPtyDetails(actionableEntityId) {
             const url = `https://sasserver.demo.sas.com/SASVisualInvestigator/pages/PTY/${actionableEntityId}`;
+
             try {
                 const response = await fetch(url, requestOptions);
                 if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
@@ -159,8 +181,9 @@
             }
         }
 
-        function fetchOpenAIResponse(apiKey) {
-            console.log('Using API Key:', apiKey);
+        function fetchOpenAIResponse(apiKey, scenarioFiredEvents, filteredTransactions) {
+            const content = JSON.stringify(scenarioFiredEvents);
+            const contenttrans = JSON.stringify(filteredTransactions);
 
             fetch('https://api.openai.com/v1/chat/completions', {
                 method: "POST",
@@ -170,7 +193,10 @@
                 },
                 body: JSON.stringify({
                     "model": "gpt-3.5-turbo",
-                    "messages": [{"role": "user", "content": "Test message"}]
+                    "messages": [{
+                        "role": "user",
+                        "content": `You are here to help an AML investigator of a bank. In json format there is a list of scenarios that trigger a customer. There is also the list of transactions of this customer in json format. Based on that give recommendation for the investigation. Send back a text on where the investigator should look. You can provide details at Scenario fired event level and give the transactions suspicious for each scenario fired event and why they are suspicious. Give also general recommendation on this alert: Filtered Scenario Fired Events: ${content} Filtered transactions: ${contenttrans}`
+                    }]
                 })
             })
             .then(response => {
@@ -187,9 +213,6 @@
                 document.getElementById("apiResponseQ&A").textContent = "Error occurred while fetching API data.";
             });
         }
-
-        // Initial fetch call
-        fetchInitialApiResponse();
     </script>
 </body>
 </html>
