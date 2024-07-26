@@ -185,6 +185,11 @@
             const content = JSON.stringify(scenarioFiredEvents);
             const contenttrans = JSON.stringify(filteredTransactions);
 
+            console.log('Sending request to OpenAI API');
+            console.log('API Key:', apiKey);
+            console.log('Scenario Fired Events:', content);
+            console.log('Filtered Transactions:', contenttrans);
+
             fetch('https://api.openai.com/v1/chat/completions', {
                 method: "POST",
                 headers: {
@@ -195,18 +200,20 @@
                     "model": "gpt-3.5-turbo",
                     "messages": [{
                         "role": "user",
-                        "content": `hello`
+                        "content": `You are here to help an AML investigator of a bank. In json format there is a list of scenarios that trigger a customer. There is also the list of transactions of this customer in json format. Based on that give recommendation for the investigation. Send back a text on where the investigator should look. You can provide details at Scenario fired event level and give the transactions suspicious for each scenario fired event and why they are suspicious. Give also general recommendation on this alert: Filtered Scenario Fired Events: ${content} Filtered transactions: ${contenttrans}`
                     }]
                 })
             })
             .then(response => {
-                if (!response.ok) throw new Error('OpenAI API response was not ok ' + response.statusText);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
                 return response.json();
             })
             .then(data => {
-                var answer = data.choices[0].message.content;
-                console.log('OpenAI API Response:', data);
-                document.getElementById("apiResponseQ&A").textContent = answer;
+                console.log('OpenAI API response:', data);
+                const answer = data.choices[0].message.content; // Retrieve the answer from the API response
+                document.getElementById("apiResponseQ&A").textContent = answer; // Display the answer
             })
             .catch(error => {
                 console.error("Error:", error);
