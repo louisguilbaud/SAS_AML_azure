@@ -111,33 +111,33 @@
                 const result = await response.json();
                 console.log('Transaction Details:', result);
                 displayResponse('transactionDetails', result);
+
+                // Extract only the desired properties from transactions
+                const filteredTransactions = result.map(transaction => ({
+                    transactionNumber: transaction.transactionNumber,
+                    primaryMediumDesc: transaction.primaryMediumDesc,
+                    secondaryMediumDesc: transaction.secondaryMediumDesc,
+                    mechanismDesc: transaction.mechanismDesc,
+                    currencyAmount: transaction.currencyAmount,
+                    transactionCDIDesc: transaction.transactionCDIDesc,
+                }));
+
+                // Convert the filtered data to a formatted JSON string
+                const filteredJsonTrans = JSON.stringify(filteredTransactions, null, 2);
+
+                // Get the container to display the content
+                const contentContainerTrans = document.getElementById('contenttrans');
+
+                // Create a pre element to display the parsed data in JSON format
+                const parsedPreTrans = document.createElement('pre');
+                parsedPreTrans.className = 'parsed-container';
+                parsedPreTrans.textContent = 'Filtered Transactions:\n' + filteredJsonTrans;
+
+                // Append the parsed data pre element to the content container
+                contentContainerTrans.appendChild(parsedPreTrans); 
             } catch (error) {
                 console.error('There has been a problem with your fetch operation:', error);
             }
-
-        // Extract only the desired properties from scenarioFiredEvents
-        const filteredtransactions = result.map(event => ({
-            transactionNumber: event.transactionNumber,
-            primaryMediumDesc: event.primaryMediumDesc,
-            secondaryMediumDesc: event.secondaryMediumDesc,
-			mechanismDesc: event.mechanismDesc,
-			currencyAmount: event.currencyAmount,
-			transactionCDIDesc: event.transactionCDIDesc,
-        }));
-
-        // Convert the filtered data to a formatted JSON string
-        const filteredJsontrans = JSON.stringify(filteredtransactions, null, 2);
-
-        // Get the container to display the content
-        const contentContainertrans = document.getElementById('contenttrans');
-
-        // Create a div to display the parsed data in JSON format
-        const parsedDivtrans = document.createElement('div');
-        parsedDivtrans.className = 'parsed-container';
-        parsedDivtrans.textContent = 'Filtered transactions:\n' + filteredJsontrans;
-
-        // Append the parsed data div to the content container
-        contentContainertrans.appendChild(parsedDivtrans); 
         }
 
         async function fetchPtyDetails(actionableEntityId) {
