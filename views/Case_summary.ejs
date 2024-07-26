@@ -20,7 +20,6 @@
         const cookie = 'sas-ingress-nginx=065cb3791bb3583f0df2865f6eeb8a3a|f0e9e5d83f1b459459b54939af4feb2b';
 
         const myHeaders = new Headers();
-        
         myHeaders.append("Cookie", cookie);
 
         const requestOptions = {
@@ -45,9 +44,9 @@
                 console.log('Current Alerting Event ID:', currentAlertingEventId);
                 console.log('Actionable Entity ID:', actionableEntityId);
 
-                fetchCurrentAlertingEvent(currentAlertingEventId);
-                fetchTransactionDetails(actionableEntityId);
-                fetchPtyDetails(actionableEntityId);
+                await fetchCurrentAlertingEvent(currentAlertingEventId);
+                await fetchTransactionDetails(actionableEntityId);
+                await fetchPtyDetails(actionableEntityId);
 
                 const scenarioFiredEvents = result.scenarioFiredEvents.map(event => ({
                     scenarioDescription: event.scenarioDescription,
@@ -65,7 +64,6 @@
             div.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
         }
 
-
         async function fetchCurrentAlertingEvent(eventId) {
             const url = `https://sasserver.demo.sas.com/svi-alert/alertingEvents/${eventId}`;
 
@@ -76,32 +74,31 @@
                 const result = await response.json();
                 console.log('Current Alerting Event Details:', result);
                 displayResponse('currentAlertingEventResponse', result);
+
+                // Extract only the desired properties from scenarioFiredEvents
+                const filteredScenarioFiredEvents = result.scenarioFiredEvents.map(event => ({
+                    scenarioName: event.scenarioName,
+                    scenarioDescription: event.scenarioDescription,
+                    messageTemplateText: event.messageTemplateText
+                }));
+
+                // Convert the filtered data to a formatted JSON string
+                const filteredJson = JSON.stringify(filteredScenarioFiredEvents, null, 2);
+
+                // Get the container to display the content
+                const contentContainer = document.getElementById('content');
+
+                // Create a div to display the parsed data in JSON format
+                const parsedDiv = document.createElement('div');
+                parsedDiv.className = 'parsed-container';
+                parsedDiv.textContent = 'Filtered Scenario Fired Events:\n' + filteredJson;
+
+                // Append the parsed data div to the content container
+                contentContainer.appendChild(parsedDiv);
             } catch (error) {
                 console.error('There has been a problem with your fetch operation:', error);
             }
-
-             // Extract only the desired properties from scenarioFiredEvents
-            const filteredScenarioFiredEvents = obj.result.map(event => ({
-                scenarioName: event.scenarioName,
-                scenarioDescription: event.scenarioDescription,
-                messageTemplateText: event.messageTemplateText
-            }));
-    
-            // Convert the filtered data to a formatted JSON string
-            const filteredJson = JSON.stringify(filteredScenarioFiredEvents, null, 2);
-    
-            // Get the container to display the content
-            const contentContainer = document.getElementById('content');
-    
-            // Create a div to display the parsed data in JSON format
-            const parsedDiv = document.createElement('div');
-            parsedDiv.className = 'parsed-container';
-            parsedDiv.textContent = 'Filtered Scenario Fired Events:\n' + filteredJson;
-    
-            // Append the parsed data div to the content container
-            contentContainer.appendChild(parsedDiv);
         }
-
 
         async function fetchTransactionDetails(actionableEntityId) {
             const url = `https://sasserver.demo.sas.com/amlCore/transactions?entityLevelCode=PTY&entityNumber=${actionableEntityId}`;
