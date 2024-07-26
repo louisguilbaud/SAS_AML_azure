@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <script src='./javascripts/sas/util/messagingUtil.js'></script>
-	<script src="./javascripts/jquery/jquery.min.js"></script>
+    <script src="./javascripts/jquery/jquery.min.js"></script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,24 +18,26 @@
     <div id="ptyDetails"></div>
     <div id="content"></div>
     <div id="contenttrans"></div>
-<div id="apiResponseQ&A"></div>
+    <div id="apiResponseQ&A"></div>
 
-<p hidden><span id="api_key"></span> </p>
+    <p hidden><span id="api_key"></span></p>
 
     <script>
-	"use strict";
+        "use strict";
         va.messagingUtil.setOnDataReceivedCallback(updateURL);
 
-		function updateURL(vaMsgObj) {
-			console.log(vaMsgObj.data[0][0]);
-			if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
-				document.getElementById("api_key").textContent = vaMsgObj.data[0][0];
-			} else {
-				document.getElementById("urlText").textContent = "No URL available";
-			}
-		}
+        function updateURL(vaMsgObj) {
+            console.log(vaMsgObj.data[0][0]);
+            if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
+                document.getElementById("api_key").textContent = vaMsgObj.data[0][0];
+                // Once the API key is set, proceed with fetching the initial API response
+                fetchInitialApiResponse();
+            } else {
+                document.getElementById("urlText").textContent = "No URL available";
+            }
+        }
+
         const cookie = 'sas-ingress-nginx=065cb3791bb3583f0df2865f6eeb8a3a|f0e9e5d83f1b459459b54939af4feb2b';
-        var apiKey = document.getElementById("api_key").textContent;
 
         const myHeaders = new Headers();
         myHeaders.append("Cookie", cookie);
@@ -52,7 +54,7 @@
             try {
                 const response = await fetch(url, requestOptions);
                 if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
-                
+
                 const result = await response.json();
                 displayResponse('response', result);
 
@@ -72,6 +74,9 @@
                 }));
 
                 displayResult(scenarioFiredEvents);
+
+                // Fetch OpenAI API response after all other fetches are complete
+                fetchOpenAIResponse(scenarioFiredEvents, result.items);
             } catch (error) {
                 console.error('There has been a problem with your fetch operation:', error);
             }
@@ -176,31 +181,34 @@
             }
         }
 
+        function fetchOpenAIResponse(scenarioFiredEvents, transactions) {
+            const apiKey = document.getElementById("api_key").textContent;
 
-        fetch('https://api.openai.com/v1/chat/completions', {
-
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					"Authorization": "Bearer " +  apiKey
-				},
-				body: JSON.stringify({
-					"model": "gpt-3.5-turbo",
-					"messages": [{"role": "user", "content": "You are here to help an AML investator of a bank. In json format there is a list of scenarios that trigger a customer. There is also the list of transactions of this customer in json format.  Based on that give recomandation for the investigation. send back a text on where the investigator should look. You can provide details at Scenario fired event level and give the transactions supicious for each scenario fired event and why they are suspicious. Give also generalrecomandation on this alert: Filtered Scenario Fired Events:" + content + "Filtered transactions:" +contenttrans}]
-				})
-			})
-			.then(response => response.json())
-			.then(data => {
-				var answer = data.choices[0].message.content; // Retrieve the answer from the API response
-				console.log(data);
-				document.getElementById("apiResponseQ&A").textContent = answer; // Display the answer
-			})
-			.catch(error => {
-				console.error("Error:", error);
-				document.getElementById("apiResponseQ&A").textContent = "Error occurred while fetching API data.";
-			});
-        // Initial fetch call
-        fetchInitialApiResponse();
+            fetch('https://api.openai.com/v1/chat/completions', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + apiKey
+                },
+                body: JSON.stringify({
+                    "model": "gpt-3.5-turbo",
+                    "messages": [{
+                        "role": "user",
+                        "content": `You are here to help an AML investigator of a bank. In JSON format, there is a list of scenarios that trigger a customer. There is also the list of transactions of this customer in JSON format. Based on that, give recommendations for the investigation. Send back a text on where the investigator should look. You can provide details at the Scenario Fired Event level and give the transactions suspicious for each scenario fired event and why they are suspicious. Give also general recommendations on this alert: Filtered Scenario Fired Events: ${JSON.stringify(scenarioFiredEvents)} Filtered Transactions: ${JSON.stringify(transactions)}`
+                    }]
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                var answer = data.choices[0].message.content; // Retrieve the answer from the API response
+                console.log(data);
+                document.getElementById("apiResponseQ&A").textContent = answer; // Display the answer
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById("apiResponseQ&A").textContent = "Error occurred while fetching API data.";
+            });
+        }
     </script>
 </body>
 </html>
