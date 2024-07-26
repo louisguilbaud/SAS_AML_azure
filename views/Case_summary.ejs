@@ -81,7 +81,7 @@
             }
 
              // Extract only the desired properties from scenarioFiredEvents
-            const filteredScenarioFiredEvents = obj.currentAlertingEventResponse.map(event => ({
+            const filteredScenarioFiredEvents = obj.result.map(event => ({
                 scenarioName: event.scenarioName,
                 scenarioDescription: event.scenarioDescription,
                 messageTemplateText: event.messageTemplateText
