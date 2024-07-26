@@ -68,13 +68,16 @@
                 await fetchTransactionDetails(actionableEntityId);
                 await fetchPtyDetails(actionableEntityId);
 
-                const scenarioFiredEvents = result.scenarioFiredEvents.map(event => ({
-                    scenarioDescription: event.scenarioDescription,
-                    messageTemplateText: event.messageTemplateText
-                }));
-
-                displayResult(scenarioFiredEvents);
-                fetchOpenAIResponse(apiKey, scenarioFiredEvents, filteredTransactions);
+                if (result.scenarioFiredEvents && Array.isArray(result.scenarioFiredEvents)) {
+                    const scenarioFiredEvents = result.scenarioFiredEvents.map(event => ({
+                        scenarioDescription: event.scenarioDescription,
+                        messageTemplateText: event.messageTemplateText
+                    }));
+                    displayResult(scenarioFiredEvents);
+                    fetchOpenAIResponse(apiKey, scenarioFiredEvents, filteredTransactions);
+                } else {
+                    console.error('scenarioFiredEvents is not defined or not an array:', result.scenarioFiredEvents);
+                }
             } catch (error) {
                 console.error('There has been a problem with your fetch operation:', error);
             }
@@ -97,25 +100,29 @@
                 displayResponse('currentAlertingEventResponse', result);
 
                 // Extract only the desired properties from scenarioFiredEvents
-                const filteredScenarioFiredEvents = result.scenarioFiredEvents.map(event => ({
-                    scenarioName: event.scenarioName,
-                    scenarioDescription: event.scenarioDescription,
-                    messageTemplateText: event.messageTemplateText
-                }));
+                if (result.scenarioFiredEvents && Array.isArray(result.scenarioFiredEvents)) {
+                    const filteredScenarioFiredEvents = result.scenarioFiredEvents.map(event => ({
+                        scenarioName: event.scenarioName,
+                        scenarioDescription: event.scenarioDescription,
+                        messageTemplateText: event.messageTemplateText
+                    }));
 
-                // Convert the filtered data to a formatted JSON string
-                const filteredJson = JSON.stringify(filteredScenarioFiredEvents, null, 2);
+                    // Convert the filtered data to a formatted JSON string
+                    const filteredJson = JSON.stringify(filteredScenarioFiredEvents, null, 2);
 
-                // Get the container to display the content
-                const contentContainer = document.getElementById('content');
+                    // Get the container to display the content
+                    const contentContainer = document.getElementById('content');
 
-                // Create a pre element to display the parsed data in JSON format
-                const parsedPre = document.createElement('pre');
-                parsedPre.className = 'parsed-container';
-                parsedPre.textContent = 'Filtered Scenario Fired Events:\n' + filteredJson;
+                    // Create a pre element to display the parsed data in JSON format
+                    const parsedPre = document.createElement('pre');
+                    parsedPre.className = 'parsed-container';
+                    parsedPre.textContent = 'Filtered Scenario Fired Events:\n' + filteredJson;
 
-                // Append the parsed data pre element to the content container
-                contentContainer.appendChild(parsedPre);
+                    // Append the parsed data pre element to the content container
+                    contentContainer.appendChild(parsedPre);
+                } else {
+                    console.error('scenarioFiredEvents is not defined or not an array:', result.scenarioFiredEvents);
+                }
             } catch (error) {
                 console.error('There has been a problem with your fetch operation:', error);
             }
@@ -134,7 +141,7 @@
                 console.log('Transaction Details:', result);
                 displayResponse('transactionDetails', result);
 
-                if (Array.isArray(result.items)) {
+                if (result.items && Array.isArray(result.items)) {
                     // Extract only the desired properties from transactions
                     filteredTransactions = result.items.map(transaction => ({
                         transactionNumber: transaction.transactionNumber,
@@ -159,7 +166,7 @@
                     // Append the parsed data pre element to the content container
                     contentContainerTrans.appendChild(parsedPreTrans);
                 } else {
-                    console.error('Transaction details result.items is not an array:', result.items);
+                    console.error('Transaction details result.items is not defined or not an array:', result.items);
                 }
             } catch (error) {
                 console.error('There has been a problem with your fetch operation:', error);
