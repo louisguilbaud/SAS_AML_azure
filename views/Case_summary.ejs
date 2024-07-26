@@ -15,6 +15,7 @@
     <h2>PTY Details</h2>
     <div id="ptyDetails"></div>
     <div id="content"></div>
+    <div id="contenttrans"></div>
 
     <script>
         const cookie = 'sas-ingress-nginx=065cb3791bb3583f0df2865f6eeb8a3a|f0e9e5d83f1b459459b54939af4feb2b';
@@ -113,6 +114,30 @@
             } catch (error) {
                 console.error('There has been a problem with your fetch operation:', error);
             }
+
+        // Extract only the desired properties from scenarioFiredEvents
+        const filteredtransactions = result.map(event => ({
+            transactionNumber: event.transactionNumber,
+            primaryMediumDesc: event.primaryMediumDesc,
+            secondaryMediumDesc: event.secondaryMediumDesc,
+			mechanismDesc: event.mechanismDesc,
+			currencyAmount: event.currencyAmount,
+			transactionCDIDesc: event.transactionCDIDesc,
+        }));
+
+        // Convert the filtered data to a formatted JSON string
+        const filteredJsontrans = JSON.stringify(filteredtransactions, null, 2);
+
+        // Get the container to display the content
+        const contentContainertrans = document.getElementById('contenttrans');
+
+        // Create a div to display the parsed data in JSON format
+        const parsedDivtrans = document.createElement('div');
+        parsedDivtrans.className = 'parsed-container';
+        parsedDivtrans.textContent = 'Filtered transactions:\n' + filteredJsontrans;
+
+        // Append the parsed data div to the content container
+        contentContainertrans.appendChild(parsedDivtrans); 
         }
 
         async function fetchPtyDetails(actionableEntityId) {
