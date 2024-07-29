@@ -24,7 +24,7 @@
             redirect: "follow"
         };
 
-        // API Call to get alert informations 
+        // API Call to get alert information
         fetch("https://sasserver.demo.sas.com/svi-alert/alerts/b63203ba-d218-410d-b3fe-95108afb5208", requestOptions)
             .then(response => {
                 if (!response.ok) {
@@ -33,17 +33,12 @@
                 return response.json();
             })
             .then(data => {
-                // Extract specific fields to store in JavaScript variables
                 const currentAlertingEventId = data.currentAlertingEventId;
                 const actionableEntityId = data.actionableEntityId;
                 console.log(currentAlertingEventId);
-                // Convert the entire JSON response to a formatted string
                 const jsonResponse = JSON.stringify(data, null, 2);
-
-                // display the json in a div
                 document.getElementById("apiResponse").innerHTML = jsonResponse;
 
-                // Get the informations about the SFE
                 fetch(`https://sasserver.demo.sas.com/svi-alert/alertingEvents/${currentAlertingEventId}`, requestOptions)
                     .then(response => {
                         if (!response.ok) {
@@ -52,53 +47,19 @@
                         return response.json();
                     })
                     .then(data => {
-                        // Extract only the desired properties from scenarioFiredEvents API call
                         if (data.scenarioFiredEvents && Array.isArray(data.scenarioFiredEvents)) {
                             const filteredScenarioFiredEvents = data.scenarioFiredEvents.map(event => ({
                                 scenarioName: event.scenarioName,
                                 scenarioDescription: event.scenarioDescription,
                                 messageTemplateText: event.messageTemplateText
                             }));
-
-                            // Convert the filtered data to a formatted JSON string
                             const filteredJson = JSON.stringify(filteredScenarioFiredEvents, null, 2);
-
-                            // display the json in a div
                             document.getElementById("scenario_fired_event").innerHTML = filteredJson;
                         } else {
                             console.error('scenarioFiredEvents is not defined or not an array:', data.scenarioFiredEvents);
                         }
 
                         fetch(`https://sasserver.demo.sas.com/amlCore/transactions?entityLevelCode=PTY&entityNumber=${actionableEntityId}`, requestOptions)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok ' + response.statusText);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-        
-                        if (data.items && Array.isArray(data.items)) {
-                            // Extract only the desired properties from transactions
-                            filteredTransactions = data.items.map(transaction => ({
-                                transactionNumber: transaction.transactionNumber,
-                                primaryMediumDesc: transaction.primaryMediumDesc,
-                                secondaryMediumDesc: transaction.secondaryMediumDesc,
-                                mechanismDesc: transaction.mechanismDesc,
-                                currencyAmount: transaction.currencyAmount,
-                                transactionCDIDesc: transaction.transactionCDIDesc,
-                            }));
-        
-                            // Convert the filtered data to a formatted JSON string
-                            const filteredJsonTrans = JSON.stringify(filteredTransactions, null, 2);
-        
-                            // display the json in a div
-                            document.getElementById("transactions").innerHTML = filteredJsonTrans;
-                        } else {
-                            console.error('Transaction details result.items is not defined or not an array:', result.items);
-                        }
-
-                        fetch('https://sasserver.demo.sas.com/SASVisualInvestigator/pages/PTY/${actionableEntityId}', requestOptions)
                             .then(response => {
                                 if (!response.ok) {
                                     throw new Error('Network response was not ok ' + response.statusText);
@@ -106,21 +67,35 @@
                                 return response.json();
                             })
                             .then(data => {
-                                
-                                // Convert the entire JSON response to a formatted string
-                                const jsonResponse = JSON.stringify(data, null, 2);
-                
-                                // display the json in a div
-                                document.getElementById("Party_info").innerHTML = jsonResponse;
-                
+                                if (data.items && Array.isArray(data.items)) {
+                                    const filteredTransactions = data.items.map(transaction => ({
+                                        transactionNumber: transaction.transactionNumber,
+                                        primaryMediumDesc: transaction.primaryMediumDesc,
+                                        secondaryMediumDesc: transaction.secondaryMediumDesc,
+                                        mechanismDesc: transaction.mechanismDesc,
+                                        currencyAmount: transaction.currencyAmount,
+                                        transactionCDIDesc: transaction.transactionCDIDesc,
+                                    }));
+                                    const filteredJsonTrans = JSON.stringify(filteredTransactions, null, 2);
+                                    document.getElementById("transactions").innerHTML = filteredJsonTrans;
+                                } else {
+                                    console.error('Transaction details result.items is not defined or not an array:', result.items);
+                                }
+
+                                fetch(`https://sasserver.demo.sas.com/SASVisualInvestigator/pages/PTY/${actionableEntityId}`, requestOptions)
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error('Network response was not ok ' + response.statusText);
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(data => {
+                                        const jsonResponse = JSON.stringify(data, null, 2);
+                                        document.getElementById("Party_info").innerHTML = jsonResponse;
+                                    }).catch(error => console.error('Error:', error));
                             }).catch(error => console.error('Error:', error));
-                    
                     }).catch(error => console.error('Error:', error));
             }).catch(error => console.error('Error:', error));
-
-            }).catch(error => console.error('Error:', error));
-
-            
     </script>
 </body>
 </html>
