@@ -17,7 +17,7 @@
 </head>
 <body>
     <h1>API Response</h1>
-    <div id="apiResponse"></div>
+    <div id="alert_details"></div>
 
     <script>
         const myHeaders = new Headers();
@@ -29,40 +29,35 @@
             redirect: "follow"
         };
 
-        fetch("https://sasserver.demo.sas.com/svi-alert/alerts/b63203ba-d218-410d-b3fe-95108afb5208", requestOptions)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data && data.scenarioFiredEvents) {
-                    // Extract only the desired properties from scenarioFiredEvents
-                    const filteredScenarioFiredEvents = data.scenarioFiredEvents.map(event => ({
-                        scenarioName: event.scenarioName,
+        async function fetchInitialApiResponse(apiKey) {
+
+                const response = await fetch(https://sasserver.demo.sas.com/svi-alert/alerts/b63203ba-d218-410d-b3fe-95108afb5208, requestOptions);
+                if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
+                
+                const result = await response.json();
+                displayResponse('alert_details', result);
+
+                const currentAlertingEventId = result.currentAlertingEventId;
+                const actionableEntityId = result.actionableEntityId;
+
+                console.log('Current Alerting Event ID:', currentAlertingEventId);
+                console.log('Actionable Entity ID:', actionableEntityId);
+
+                await fetchCurrentAlertingEvent(currentAlertingEventId);
+                await fetchTransactionDetails(actionableEntityId);
+                await fetchPtyDetails(actionableEntityId);
+
+                if (result.scenarioFiredEvents && Array.isArray(result.scenarioFiredEvents)) {
+                    const scenarioFiredEvents = result.scenarioFiredEvents.map(event => ({
                         scenarioDescription: event.scenarioDescription,
                         messageTemplateText: event.messageTemplateText
                     }));
-
-                    // Convert the filtered data to a formatted JSON string
-                    const filteredJson = JSON.stringify(filteredScenarioFiredEvents, null, 2);
-
-                    // Get the container to display the content
-                    const contentContainer = document.getElementById('apiResponse');
-
-                    // Create a div to display the parsed data in JSON format
-                    const parsedDiv = document.createElement('div');
-                    parsedDiv.className = 'parsed-container';
-                    parsedDiv.textContent = 'Filtered Scenario Fired Events:\n' + filteredJson;
-
-                    // Append the parsed data div to the content container
-                    contentContainer.appendChild(parsedDiv);
+                    displayResult(scenarioFiredEvents);
+                    fetchOpenAIResponse(apiKey, scenarioFiredEvents, filteredTransactions);
                 } else {
-                    console.error('scenarioFiredEvents not found in the response.');
-                }
-            })
-            .catch(error => console.error('Error:', error));
+                    console.error('scenarioFiredEvents is not defined or not an array:', result.scenarioFiredEvents);
+                } 
+        }
     </script>
 </body>
 </html>
