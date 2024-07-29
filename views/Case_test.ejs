@@ -102,7 +102,7 @@
             }).catch(error => console.error('Error:', error));
 
 
-        fetch("https://sasserver.demo.sas.com/SASVisualInvestigator/pages/PTY/${actionableEntityId}", requestOptions)
+        fetch('https://sasserver.demo.sas.com/SASVisualInvestigator/pages/PTY/${actionableEntityId}', requestOptions)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
