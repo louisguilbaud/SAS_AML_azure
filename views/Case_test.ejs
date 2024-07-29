@@ -50,13 +50,6 @@
                 // Get the container to display the content
                 const contentContainer = document.getElementById('apiResponse');
 
-                // Create a div to display the JSON response in formatted text
-                const parsedDiv = document.createElement('div');
-                parsedDiv.className = 'parsed-container';
-                parsedDiv.textContent = 'API Response:\n' + jsonResponse;
-
-                // Append the parsed data div to the content container
-                contentContainer.appendChild(parsedDiv);
             })
             .catch(error => console.error('Error:', error));
     </script>
