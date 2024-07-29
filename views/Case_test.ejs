@@ -130,7 +130,7 @@
                 },
                 body: JSON.stringify({
                     "model": "gpt-3.5-turbo",
-                    "messages": [{"role": "user", "content": "You are here to help an AML investator of a bank. In json format there is a list of scenarios that trigger a customer. There is also the list of transactions of this customer in json format.  Based on that give recomandation for the investigation. send back a text on where the investigator should look. You can provide details at Scenario fired event level and give the transactions supicious for each scenario fired event and why they are suspicious. Give also generalrecomandation on this alert: Filtered Scenario Fired Events:" + scenario_fired_event + "Filtered transactions:" +transactions}]
+                    "messages": [{"role": "user", "content": "You are here to help an AML investator of a bank. In json format there is a list of scenarios that trigger a customer. There is also the list of transactions of this customer in json format.  Based on that give recomandation for the investigation. send back a text on where the investigator should look. You can provide details at Scenario fired event level and give the transactions supicious for each scenario fired event and why they are suspicious. Give also generalrecomandation on this alert: Filtered Scenario Fired Events:" + scenario_fired_event + "Filtered transactions:" +transactions
 			}]
                 })
             })
