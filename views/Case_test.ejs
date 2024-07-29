@@ -18,7 +18,7 @@
     <div class="api-response-box"> 
         <p><span id="chatgptResponse"></span></p>
     </div>
-    <p hidden><span id="apiKeyContainer"></span> </p>
+    <p hidden><span id="apiKeyContainer"></span></p>
 
     <script>
         const myHeaders = new Headers();
@@ -39,7 +39,6 @@
                 const apiKey = vaMsgObj.data[0][0];
                 console.log('Fetched API Key:', apiKey);
                 document.getElementById("apiKeyContainer").textContent = apiKey;
-                fetchInitialApiResponse(apiKey);
             } else {
                 document.getElementById("apiKeyContainer").textContent = "No API key available";
             }
