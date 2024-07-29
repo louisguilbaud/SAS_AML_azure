@@ -25,7 +25,7 @@ const requestOptions = {
 fetch("https://sasserver.demo.sas.com/svi-alert/alerts/b63203ba-d218-410d-b3fe-95108afb5208", requestOptions)
   .then((response) => {
     console.log('Response object:', response); // Log the response object
-    document.getElementById("apiResponse").innerHTML = response.text(); // Extract and return the body as a string
+    document.getElementById("apiResponse").innerHTML = response;
   })
   .catch((error) => console.error('Error:', error));
       </script>
