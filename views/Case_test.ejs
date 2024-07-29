@@ -97,26 +97,25 @@
                         } else {
                             console.error('Transaction details result.items is not defined or not an array:', result.items);
                         }
+
+                        fetch('https://sasserver.demo.sas.com/SASVisualInvestigator/pages/PTY/${actionableEntityId}', requestOptions)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok ' + response.statusText);
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                
+                                // Convert the entire JSON response to a formatted string
+                                const jsonResponse = JSON.stringify(data, null, 2);
+                
+                                // display the json in a div
+                                document.getElementById("Party_info").innerHTML = jsonResponse;
+                
+                            }).catch(error => console.error('Error:', error));
                     
                     }).catch(error => console.error('Error:', error));
-            }).catch(error => console.error('Error:', error));
-
-
-        fetch('https://sasserver.demo.sas.com/SASVisualInvestigator/pages/PTY/${actionableEntityId}', requestOptions)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
-                }
-                return response.json();
-            })
-            .then(data => {
-                
-                // Convert the entire JSON response to a formatted string
-                const jsonResponse = JSON.stringify(data, null, 2);
-
-                // display the json in a div
-                document.getElementById("Party_info").innerHTML = jsonResponse;
-
             }).catch(error => console.error('Error:', error));
 
             }).catch(error => console.error('Error:', error));
