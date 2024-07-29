@@ -31,7 +31,7 @@ fetch("https://sasserver.demo.sas.com/svi-alert/alerts/b63203ba-d218-410d-b3fe-9
     console.log('Result:', result); // Log the extracted body content
   })
   .catch((error) => console.error('Error:', error));
-  
+  document.getElementById("response").innerHTML = obj.response;
       </script>
 </body>
 </html>
