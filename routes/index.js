@@ -51,8 +51,8 @@ router.get('/Scoring.html', function(req, res, next) {
   res.render('Scoring', { title: 'ML Based monitoring Scoring ddc' });
 });
 
-router.get('/TrainModel.html', function(req, res, next) {
-  res.render('TrainModel', { title: 'ML Based monitoring TrainModel ddc' });
+router.get('/Case_test.html', function(req, res, next) {
+  res.render('Case_test', { title: 'Case_test ddc' });
 });
 
 router.get('/cas_rest_api_js_sample.html', function(req, res, next) {
