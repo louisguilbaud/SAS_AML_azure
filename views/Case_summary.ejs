@@ -197,6 +197,7 @@
 					"model": "gpt-3.5-turbo",
 					"messages": [{"role": "user", "content": "hello"})
 			})
+			})
 			.then(response => response.json())
 			.then(data => {
 				var answer = data.choices[0].message.content; // Retrieve the answer from the API response
