@@ -67,10 +67,8 @@
                         } else {
                             console.error('scenarioFiredEvents is not defined or not an array:', data.scenarioFiredEvents);
                         }
-                    
-                    }).catch(error => console.error('Error:', error));
 
-            fetch(`https://sasserver.demo.sas.com/amlCore/transactions?entityLevelCode=PTY&entityNumber=${actionableEntityId}`, requestOptions)
+                        fetch(`https://sasserver.demo.sas.com/amlCore/transactions?entityLevelCode=PTY&entityNumber=${actionableEntityId}`, requestOptions)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Network response was not ok ' + response.statusText);
@@ -103,8 +101,10 @@
                         }
                     
                     }).catch(error => console.error('Error:', error));
-            })
-            .catch(error => console.error('Error:', error));
+            }).catch(error => console.error('Error:', error));
+        }).catch(error => console.error('Error:', error));
+
+            
     </script>
 </body>
 </html>
