@@ -91,11 +91,8 @@
                             // Convert the filtered data to a formatted JSON string
                             const filteredJsonTrans = JSON.stringify(filteredTransactions, null, 2);
         
-                            // Get the container to display the content
-                            const contentContainerTrans = document.getElementById('contenttrans');
-        
                             // display the json in a div
-                            document.getElementById("transactions").innerHTML = contentContainerTrans;
+                            document.getElementById("transactions").innerHTML = filteredJsonTrans;
                         } else {
                             console.error('Transaction details result.items is not defined or not an array:', result.items);
                         }
