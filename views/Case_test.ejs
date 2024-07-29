@@ -67,8 +67,8 @@
                         } else {
                             console.error('scenarioFiredEvents is not defined or not an array:', data.scenarioFiredEvents);
                         }
-                    .catch(error => console.error('Error:', error));
-                    })
+                    
+                    }).catch(error => console.error('Error:', error));
 
             fetch(`https://sasserver.demo.sas.com/amlCore/transactions?entityLevelCode=PTY&entityNumber=${actionableEntityId}`, requestOptions)
                     .then(response => {
@@ -101,9 +101,8 @@
                         } else {
                             console.error('Transaction details result.items is not defined or not an array:', result.items);
                         }
-                        .catch(error => console.error('Error:', error));
                     
-                    })
+                    }).catch(error => console.error('Error:', error));
             })
             .catch(error => console.error('Error:', error));
     </script>
