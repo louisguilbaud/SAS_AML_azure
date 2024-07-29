@@ -120,8 +120,9 @@
 
     document.getElementById("callApiButton").addEventListener("click", function() {
             var apiKey = document.getElementById("api_key").textContent;
+	var apiUrl = "https://api.openai.com/v1/chat/completions";
             
-           fetch("https://api.openai.com/v1/chat/completions", {
+           fetch(apiUrl, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -136,7 +137,7 @@
 			.then(response => response.json())
 			.then(data => {
 				var content = data.choices[0].message.content;
-				document.getElementById("apiResponse").innerHTML = content;
+				document.getElementById("apiResponse").textContent  = content;
 			})
 			.catch(error => {
 				console.error("Error:", error);
