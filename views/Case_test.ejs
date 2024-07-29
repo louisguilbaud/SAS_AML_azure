@@ -6,18 +6,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>API Response</title>
-    <style>
-        .parsed-container {
-            white-space: pre-wrap;
-            background-color: #f0f0f0;
-            padding: 10px;
-            border-radius: 5px;
-        }
-    </style>
 </head>
 <body>
     <h1>API Response</h1>
     <div id="apiResponse"></div>
+    <div id="scenario_fired_event"></div>
+
     <script>
         const myHeaders = new Headers();
         myHeaders.append("Cookie", "sas-ingress-nginx=6866adc2289a112d6ea7fd0775261540|f0e9e5d83f1b459459b54939af4feb2b");
@@ -28,6 +22,7 @@
             redirect: "follow"
         };
 
+        // API Call to get alert informations 
         fetch("https://sasserver.demo.sas.com/svi-alert/alerts/b63203ba-d218-410d-b3fe-95108afb5208", requestOptions)
             .then(response => {
                 if (!response.ok) {
@@ -40,16 +35,45 @@
                 const currentAlertingEventId = data.currentAlertingEventId;
                 const actionableEntityId = data.actionableEntityId;
 
-                // Log the extracted variables to the console (for debugging)
-                console.log('currentAlertingEventId:', currentAlertingEventId);
-                console.log('actionableEntityId:', actionableEntityId);
-
                 // Convert the entire JSON response to a formatted string
                 const jsonResponse = JSON.stringify(data, null, 2);
 
-                // Get the container to display the content
+                // display the json in a div
                 document.getElementById("apiResponse").innerHTML = jsonResponse;
 
+            })
+            .catch(error => console.error('Error:', error));
+
+        // API Call to get alert informations 
+        fetch("https://sasserver.demo.sas.com/svi-alert/alertingEvents/${currentAlertingEventId}", requestOptions)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Extract only the desired properties from scenarioFiredEvents
+                if (data.scenarioFiredEvents && Array.isArray(result.scenarioFiredEvents)) {
+                    const filteredScenarioFiredEvents = data.scenarioFiredEvents.map(event => ({
+                        scenarioName: event.scenarioName,
+                        scenarioDescription: event.scenarioDescription,
+                        messageTemplateText: event.messageTemplateText
+                    }));
+
+                    // Convert the filtered data to a formatted JSON string
+                    const filteredJson = JSON.stringify(filteredScenarioFiredEvents, null, 2);
+
+
+                    // Convert the entire JSON response to a formatted string
+                     const jsonResponse = JSON.stringify(filteredScenarioFiredEvents, null, 2);
+
+                    // display the json in a div
+                    document.getElementById("scenario_fired_event").innerHTML = jsonResponse;
+
+            } else {
+                    console.error('scenarioFiredEvents is not defined or not an array:', result.scenarioFiredEvents);
+                }
             })
             .catch(error => console.error('Error:', error));
     </script>
