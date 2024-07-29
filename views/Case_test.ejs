@@ -12,6 +12,7 @@
     <div id="apiResponse"></div>
     <div id="scenario_fired_event"></div>
     <div id="transactions"></div>
+    <div id="Party_info"></div>
 
     <script>
         const myHeaders = new Headers();
@@ -99,7 +100,26 @@
                     
                     }).catch(error => console.error('Error:', error));
             }).catch(error => console.error('Error:', error));
-        }).catch(error => console.error('Error:', error));
+
+
+        fetch("https://sasserver.demo.sas.com/SASVisualInvestigator/pages/PTY/${actionableEntityId}", requestOptions)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                
+                // Convert the entire JSON response to a formatted string
+                const jsonResponse = JSON.stringify(data, null, 2);
+
+                // display the json in a div
+                document.getElementById("Party_info").innerHTML = jsonResponse;
+
+            }).catch(error => console.error('Error:', error));
+
+            }).catch(error => console.error('Error:', error));
 
             
     </script>
