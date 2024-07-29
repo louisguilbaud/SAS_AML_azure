@@ -11,6 +11,7 @@
     <h1>API Response</h1>
     <div id="apiResponse"></div>
     <div id="scenario_fired_event"></div>
+    <div id="transactions"></div>
 
     <script>
         const myHeaders = new Headers();
@@ -41,7 +42,7 @@
                 // display the json in a div
                 document.getElementById("apiResponse").innerHTML = jsonResponse;
 
-                // Now, make the second fetch call
+                // Get the informations about the SFE
                 fetch(`https://sasserver.demo.sas.com/svi-alert/alertingEvents/${currentAlertingEventId}`, requestOptions)
                     .then(response => {
                         if (!response.ok) {
@@ -50,7 +51,7 @@
                         return response.json();
                     })
                     .then(data => {
-                        // Extract only the desired properties from scenarioFiredEvents
+                        // Extract only the desired properties from scenarioFiredEvents API call
                         if (data.scenarioFiredEvents && Array.isArray(data.scenarioFiredEvents)) {
                             const filteredScenarioFiredEvents = data.scenarioFiredEvents.map(event => ({
                                 scenarioName: event.scenarioName,
@@ -66,8 +67,43 @@
                         } else {
                             console.error('scenarioFiredEvents is not defined or not an array:', data.scenarioFiredEvents);
                         }
-                    })
                     .catch(error => console.error('Error:', error));
+                    })
+
+            fetch(`https://sasserver.demo.sas.com/amlCore/transactions?entityLevelCode=PTY&entityNumber=${actionableEntityId}`, requestOptions)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok ' + response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+        
+                        if (data.items && Array.isArray(data.items)) {
+                            // Extract only the desired properties from transactions
+                            filteredTransactions = data.items.map(transaction => ({
+                                transactionNumber: transaction.transactionNumber,
+                                primaryMediumDesc: transaction.primaryMediumDesc,
+                                secondaryMediumDesc: transaction.secondaryMediumDesc,
+                                mechanismDesc: transaction.mechanismDesc,
+                                currencyAmount: transaction.currencyAmount,
+                                transactionCDIDesc: transaction.transactionCDIDesc,
+                            }));
+        
+                            // Convert the filtered data to a formatted JSON string
+                            const filteredJsonTrans = JSON.stringify(filteredTransactions, null, 2);
+        
+                            // Get the container to display the content
+                            const contentContainerTrans = document.getElementById('contenttrans');
+        
+                            // display the json in a div
+                            document.getElementById("transactions").innerHTML = contentContainerTrans;
+                        } else {
+                            console.error('Transaction details result.items is not defined or not an array:', result.items);
+                        }
+                        .catch(error => console.error('Error:', error));
+                    
+                    })
             })
             .catch(error => console.error('Error:', error));
     </script>
