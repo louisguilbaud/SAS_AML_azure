@@ -14,6 +14,12 @@
     <div id="transactions"></div>
     <div id="Party_info"></div>
 
+    <button type="submit" class="btn-primary" id="callApiButton">Case Narative</button>
+    <div class="api-response-box"> 
+					<p><span id="apiResponse"></span></p>
+	</div>
+    <p hidden><span id="api_key"></span> </p>
+
     <script>
         const myHeaders = new Headers();
         myHeaders.append("Cookie", "sas-ingress-nginx=6866adc2289a112d6ea7fd0775261540|f0e9e5d83f1b459459b54939af4feb2b");
@@ -24,6 +30,20 @@
             redirect: "follow"
         };
 
+        "use strict";
+        va.messagingUtil.setOnDataReceivedCallback(updateURL);
+
+        function updateURL(vaMsgObj) {
+            console.log('Received vaMsgObj:', vaMsgObj);
+            if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
+                const apiKey = vaMsgObj.data[0][0];
+                console.log('Fetched API Key:', apiKey);
+                document.getElementById("apiKeyContainer").textContent = 'API Key: ' + apiKey;
+                fetchInitialApiResponse(apiKey);
+            } else {
+                document.getElementById("apiKeyContainer").textContent = "No API key available";
+            }
+        }
         // API Call to get alert information
         fetch("https://sasserver.demo.sas.com/svi-alert/alerts/b63203ba-d218-410d-b3fe-95108afb5208", requestOptions)
             .then(response => {
@@ -97,6 +117,34 @@
                             }).catch(error => console.error('Error:', error));
                     }).catch(error => console.error('Error:', error));
             }).catch(error => console.error('Error:', error));
+
+    document.getElementById("callApiButton").addEventListener("click", function() {
+            var apiKey = document.getElementById("api_key").textContent;
+            
+           fetch(apiUrl, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": "Bearer " + apiKey
+				},
+				body: JSON.stringify({
+					"model": "gpt-3.5-turbo",
+					"messages": [{"role": "user", "content": "hello"
+				}]
+				})
+			})
+			.then(response => response.json())
+			.then(data => {
+				var content = data.choices[0].message.content;
+				document.getElementById("apiResponse").innerHTML = content;
+			})
+			.catch(error => {
+				console.error("Error:", error);
+				document.getElementById("apiResponse").textContent = "Error occurred while fetching API data.";
+			});
+});
+
+        document.getElementById("chatgptButton").addEventListener("click", callChatGPT);
     </script>
 </body>
 </html>
