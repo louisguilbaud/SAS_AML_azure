@@ -45,7 +45,7 @@
             .catch(error => console.error('Error:', error));
 
         // API Call to get alert informations 
-        fetch('https://sasserver.demo.sas.com/svi-alert/alertingEvents/${currentAlertingEventId}', requestOptions)
+        return fetch('https://sasserver.demo.sas.com/svi-alert/alertingEvents/${currentAlertingEventId}', requestOptions)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
