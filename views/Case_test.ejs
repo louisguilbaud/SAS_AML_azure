@@ -17,8 +17,7 @@
 </head>
 <body>
     <h1>API Response</h1>
-    <div id="alert_details"></div>
-
+    <div id="apiResponse"></div>
     <script>
         const myHeaders = new Headers();
         myHeaders.append("Cookie", "sas-ingress-nginx=6866adc2289a112d6ea7fd0775261540|f0e9e5d83f1b459459b54939af4feb2b");
@@ -29,35 +28,37 @@
             redirect: "follow"
         };
 
-        async function fetchInitialApiResponse(apiKey) {
+        fetch("https://sasserver.demo.sas.com/svi-alert/alerts/b63203ba-d218-410d-b3fe-95108afb5208", requestOptions)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Extract specific fields to store in JavaScript variables
+                const currentAlertingEventId = data.currentAlertingEventId;
+                const actionableEntityId = data.actionableEntityId;
 
-                const response = await fetch('https://sasserver.demo.sas.com/svi-alert/alerts/b63203ba-d218-410d-b3fe-95108afb5208', requestOptions);
-                if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
-                
-                const result = await response.json();
-                displayResponse('alert_details', result);
+                // Log the extracted variables to the console (for debugging)
+                console.log('currentAlertingEventId:', currentAlertingEventId);
+                console.log('actionableEntityId:', actionableEntityId);
 
-                const currentAlertingEventId = result.currentAlertingEventId;
-                const actionableEntityId = result.actionableEntityId;
+                // Convert the entire JSON response to a formatted string
+                const jsonResponse = JSON.stringify(data, null, 2);
 
-                console.log('Current Alerting Event ID:', currentAlertingEventId);
-                console.log('Actionable Entity ID:', actionableEntityId);
+                // Get the container to display the content
+                const contentContainer = document.getElementById('apiResponse');
 
-                await fetchCurrentAlertingEvent(currentAlertingEventId);
-                await fetchTransactionDetails(actionableEntityId);
-                await fetchPtyDetails(actionableEntityId);
+                // Create a div to display the JSON response in formatted text
+                const parsedDiv = document.createElement('div');
+                parsedDiv.className = 'parsed-container';
+                parsedDiv.textContent = 'API Response:\n' + jsonResponse;
 
-                if (result.scenarioFiredEvents && Array.isArray(result.scenarioFiredEvents)) {
-                    const scenarioFiredEvents = result.scenarioFiredEvents.map(event => ({
-                        scenarioDescription: event.scenarioDescription,
-                        messageTemplateText: event.messageTemplateText
-                    }));
-                    displayResult(scenarioFiredEvents);
-                    fetchOpenAIResponse(apiKey, scenarioFiredEvents, filteredTransactions);
-                } else {
-                    console.error('scenarioFiredEvents is not defined or not an array:', result.scenarioFiredEvents);
-                } 
-        }
+                // Append the parsed data div to the content container
+                contentContainer.appendChild(parsedDiv);
+            })
+            .catch(error => console.error('Error:', error));
     </script>
 </body>
 </html>
