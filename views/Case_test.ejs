@@ -14,11 +14,11 @@
     <div id="transactions"></div>
     <div id="Party_info"></div>
 
-    <button type="submit" class="btn-primary" id="callApiButton">Case Narative</button>
+    <button type="submit" class="btn-primary" id="callApiButton">Case Narrative</button>
     <div class="api-response-box"> 
-					<p><span id="apiResponse"></span></p>
-	</div>
-    <p hidden><span id="api_key"></span> </p>
+        <p><span id="chatgptResponse"></span></p>
+    </div>
+    <p hidden><span id="apiKeyContainer"></span> </p>
 
     <script>
         const myHeaders = new Headers();
@@ -38,12 +38,13 @@
             if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
                 const apiKey = vaMsgObj.data[0][0];
                 console.log('Fetched API Key:', apiKey);
-                document.getElementById("apiKeyContainer").textContent = 'API Key: ' + apiKey;
+                document.getElementById("apiKeyContainer").textContent = apiKey;
                 fetchInitialApiResponse(apiKey);
             } else {
                 document.getElementById("apiKeyContainer").textContent = "No API key available";
             }
         }
+
         // API Call to get alert information
         fetch("https://sasserver.demo.sas.com/svi-alert/alerts/b63203ba-d218-410d-b3fe-95108afb5208", requestOptions)
             .then(response => {
@@ -118,33 +119,31 @@
                     }).catch(error => console.error('Error:', error));
             }).catch(error => console.error('Error:', error));
 
-    document.getElementById("callApiButton").addEventListener("click", function() {
-            var apiKey = document.getElementById("api_key").textContent;
-	var apiUrl = "https://api.openai.com/v1/chat/completions";
+        document.getElementById("callApiButton").addEventListener("click", function() {
+            var apiKey = document.getElementById("apiKeyContainer").textContent;
+            var apiUrl = "https://api.openai.com/v1/chat/completions";
             
-           fetch(apiUrl, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					"Authorization": "Bearer " + apiKey
-				},
-				body: JSON.stringify({
-					"model": "gpt-3.5-turbo",
-					"messages": [{"role": "user", "content": "hello"
-				}]
-				})
-			})
-			.then(response => response.json())
-			.then(data => {
-				var content = data.choices[0].message.content;
-				document.getElementById("apiResponse").textContent  = content;
-			})
-			.catch(error => {
-				console.error("Error:", error);
-				document.getElementById("apiResponse").textContent = "Error occurred while fetching API data.";
-			});
-});
-
+            fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + apiKey
+                },
+                body: JSON.stringify({
+                    "model": "gpt-3.5-turbo",
+                    "messages": [{"role": "user", "content": "Provide a summary of the API responses displayed on the page."}]
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                var content = data.choices[0].message.content;
+                document.getElementById("chatgptResponse").textContent = content;
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById("chatgptResponse").textContent = "Error occurred while fetching API data.";
+            });
+        });
     </script>
 </body>
 </html>
