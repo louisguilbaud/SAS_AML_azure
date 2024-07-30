@@ -1,85 +1,43 @@
-<!DOCTYPE html>
-<!--
-Copyright 2018 SAS Institute Inc.
+const myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+myHeaders.append("Authorization", "eyJhbGciOiJSUzI1NiIsImprdSI6Imh0dHBzOi8vbG9jYWxob3N0L1NBU0xvZ29uL3Rva2VuX2tleXMiLCJraWQiOiJsZWdhY3ktdG9rZW4ta2V5IiwidHlwIjoiSldUIn0.eyJqdGkiOiIwZDBiZjExMDE1NTI0MmFiODZiODMwODAwMmQ2ODU4YyIsImF1dGhvcml0aWVzIjpbImNzX2ludGVybmFsX2RiX2FjY2VzcyIsInN2aXVzcnMiLCJjc19hbWxfZW1wbG95ZWVfYWNjZXNzIiwiY3NfYW1sX3NjZW5hcmlvX2FuYWx5c3QiLCJjc19lZmlsZXJfZGJfYWNjZXNzIiwiY3NfYW1sX2FkbWluaXN0cmF0b3IiLCJjc19pbnZlc3RpZ2F0b3JfZGJfYWNjZXNzX2VtcCIsImNzX2ludmVzdGlnYXRvcl9kYl9hY2Nlc3MiLCJjc19hbWxfdG1fc3RyYXRfYWNjZXNzIiwiY3NfYW1sX3FhX2FuYWx5c3QiLCJjc19hbWxfYXVkaXRvciIsInN2aWFkbXMiLCJjc19zY2VuYXJpb19hZG1pbmlzdHJhdG9yX2RiX2FjY2VzcyIsImNzX2FtbF9vcGVyYXRpb25zX21hbmFnZXIiLCJjc19jZGRfY3JyX2dyb3VwIiwic3ZpYXVkdCIsImNzX2FtbF9hbmFseXN0IiwiY3NfYW1sX2VmaWxlciIsImNzX2NkZF9oaWdoX3Jpc2tfY3VzdF9zdHJhdF9hY2Nlc3MiLCJjc19jZGRfbWVkaXVtX3Jpc2tfY3VzdF9zdHJhdF9hY2Nlc3MiLCJjc19hbWxfc2NlbmFyaW9fYWRtaW5pc3RyYXRvciIsImNzX2NkZF9hbmFseXN0IiwiY3NfYW1sX2ludmVzdGlnYXRvciIsImNzX2FtbF9kYl9hY2Nlc3MiLCJjc19hbWxfd2xfc3RyYXRfYWNjZXNzIiwiY3NfYW1sX21hbmFnZXIiLCJjc19hbWxldGxfZGJfYWNjZXNzX2VtcCIsInZzZGRuZ3MiLCJTQVNBZG1pbmlzdHJhdG9ycyIsImNzX2NkZF9wcm9tb3RlZF90b19lZGRfc3RyYXRfYWNjZXNzIiwiY3NfYmF0Y2hfZGJfYWNjZXNzX2VtcCIsImNzX2NkZF9sb3dfcmlza19jdXN0X3N0cmF0X2FjY2VzcyIsImNzX2ludGVybmFsX2RiX2FjY2Vzc19lbXAiLCJjc19lZmlsZXJfZGJfYWNjZXNzX2VtcCIsImNzX2FtbF90bV9ncm91cCJdLCJleHRfaWQiOiJ1aWQ9dml5YWFkbWluLG91PVBlb3BsZSxkYz1zYXMsZGM9Y29tIiwic3ViIjoiM2MwZTlkNjItNTY4MC00Y2UzLThjZTAtM2U4ZTE0MjFjZDZlIiwic2NvcGUiOlsiY2xpZW50cy5yZWFkIiwiY2xpZW50cy5zZWNyZXQiLCJ1YWEucmVzb3VyY2UiLCJvcGVuaWQiLCJ1YWEuYWRtaW4iLCJjbGllbnRzLmFkbWluIiwic2NpbS5yZWFkIiwidWFhLnVzZXIiLCJTQVNBZG1pbmlzdHJhdG9ycyIsImNsaWVudHMud3JpdGUiLCJzY2ltLndyaXRlIl0sImNsaWVudF9pZCI6InNhcy5lYyIsImNpZCI6InNhcy5lYyIsImF6cCI6InNhcy5lYyIsImdyYW50X3R5cGUiOiJwYXNzd29yZCIsInVzZXJfaWQiOiIzYzBlOWQ2Mi01NjgwLTRjZTMtOGNlMC0zZThlMTQyMWNkNmUiLCJvcmlnaW4iOiJsZGFwIiwidXNlcl9uYW1lIjoidml5YWFkbWluIiwiZW1haWwiOiJ2aXlhYWRtaW5AdXNlci5mcm9tLmxkYXAuY2YiLCJhdXRoX3RpbWUiOjE3MjIzMjk3MTAsInJldl9zaWciOiI0OWY2YmIwNyIsImlhdCI6MTcyMjMyOTcxMCwiZXhwIjoxNzIyMzMzMzEwLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0L1NBU0xvZ29uL29hdXRoL3Rva2VuIiwiemlkIjoidWFhIiwiYXVkIjpbInNjaW0iLCJjbGllbnRzIiwidWFhIiwib3BlbmlkIiwic2FzLmVjIl19.A4zYwFteE0cGC4UGKuQEDV9t6s13-abLEbBe9LD-fj32DkWqy8hvyh3DlWTT2dbGeyXpvldVJPfl_QBhLjel2uxHvLGGB1AWGftR5M6SFj-kWvZQsKDMLLJKzeeI4PDLFBzANjfKngr008cNOnorXWn4aqNBpW00EvUAg1MW0oAZnRJG_FRjmHGAr5NQNveQs4qbz71PQ2q50vkiCYPqv8ShjYgIGdGa54_D4b7Tbulf0a6qwl4lHUoxML_VCaEJaRnrC7qgUEkytoZZCCuWZF0gkujCJf5Am1LkxkYefvKK25j8W9zCYXgNwL4-zJWQ-x1d_76-r4fXl9qK5OnKjA");
+myHeaders.append("Cookie", "sas-ingress-nginx=465a78167134495424fe1d90f9dbaa56|12b794cb5ca279bec1edb7e510234855");
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+const raw = JSON.stringify({
+  "edgeTypes": [
+    "social_link"
+  ],
+  "depth": 1,
+  "extendedFormat": true,
+  "graphObjectIds": [
+    {
+      "type": "PTY",
+      "id": "10056215"
+    },
+    {
+      "type": "alerts",
+      "id": "b63203ba-d218-410d-b3fe-95108afb5208"
+    }
+  ],
+  "query": {
+    "type": "object",
+    "objectIds": [
+      {
+        "type": "PTY",
+        "id": "10056215"
+      }
+    ]
+  }
+});
 
-    https://www.apache.org/licenses/LICENSE-2.0
+const requestOptions = {
+  method: "POST",
+  headers: myHeaders,
+  body: raw,
+  redirect: "follow"
+};
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
--->
-<html>
-  <head>
-	<script src='./javascripts/sas/util/messagingUtil.js'></script>
-
-     <style>
-
-		html, body, #ddc_chart {
-			margin: 0px;
-			padding: 0px;
-			height: 100%;
-			width: 100%;
-		}
-		
-		#ddc_chart {
-            position: relative;
-			border-style: none;
-			border-width: 0px;
-		}
-	
-		pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
-		.string { color: green; }
-		.number { color: blue; }
-		.boolean { color: darkorange; }
-		.null { color: magenta; }
-		.key { color: red; }
-		
-     </style>
-	
-     <script type="text/javascript">
-		"use strict";
-
-        va.messagingUtil.setOnDataReceivedCallback(onDataReceived);
-
-		function syntaxHighlight(json) {
-			if (typeof json != 'string') {
-				 json = JSON.stringify(json, undefined, 4);
-			}
-			json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-			return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-				var cls = 'number';
-				if (/^"/.test(match)) {
-					if (/:$/.test(match)) {
-						cls = 'key';
-					} else {
-						cls = 'string';
-					}
-				} else if (/true|false/.test(match)) {
-					cls = 'boolean';
-				} else if (/null/.test(match)) {
-					cls = 'null';
-				}
-				return '<span class="' + cls + '">' + match + '</span>';
-			});
-		}
-
-		// Retrieve data and begin processing
-        function onDataReceived(resultData)
-        {
-            //process result data  
-            var json = syntaxHighlight(resultData);
-            document.getElementById('ddc_chart').innerHTML = "<pre>" + json + "</pre>";
-		}
-
-     </script>
-  </head>
-  <body>
-     <div id="ddc_chart"></div>
-  </body>
-</html>
+fetch("https://sasserver.demo.sas.com/svi-sand/traversals?calculateMetrics=false&expansionLimit=2000", requestOptions)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.error(error))
