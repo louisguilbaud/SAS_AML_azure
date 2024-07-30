@@ -8,46 +8,49 @@
 
 
     <script>
-var settings = {
-  "url": "https://sasserver.demo.sas.com/svi-sand/traversals?calculateMetrics=false&expansionLimit=2000",
-  "method": "POST",
-  "timeout": 0,
-  "headers": {
-    "Content-Type": "application/json",
-    "Authorization": "eyJhbGciOiJSUzI1NiIsImprdSI6Imh0dHBzOi8vbG9jYWxob3N0L1NBU0xvZ29uL3Rva2VuX2tleXMiLCJraWQiOiJsZWdhY3ktdG9rZW4ta2V5IiwidHlwIjoiSldUIn0.eyJqdGkiOiI3MWVhYzM3N2Q4ZGM0MzBkODIyZDVjYjQyNTcxNDJlOSIsImF1dGhvcml0aWVzIjpbImNzX2ludGVybmFsX2RiX2FjY2VzcyIsInN2aXVzcnMiLCJjc19hbWxfZW1wbG95ZWVfYWNjZXNzIiwiY3NfYW1sX3NjZW5hcmlvX2FuYWx5c3QiLCJjc19lZmlsZXJfZGJfYWNjZXNzIiwiY3NfYW1sX2FkbWluaXN0cmF0b3IiLCJjc19pbnZlc3RpZ2F0b3JfZGJfYWNjZXNzX2VtcCIsImNzX2ludmVzdGlnYXRvcl9kYl9hY2Nlc3MiLCJjc19hbWxfdG1fc3RyYXRfYWNjZXNzIiwiY3NfYW1sX3FhX2FuYWx5c3QiLCJjc19hbWxfYXVkaXRvciIsInN2aWFkbXMiLCJjc19zY2VuYXJpb19hZG1pbmlzdHJhdG9yX2RiX2FjY2VzcyIsImNzX2FtbF9vcGVyYXRpb25zX21hbmFnZXIiLCJjc19jZGRfY3JyX2dyb3VwIiwic3ZpYXVkdCIsImNzX2FtbF9hbmFseXN0IiwiY3NfYW1sX2VmaWxlciIsImNzX2NkZF9oaWdoX3Jpc2tfY3VzdF9zdHJhdF9hY2Nlc3MiLCJjc19jZGRfbWVkaXVtX3Jpc2tfY3VzdF9zdHJhdF9hY2Nlc3MiLCJjc19hbWxfc2NlbmFyaW9fYWRtaW5pc3RyYXRvciIsImNzX2NkZF9hbmFseXN0IiwiY3NfYW1sX2ludmVzdGlnYXRvciIsImNzX2FtbF9kYl9hY2Nlc3MiLCJjc19hbWxfd2xfc3RyYXRfYWNjZXNzIiwiY3NfYW1sX21hbmFnZXIiLCJjc19hbWxldGxfZGJfYWNjZXNzX2VtcCIsInZzZGRuZ3MiLCJTQVNBZG1pbmlzdHJhdG9ycyIsImNzX2NkZF9wcm9tb3RlZF90b19lZGRfc3RyYXRfYWNjZXNzIiwiY3NfYmF0Y2hfZGJfYWNjZXNzX2VtcCIsImNzX2NkZF9sb3dfcmlza19jdXN0X3N0cmF0X2FjY2VzcyIsImNzX2ludGVybmFsX2RiX2FjY2Vzc19lbXAiLCJjc19lZmlsZXJfZGJfYWNjZXNzX2VtcCIsImNzX2FtbF90bV9ncm91cCJdLCJleHRfaWQiOiJ1aWQ9dml5YWFkbWluLG91PVBlb3BsZSxkYz1zYXMsZGM9Y29tIiwic3ViIjoiM2MwZTlkNjItNTY4MC00Y2UzLThjZTAtM2U4ZTE0MjFjZDZlIiwic2NvcGUiOlsiY2xpZW50cy5yZWFkIiwiY2xpZW50cy5zZWNyZXQiLCJ1YWEucmVzb3VyY2UiLCJvcGVuaWQiLCJ1YWEuYWRtaW4iLCJjbGllbnRzLmFkbWluIiwic2NpbS5yZWFkIiwidWFhLnVzZXIiLCJTQVNBZG1pbmlzdHJhdG9ycyIsImNsaWVudHMud3JpdGUiLCJzY2ltLndyaXRlIl0sImNsaWVudF9pZCI6InNhcy5lYyIsImNpZCI6InNhcy5lYyIsImF6cCI6InNhcy5lYyIsImdyYW50X3R5cGUiOiJwYXNzd29yZCIsInVzZXJfaWQiOiIzYzBlOWQ2Mi01NjgwLTRjZTMtOGNlMC0zZThlMTQyMWNkNmUiLCJvcmlnaW4iOiJsZGFwIiwidXNlcl9uYW1lIjoidml5YWFkbWluIiwiZW1haWwiOiJ2aXlhYWRtaW5AdXNlci5mcm9tLmxkYXAuY2YiLCJhdXRoX3RpbWUiOjE3MjIzMzAxMjEsInJldl9zaWciOiI0OWY2YmIwNyIsImlhdCI6MTcyMjMzMDEyMSwiZXhwIjoxNzIyMzMzNzIxLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0L1NBU0xvZ29uL29hdXRoL3Rva2VuIiwiemlkIjoidWFhIiwiYXVkIjpbInNjaW0iLCJjbGllbnRzIiwidWFhIiwib3BlbmlkIiwic2FzLmVjIl19.Ed-2fN8EfanLbYbXxYYWLg6-9C_zRfmmlEyZKoVySyot4Yb9mMcsdN4ISqF6R9AxlAJEkplzlFtv6dGKSV4WDp2kCjzpw7zA84hRzNgEVq3YElshHBgHZgOUbOipSDYwxVqETAfo0zTRnoSuWfXW9p3bhyhBYy_fnxly-rfO2Ww2jzn7PoAtOQ8hM6hP-V2xKNt7C2BRc_JDg05eblvNk-yOFlszP9z82kHOATorQcpKdfYSInDnRW1EmOwhBrMx_2O8eG57U1XKxmIvy-Uj13c6qPZ0vKM3Tv0A3SLgJf_AId7hFQQ4aMAuATDMR_yiHUQBdhu-l8HEtLaCQPH1og",
-    "Cookie": "sas-ingress-nginx=465a78167134495424fe1d90f9dbaa56|12b794cb5ca279bec1edb7e510234855"
-  },
-  "data": JSON.stringify({
-    "edgeTypes": [
-      "social_link"
-    ],
-    "depth": 1,
-    "extendedFormat": true,
-    "graphObjectIds": [
+const myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+myHeaders.append("Authorization", "eyJhbGciOiJSUzI1NiIsImprdSI6Imh0dHBzOi8vbG9jYWxob3N0L1NBU0xvZ29uL3Rva2VuX2tleXMiLCJraWQiOiJsZWdhY3ktdG9rZW4ta2V5IiwidHlwIjoiSldUIn0.eyJqdGkiOiJjZDllZTE4NTFkMzc0YTVlOTM1NzY2ZWNlM2VkMmUyMyIsImF1dGhvcml0aWVzIjpbImNzX2ludGVybmFsX2RiX2FjY2VzcyIsInN2aXVzcnMiLCJjc19hbWxfZW1wbG95ZWVfYWNjZXNzIiwiY3NfYW1sX3NjZW5hcmlvX2FuYWx5c3QiLCJjc19lZmlsZXJfZGJfYWNjZXNzIiwiY3NfYW1sX2FkbWluaXN0cmF0b3IiLCJjc19pbnZlc3RpZ2F0b3JfZGJfYWNjZXNzX2VtcCIsImNzX2ludmVzdGlnYXRvcl9kYl9hY2Nlc3MiLCJjc19hbWxfdG1fc3RyYXRfYWNjZXNzIiwiY3NfYW1sX3FhX2FuYWx5c3QiLCJjc19hbWxfYXVkaXRvciIsInN2aWFkbXMiLCJjc19zY2VuYXJpb19hZG1pbmlzdHJhdG9yX2RiX2FjY2VzcyIsImNzX2FtbF9vcGVyYXRpb25zX21hbmFnZXIiLCJjc19jZGRfY3JyX2dyb3VwIiwic3ZpYXVkdCIsImNzX2FtbF9hbmFseXN0IiwiY3NfYW1sX2VmaWxlciIsImNzX2NkZF9oaWdoX3Jpc2tfY3VzdF9zdHJhdF9hY2Nlc3MiLCJjc19jZGRfbWVkaXVtX3Jpc2tfY3VzdF9zdHJhdF9hY2Nlc3MiLCJjc19hbWxfc2NlbmFyaW9fYWRtaW5pc3RyYXRvciIsImNzX2NkZF9hbmFseXN0IiwiY3NfYW1sX2ludmVzdGlnYXRvciIsImNzX2FtbF9kYl9hY2Nlc3MiLCJjc19hbWxfd2xfc3RyYXRfYWNjZXNzIiwiY3NfYW1sX21hbmFnZXIiLCJjc19hbWxldGxfZGJfYWNjZXNzX2VtcCIsInZzZGRuZ3MiLCJTQVNBZG1pbmlzdHJhdG9ycyIsImNzX2NkZF9wcm9tb3RlZF90b19lZGRfc3RyYXRfYWNjZXNzIiwiY3NfYmF0Y2hfZGJfYWNjZXNzX2VtcCIsImNzX2NkZF9sb3dfcmlza19jdXN0X3N0cmF0X2FjY2VzcyIsImNzX2ludGVybmFsX2RiX2FjY2Vzc19lbXAiLCJjc19lZmlsZXJfZGJfYWNjZXNzX2VtcCIsImNzX2FtbF90bV9ncm91cCJdLCJleHRfaWQiOiJ1aWQ9dml5YWFkbWluLG91PVBlb3BsZSxkYz1zYXMsZGM9Y29tIiwic3ViIjoiM2MwZTlkNjItNTY4MC00Y2UzLThjZTAtM2U4ZTE0MjFjZDZlIiwic2NvcGUiOlsiY2xpZW50cy5yZWFkIiwiY2xpZW50cy5zZWNyZXQiLCJ1YWEucmVzb3VyY2UiLCJvcGVuaWQiLCJ1YWEuYWRtaW4iLCJjbGllbnRzLmFkbWluIiwic2NpbS5yZWFkIiwidWFhLnVzZXIiLCJTQVNBZG1pbmlzdHJhdG9ycyIsImNsaWVudHMud3JpdGUiLCJzY2ltLndyaXRlIl0sImNsaWVudF9pZCI6InNhcy5lYyIsImNpZCI6InNhcy5lYyIsImF6cCI6InNhcy5lYyIsImdyYW50X3R5cGUiOiJwYXNzd29yZCIsInVzZXJfaWQiOiIzYzBlOWQ2Mi01NjgwLTRjZTMtOGNlMC0zZThlMTQyMWNkNmUiLCJvcmlnaW4iOiJsZGFwIiwidXNlcl9uYW1lIjoidml5YWFkbWluIiwiZW1haWwiOiJ2aXlhYWRtaW5AdXNlci5mcm9tLmxkYXAuY2YiLCJhdXRoX3RpbWUiOjE3MjIzMzA0MDYsInJldl9zaWciOiI0OWY2YmIwNyIsImlhdCI6MTcyMjMzMDQwNiwiZXhwIjoxNzIyMzM0MDA2LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0L1NBU0xvZ29uL29hdXRoL3Rva2VuIiwiemlkIjoidWFhIiwiYXVkIjpbInNjaW0iLCJjbGllbnRzIiwidWFhIiwib3BlbmlkIiwic2FzLmVjIl19.Zqw8IRlnShvk756194lj-lY2atfhsR4BAAxssOUKUezGHEAPtTtE3qKgMEs-1QcSx-6uweHpJbFWknnGyiRO9GCiIK9vdesxYvbgAdxzK-Jp4ReLeg0RoCenwqCaK2KCMwMII3QJ3AQBC7uqTx-5ikSbKPnfrKHLC8Rj9lb1gNNF04SZmAM2B9_8RrxqDGlN_KMOvpGs22r0UNl_ludWwSV9FDKvqDd9zWfoiVaa58aq3LlivmxeH6K73on_hNwhfQ4tz65sB8HTCuw6rFf4Q1ACvdI8uwFFSwhOO47ZCkVcSldQk1uQcKEumEE5WQLVW_ZhhtRt2ShRfZIlFYvmBQ");
+myHeaders.append("Cookie", "sas-ingress-nginx=465a78167134495424fe1d90f9dbaa56|12b794cb5ca279bec1edb7e510234855");
+
+const raw = JSON.stringify({
+  "edgeTypes": [
+    "social_link"
+  ],
+  "depth": 1,
+  "extendedFormat": true,
+  "graphObjectIds": [
+    {
+      "type": "PTY",
+      "id": "10056215"
+    },
+    {
+      "type": "alerts",
+      "id": "b63203ba-d218-410d-b3fe-95108afb5208"
+    }
+  ],
+  "query": {
+    "type": "object",
+    "objectIds": [
       {
         "type": "PTY",
         "id": "10056215"
-      },
-      {
-        "type": "alerts",
-        "id": "b63203ba-d218-410d-b3fe-95108afb5208"
       }
-    ],
-    "query": {
-      "type": "object",
-      "objectIds": [
-        {
-          "type": "PTY",
-          "id": "10056215"
-        }
-      ]
-    }
-  }),
+    ]
+  }
+});
+
+const requestOptions = {
+  method: "POST",
+  headers: myHeaders,
+  body: raw,
+  redirect: "follow"
 };
 
-$.ajax(settings).done(function (response) {
-  console.log(response);
-});
+fetch("https://sasserver.demo.sas.com/svi-sand/traversals?calculateMetrics=false&expansionLimit=2000", requestOptions)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.error(error));
     </script>
 </body>
 </html>
