@@ -130,7 +130,7 @@
                     "Authorization": "Bearer " + apiKey
                 },
                 body: JSON.stringify({
-                    "model": "gpt-3.5-turbo",
+                    "model": "gpt-4o",
                     "messages": [{"role": "user", "content": "You are here to help an AML investator of a bank. In json format there is a list of scenarios that trigger (also called scenario fired event) a customer, is personal information and the list of his transactions. I want you to give recomandation for each scenario fired event on where the investigator should look first to fine the suspicious activity. write the scenario name and then the recomandation for the trigered scenario. You can give the transactions that are suspicious for a specific scenario by giving the transaction ID. Try to give as more as details as possible.  At the very end give a recommandation on the total alert considering all the information and espeacally considering the KYC profile of the customer: Filtered Scenario Fired Events:" + scenario_fired_event + "Filtered transactions:" +transactions + "Personal information on the customer" + Party_info 
 			}]
                 })
