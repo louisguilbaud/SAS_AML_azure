@@ -6,7 +6,6 @@
 <body>
     <h1>API Response</h1>
 
-
     <script>
 const myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
@@ -48,9 +47,14 @@ const requestOptions = {
 };
 
 fetch("https://sasserver.demo.sas.com/svi-sand/traversals?calculateMetrics=false&expansionLimit=2000", requestOptions)
-  .then((response) => response.text())
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    return response.text();
+  })
   .then((result) => console.log(result))
-  .catch((error) => console.error(error));
+  .catch((error) => console.error('Error:', error));
     </script>
 </body>
 </html>
