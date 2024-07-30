@@ -13,6 +13,7 @@
     <div id="scenario_fired_event"></div>
     <div id="transactions"></div>
     <div id="Party_info"></div>
+    <div id="network_info</div>
 
     <button type="submit" class="btn-primary" id="callApiButton">Case Narrative</button>
     <div class="api-response-box"> 
@@ -113,6 +114,40 @@
                                         const KYC_data = data.data;
                                         const jsonResponse = JSON.stringify(KYC_data, null, 2);
                                         document.getElementById("Party_info").innerHTML = jsonResponse;
+
+					fetch(`https://sasserver.demo.sas.com/svi-sand/traversals?calculateMetrics=false&expansionLimit=2000`, {
+						    method: 'POST',
+						    headers: {
+						        'Content-Type': 'application/json'
+						    },
+						    body: JSON.stringify({
+							    edgeTypes: ["social_link"],
+							    depth: 1,
+							    extendedFormat: true,
+							    graphObjectIds: [
+							        { type: "PTY", id: "10056215" },
+							        { type: "alerts", id: "b63203ba-d218-410d-b3fe-95108afb5208" }
+							    ],
+							    query: {
+							        type: "object",
+							        objectIds: [
+							            { type: "PTY", id: "10056215" }
+							        ]
+							    }
+							})
+						})
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error('Network response was not ok ' + response.statusText);
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(data => {
+                                        const network_data = data.data;
+                                        const jsonResponse = JSON.stringify(network_data, null, 2);
+                                        document.getElementById("network_info").innerHTML = jsonResponse;
+                                    }).catch(error => console.error('Error:', error));
+
                                     }).catch(error => console.error('Error:', error));
                             }).catch(error => console.error('Error:', error));
                     }).catch(error => console.error('Error:', error));
