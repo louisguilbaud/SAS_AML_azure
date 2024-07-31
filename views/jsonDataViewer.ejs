@@ -9,38 +9,11 @@
     <script>
 const myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
-myHeaders.append("Authorization", "eyJhbGciOiJSUzI1NiIsImprdSI6Imh0dHBzOi8vbG9jYWxob3N0L1NBU0xvZ29uL3Rva2VuX2tleXMiLCJraWQiOiJsZWdhY3ktdG9rZW4ta2V5IiwidHlwIjoiSldUIn0.eyJzdWIiOiIzYzBlOWQ2Mi01NjgwLTRjZTMtOGNlMC0zZThlMTQyMWNkNmUiLCJhdWQiOlsic2FzLmVjIl0sImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3QvU0FTTG9nb24vb2F1dGgvdG9rZW4iLCJleHAiOjE3MjIzNDY4ODAsImlhdCI6MTcyMjM0MzI4MCwiYW1yIjpbImV4dCIsInB3ZCJdLCJhenAiOiJzYXMuZWMiLCJzY29wZSI6WyJvcGVuaWQiXSwiZW1haWwiOiJ2aXlhYWRtaW5AdXNlci5mcm9tLmxkYXAuY2YiLCJ6aWQiOiJ1YWEiLCJvcmlnaW4iOiJsZGFwIiwianRpIjoiMTFhZjY5MGI1ZTNkNDJjYmE5OTMxNmIzNmMwZWZlY2QiLCJwcmV2aW91c19sb2dvbl90aW1lIjoxNzIyMzQzMTU3MTk4LCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImNsaWVudF9pZCI6InNhcy5lYyIsImNpZCI6InNhcy5lYyIsImdyYW50X3R5cGUiOiJwYXNzd29yZCIsInVzZXJfbmFtZSI6InZpeWFhZG1pbiIsInJldl9zaWciOiJhOWUyZDRiZiIsInVzZXJfaWQiOiIzYzBlOWQ2Mi01NjgwLTRjZTMtOGNlMC0zZThlMTQyMWNkNmUiLCJhdXRoX3RpbWUiOjE3MjIzNDMyODB9.GVubXxzEjgHtZjwzP_J5ACRNsTkAFA7gT_7o90gDFqtlaX3YdH1Mektb3md6EpLr2QY0hGL1p2A2EhpCQ03f-EyI-1XM_aNxVxk1e7n1JpN5j2sK14WP34Kw0c_g7dJzPbDMXFpNjcZQmfQz0PF8TZGVTKCjGfuJi0HMi0ODTBf0TP2mZtopqLHx45KA-bUyPV1Zyauy5B0NBgFvmi-_y3ummRqNgVVD9f6ZYaR2eBA-fVl0R8Wse5H5X4KKZk1VyTjZohI6_u2Tp6kGfVKQ4wzx1bi_AEvOwr6lIGx0IPKtIkunPPEHIKfJrkFLPtmbr2iSlGTWP4ox-PtaUTTi1w");
 myHeaders.append("Cookie", "sas-ingress-nginx=465a78167134495424fe1d90f9dbaa56|12b794cb5ca279bec1edb7e510234855");
 
-const raw = JSON.stringify({
-  "edgeTypes": [
-    "social_link"
-  ],
-  "depth": 1,
-  "extendedFormat": true,
-  "graphObjectIds": [
-    {
-      "type": "PTY",
-      "id": "10056215"
-    },
-    {
-      "type": "alerts",
-      "id": "b63203ba-d218-410d-b3fe-95108afb5208"
-    }
-  ],
-  "query": {
-    "type": "object",
-    "objectIds": [
-      {
-        "type": "PTY",
-        "id": "10056215"
-      }
-    ]
-  }
-});
 
 const requestOptions = {
-  method: "POST",
+  method: "GET",
   headers: myHeaders,
   body: raw,
   redirect: "follow"
