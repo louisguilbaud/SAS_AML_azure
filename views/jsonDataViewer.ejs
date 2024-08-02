@@ -124,7 +124,7 @@
 											const jsonResponse = JSON.stringify(KYC_data, null, 2);
 											document.getElementById("Party_info").innerHTML = jsonResponse;
 											
-											const getResponseText = await data.text();
+											const getResponseText = data.text();
 											document.getElementById('getResponse').textContent = getResponseText;
 
 											const csrfToken = data.headers.get('X-CSRF-TOKEN');
@@ -160,8 +160,6 @@
 												}
 											};
 
-											try {
-												const csrfToken = await getCsrfToken();
 
 												const myHeaderspost = new Headers();
 												myHeaderspost.append("Content-Type", "application/json");
