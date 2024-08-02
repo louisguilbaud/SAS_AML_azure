@@ -180,7 +180,7 @@
 														return response.json();
 													})
 													.then(data => {
-														const postResponseText = await data.text();
+														const postResponseText = data.text();
 														document.getElementById('postResponse').textContent = postResponseText;
 											}).catch(error => console.error('Error:', error));	
 										}).catch(error => console.error('Error:', error));
@@ -220,94 +220,3 @@
     </script>
 </body>
 </html>
-
-
-async function getCsrfToken() {
-            const url = 'https://sasserver.demo.sas.com/svi-sand/traversals?calculateMetrics=false&expansionLimit=2000';
-
-            try {
-                const response = await fetch(url, {
-                    method: 'GET',
-                    credentials: 'include' // Include credentials for same-origin requests
-                });
-
-                const getResponseText = await response.text();
-                document.getElementById('getResponse').textContent = getResponseText;
-
-                const csrfToken = response.headers.get('X-CSRF-TOKEN');
-                if (!csrfToken) {
-                    console.error('CSRF token not found in response headers');
-                    throw new Error('CSRF token not found in response headers');
-                }
-
-                return csrfToken;
-            } catch (error) {
-                document.getElementById('getResponse').textContent = `Error: ${error}`;
-                console.error('Error in getCsrfToken:', error);
-                throw error;
-            }
-        }
-
-        async function postData() {
-            const url = 'https://sasserver.demo.sas.com/svi-sand/traversals?calculateMetrics=false&expansionLimit=2000';
-            const data = {
-                "edgeTypes": [
-                    "social_link"
-                ],
-                "depth": 2,
-                "extendedFormat": true,
-                "graphObjectIds": [
-                    {
-                        "type": "PTY",
-                        "id": "10056215"
-                    },
-                    {
-                        "type": "alerts",
-                        "id": "b63203ba-d218-410d-b3fe-95108afb5208"
-                    }
-                ],
-                "query": {
-                    "type": "object",
-                    "objectIds": [
-                        {
-                            "type": "PTY",
-                            "id": "10056215"
-                        }
-                    ]
-                }
-            };
-
-            try {
-                const csrfToken = await getCsrfToken();
-
-                const myHeaders = new Headers();
-                myHeaders.append("Content-Type", "application/json");
-                myHeaders.append("Cookie", "sas-ingress-nginx=465a78167134495424fe1d90f9dbaa56|12b794cb5ca279bec1edb7e510234855");
-                myHeaders.append("X-CSRF-TOKEN", csrfToken);
-
-                const requestOptions = {
-                    method: "POST",
-                    headers: myHeaders,
-                    body: JSON.stringify(data),
-                    redirect: "follow"
-                };
-
-                const response = await fetch(url, requestOptions);
-
-                const postResponseText = await response.text();
-                document.getElementById('postResponse').textContent = postResponseText;
-
-                if (!response.ok) {
-                    console.error('Failed to post data:', response.status, response.statusText);
-                    throw new Error('Failed to post data');
-                }
-
-                console.log(postResponseText);
-            } catch (error) {
-                document.getElementById('postResponse').textContent = `Error: ${error}`;
-                console.error('Error in postData:', error);
-            }
-        }
-
-        // Call the function to make the POST request
-        postData();
