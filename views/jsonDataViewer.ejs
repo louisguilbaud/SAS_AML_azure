@@ -10,7 +10,7 @@
 const myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
 myHeaders.append("Cookie", "sas-ingress-nginx=465a78167134495424fe1d90f9dbaa56|12b794cb5ca279bec1edb7e510234855");
-//myHeaders.append("X-CSRF-TOKEN","cabd9d01-a25b-4447-8346-433fab1e1f2b");
+myHeaders.append("X-CSRF-TOKEN","8e02f3cd-f5cf-42ec-8892-3118ac050f69");
 
 const raw = JSON.stringify({
   "edgeTypes": [
@@ -43,6 +43,7 @@ const raw = JSON.stringify({
 const requestOptions = {
   method: "GET",
   headers: myHeaders,
+  body:raw,
   redirect: "follow"
 };
 
