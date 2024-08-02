@@ -16,11 +16,6 @@
                     credentials: 'include' // Include credentials for same-origin requests
                 });
 
-                if (!response.ok) {
-                    console.error('Failed to fetch CSRF token:', response.status, response.statusText);
-                    throw new Error('Failed to fetch CSRF token');
-                }
-
                 const csrfToken = response.headers.get('X-CSRF-TOKEN');
                 if (!csrfToken) {
                     console.error('CSRF token not found in response headers');
