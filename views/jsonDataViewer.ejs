@@ -29,7 +29,11 @@
             })
             .then(data => {
                 document.getElementById("apiResponse").innerHTML = data;
-        
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            document.getElementById("chatgptResponse").textContent = "Error occurred while fetching API data.";
+            });
             
        
     </script>
