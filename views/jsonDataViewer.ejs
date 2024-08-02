@@ -1,21 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src='./javascripts/sas/util/messagingUtil.js'></script>
+    <script src="./javascripts/jquery/jquery.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>API Response</title>
 </head>
 <body>
     <h1>API Response</h1>
-    <div>
-        <h2>GET Request Response</h2>
-        <pre id="getResponse"></pre>
+    <div id="apiResponse"></div>
+    <div id="scenario_fired_event"></div>
+    <div id="transactions"></div>
+    <div id="Party_info"></div>
+	<div id="postResponse"></div>
+
+    <button type="submit" class="btn-primary" id="callApiButton">Case Narrative</button>
+    <div class="api-response-box"> 
+        <p><span id="chatgptResponse"></span></p>
     </div>
-    <div>
-        <h2>POST Request Response</h2>
-        <pre id="postResponse"></pre>
-    </div>
+    <p hidden><span id="apiKeyContainer"></span></p>
 
     <script>
-        async function getCsrfToken() {
+        const myHeaders = new Headers();
+        myHeaders.append("Cookie", "sas-ingress-nginx=6866adc2289a112d6ea7fd0775261540|f0e9e5d83f1b459459b54939af4feb2b");
+
+        const requestOptions = {
+            method: "GET",
+            headers: myHeaders,
+            redirect: "follow"
+        };
+
+        "use strict";
+        va.messagingUtil.setOnDataReceivedCallback(updateURL);
+
+        function updateURL(vaMsgObj) {
+            console.log('Received vaMsgObj:', vaMsgObj);
+            if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
+                const apiKey = vaMsgObj.data[0][0];
+                console.log('Fetched API Key:', apiKey);
+                document.getElementById("apiKeyContainer").textContent = apiKey;
+            } else {
+                document.getElementById("apiKeyContainer").textContent = "No API key available";
+            }
+        }
+
+        // API Call to get alert information
+        fetch("https://sasserver.demo.sas.com/svi-alert/alerts/b63203ba-d218-410d-b3fe-95108afb5208", requestOptions)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const currentAlertingEventId = data.currentAlertingEventId;
+                const actionableEntityId = data.actionableEntityId;
+                console.log(currentAlertingEventId);
+                const jsonResponse = JSON.stringify(data, null, 2);
+                document.getElementById("apiResponse").innerHTML = jsonResponse;
+
+                fetch(`https://sasserver.demo.sas.com/svi-alert/alertingEvents/${currentAlertingEventId}`, requestOptions)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok ' + response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.scenarioFiredEvents && Array.isArray(data.scenarioFiredEvents)) {
+                            const filteredScenarioFiredEvents = data.scenarioFiredEvents.map(event => ({
+                                scenarioName: event.scenarioName,
+                                scenarioDescription: event.scenarioDescription,
+                                messageTemplateText: event.messageTemplateText
+                            }));
+                            const filteredJson = JSON.stringify(filteredScenarioFiredEvents, null, 2);
+                            document.getElementById("scenario_fired_event").innerHTML = filteredJson;
+                        } else {
+                            console.error('scenarioFiredEvents is not defined or not an array:', data.scenarioFiredEvents);
+                        }
+
+                        fetch(`https://sasserver.demo.sas.com/amlCore/transactions?entityLevelCode=PTY&entityNumber=${actionableEntityId}`, requestOptions)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok ' + response.statusText);
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                if (data.items && Array.isArray(data.items)) {
+                                    const filteredTransactions = data.items.map(transaction => ({
+                                        transactionNumber: transaction.transactionNumber,
+                                        primaryMediumDesc: transaction.primaryMediumDesc,
+                                        secondaryMediumDesc: transaction.secondaryMediumDesc,
+                                        mechanismDesc: transaction.mechanismDesc,
+                                        currencyAmount: transaction.currencyAmount,
+                                        transactionCDIDesc: transaction.transactionCDIDesc,
+                                    }));
+                                    const filteredJsonTrans = JSON.stringify(filteredTransactions, null, 2);
+                                    document.getElementById("transactions").innerHTML = filteredJsonTrans;
+                                } else {
+                                    console.error('Transaction details result.items is not defined or not an array:', result.items);
+                                }
+
+                                fetch(`https://sasserver.demo.sas.com/SASVisualInvestigator/pages/PTY/${actionableEntityId}`, requestOptions)
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error('Network response was not ok ' + response.statusText);
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(data => {
+                                        const KYC_data = data.data;
+                                        const jsonResponse = JSON.stringify(KYC_data, null, 2);
+                                        document.getElementById("Party_info").innerHTML = jsonResponse;
+										
+									fetch('https://sasserver.demo.sas.com/svi-sand/traversals?calculateMetrics=false&expansionLimit=2000', {
+																																				method: 'GET',
+																																				credentials: 'include' // Include credentials for same-origin requests
+																																			})
+										.then(data => {
+											const KYC_data = data.data;
+											const jsonResponse = JSON.stringify(KYC_data, null, 2);
+											document.getElementById("Party_info").innerHTML = jsonResponse;
+											
+											const getResponseText = await data.text();
+											document.getElementById('getResponse').textContent = getResponseText;
+
+											const csrfToken = data.headers.get('X-CSRF-TOKEN');
+											if (!csrfToken) {
+												console.error('CSRF token not found in response headers');
+												throw new Error('CSRF token not found in response headers');
+											}	
+											return csrfToken;
+											const datapost = {
+												"edgeTypes": [
+													"social_link"
+												],
+												"depth": 2,
+												"extendedFormat": true,
+												"graphObjectIds": [
+													{
+														"type": "PTY",
+														"id": "10056215"
+													},
+													{
+														"type": "alerts",
+														"id": "b63203ba-d218-410d-b3fe-95108afb5208"
+													}
+												],
+												"query": {
+													"type": "object",
+													"objectIds": [
+														{
+															"type": "PTY",
+															"id": "10056215"
+														}
+													]
+												}
+											};
+
+											try {
+												const csrfToken = await getCsrfToken();
+
+												const myHeaderspost = new Headers();
+												myHeaderspost.append("Content-Type", "application/json");
+												myHeaderspost.append("Cookie", "sas-ingress-nginx=465a78167134495424fe1d90f9dbaa56|12b794cb5ca279bec1edb7e510234855");
+												myHeaderspost.append("X-CSRF-TOKEN", csrfToken);
+
+												const requestOptionspost = {
+													method: "POST",
+													headers: myHeaderspost,
+													body: JSON.stringify(datapost),
+													redirect: "follow"
+												};
+											fetch('https://sasserver.demo.sas.com/svi-sand/traversals?calculateMetrics=false&expansionLimit=2000', requestOptionspost)
+												.then(response => {
+														if (!response.ok) {
+															throw new Error('Network response was not ok ' + response.statusText);
+														}
+														return response.json();
+													})
+													.then(data => {
+														const postResponseText = await data.text();
+														document.getElementById('postResponse').textContent = postResponseText;
+											}).catch(error => console.error('Error:', error));	
+										}).catch(error => console.error('Error:', error));
+										}).catch(error => console.error('Error:', error));
+                                    }).catch(error => console.error('Error:', error));
+                                    }).catch(error => console.error('Error:', error));
+                            }).catch(error => console.error('Error:', error));
+                    }).catch(error => console.error('Error:', error));
+            }).catch(error => console.error('Error:', error));
+
+        document.getElementById("callApiButton").addEventListener("click", function() {
+            var apiKey = document.getElementById("apiKeyContainer").textContent;
+            var apiUrl = "https://api.openai.com/v1/chat/completions";
+            
+            fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + apiKey
+                },
+                body: JSON.stringify({
+                    "model": "gpt-4o",
+                    "messages": [{"role": "user", "content": "You are here to help an AML investator of a bank. In json format there is a list of scenarios that trigger (also called scenario fired event) a customer, is personal information and the list of his transactions. I want you to give recomandation for each scenario fired event on where the investigator should look first to fine the suspicious activity. write the scenario name and then the recomandation for the trigered scenario. You can give the transactions that are suspicious for a specific scenario by giving the transaction ID. Try to give as more as details as possible.  At the very end give a recommandation on the total alert considering all the information and espeacally considering the KYC profile of the customer: Filtered Scenario Fired Events:" + scenario_fired_event + "Filtered transactions:" +transactions + "Personal information on the customer" + Party_info 
+			}]
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                var content = data.choices[0].message.content;
+                document.getElementById("chatgptResponse").textContent = content;
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById("chatgptResponse").textContent = "Error occurred while fetching API data.";
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+async function getCsrfToken() {
             const url = 'https://sasserver.demo.sas.com/svi-sand/traversals?calculateMetrics=false&expansionLimit=2000';
 
             try {
@@ -104,6 +313,3 @@
 
         // Call the function to make the POST request
         postData();
-    </script>
-</body>
-</html>
