@@ -14,6 +14,10 @@
     <div id="transactions"></div>
     <div id="Party_info"></div>
     <div id="postResponse"></div>
+    <h2>Vertices JSON</h2>
+    <pre id="verticesJson"></pre>
+    <h2>Edges JSON</h2>
+    <pre id="edgesJson"></pre>
 
     <button type="submit" class="btn-primary" id="callApiButton">Case Narrative</button>
     <div class="api-response-box"> 
@@ -112,6 +116,26 @@
                 }
                 const postResponseText = await response.json();
                 document.getElementById('postResponse').textContent = JSON.stringify(postResponseText, null, 2);
+
+                const vertices = postResponseText.vertices.map(vertex => ({
+                    type: vertex.type,
+                    id: vertex.id,
+                    typeLabel: vertex.typeLabel,
+                    label: vertex.label
+                }));
+
+                const edges = postResponseText.edges.map(edge => ({
+                    id: edge.id,
+                    endpoints: edge.endpoints.map(endpoint => ({
+                        type: endpoint.type,
+                        id: endpoint.id
+                    })),
+                    subtype: edge.subtype,
+                    label: edge.label
+                }));
+
+                document.getElementById('verticesJson').textContent = JSON.stringify(vertices, null, 2);
+                document.getElementById('edgesJson').textContent = JSON.stringify(edges, null, 2);
             } catch (error) {
                 console.error('Error in postData:', error);
                 document.getElementById('postResponse').textContent = `Error: ${error}`;
