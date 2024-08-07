@@ -4,28 +4,168 @@
     <script src='./javascripts/sas/util/messagingUtil.js'></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Response</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            margin: 0 30px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        pre {
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        details {
+            margin: 20px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        summary {
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            margin: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+        label {
+            margin-bottom: 10px;
+        }
+        textarea {
+            width: 100%;
+            min-height: 50px;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            text-wrap: wrap;
+            height: auto;
+            overflow: hidden;
+            resize: none;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            margin: 0 30px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        pre {
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        details {
+            margin: 20px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 90%;
+            padding: 10px;
+        }
+        summary {
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            margin: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+        label {
+            margin-bottom: 10px;
+        }
+        textarea {
+            width: 90%;
+            min-height: 80px;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            text-wrap: wrap;
+            height: auto;
+            overflow: hidden;
+            resize: none;
+        }
+    </style>
+    <title>Data Workbench</title>
 </head>
 <body>
-    <h1>API Response</h1>
-    <div id="apiResponse"></div>
-    <div id="scenario_fired_event"></div>
-    <div id="transactions"></div>
-    <div id="Party_info"></div>
-    <div id="postResponse"></div>
-    <h2>Vertices JSON</h2>
-    <pre id="verticesJson"></pre>
-    <h2>Edges JSON</h2>
-    <pre id="edgesJson"></pre>
+    <details>
+        <summary>API Response</summary>
+        <pre id="apiResponse"></pre>
+        <pre id="scenario_fired_event"></pre>
+        <pre id="transactions"></pre>
+        <pre id="Party_info"></pre>
+        <pre id="postResponse"></pre>
+    </details>
+    <details>
+        <summary>Graph Of Transactions</summary>
+        <h2>Vertices JSON</h2>
+        <pre id="verticesJson"></pre>
+        <h2>Edges JSON</h2>
+        <pre id="edgesJson"></pre>
+    </details>
 
-    <button type="submit" class="btn-primary" id="callApiButton">Case Narrative</button>
+    <form id="chatForm">
+        <label for="systemPrompt">System Prompt:</label>
+        <textarea id="systemPrompt" name="systemPrompt">
+            You are an Anti Money Laundering Investigator of a Bank. You're used to understanding why alerts can get flagged based on complex transactions and customer information. You need to help another Investigator make sense of the alerts that they're receiving.
+        </textarea>
+        <br/>
+        <label for="userPrompt">User Prompt - Note that Filtered Scenario Events, Filtered Transactions, and Personal Information will be appended to this prompt:</label>
+        <textarea id="userPrompt" name="userPrompt">
+            Please help with a list of scenarios that triggered (also called scenario fired event) with a customer, their personal information, and the list of their transactions. I want you to give recommendations for each scenario fired event on where the investigator should look first to find the suspicious activity. Write the scenario name and then the recommendation for the triggered scenario. You can give the transactions that are suspicious for a specific scenario by giving the transaction ID. Try to give as many details as possible. At the very end give a recommendation on the total alert considering all the information and especially considering the KYC profile of the customer:
+        </textarea>
+        <br/>
+        <button type="submit" class="btn-primary" id="callApiButton">Case Narrative
+        </button>
+    </form>
+
     <div class="api-response-box"> 
-        <p><span id="chatgptResponse"></span></p>
+        <pre><span id="chatgptResponse"></span></pre>
     </div>
     <p hidden><span id="apiKeyContainer"></span></p>
 
     <script>
         "use strict";
+
+        function autoGrow(element) {
+            element.style.height = 'auto';
+            element.style.height = (element.scrollHeight) + 'px';
+        }
+
+        // Attach the autoGrow function to input event for all textareas
+        document.querySelectorAll('textarea').forEach(textarea => {
+            textarea.addEventListener('input', function() {
+                autoGrow(this);
+            });
+            // Call autoGrow on page load to set initial height
+            autoGrow(textarea);
+        });
 
         const myHeaders = new Headers();
         myHeaders.append("Cookie", "sas-ingress-nginx=6866adc2289a112d6ea7fd0775261540|f0e9e5d83f1b459459b54939af4feb2b");
@@ -203,16 +343,18 @@
             }
         }
 
-        document.getElementById("callApiButton").addEventListener("click", function() {
+        document.getElementById("chatForm").addEventListener("submit", function() {
             console.log("[debug]: called api button");
 
             const apiKey = document.getElementById("apiKeyContainer").textContent;
             const apiUrl = "https://api.openai.com/v1/chat/completions";
+            const systemPrompt = document.getElementById("systemPrompt").value;
+            const userPrompt = document.getElementById("userPrompt").value;
 
             console.log("[debug]: ", apiKey);
 
-            const userContent = `You are here to help an AML investigator of a bank. In JSON format, there is a list of scenarios that triggered (also called scenario fired event) a customer, his personal information, and the list of his transactions. I want you to give recommendations for each scenario fired event on where the investigator should look first to find the suspicious activity. Write the scenario name and then the recommendation for the triggered scenario. You can give the transactions that are suspicious for a specific scenario by giving the transaction ID. Try to give as many details as possible. At the very end give a recommendation on the total alert considering all the information and especially considering the KYC profile of the customer: 
-            
+            const userContent = `${userPrompt}
+
             Filtered Scenario Fired Events: ${document.getElementById("scenario_fired_event").textContent} 
             
             Filtered transactions: ${document.getElementById("transactions").textContent} 
@@ -220,8 +362,7 @@
             Personal information on the customer: ${document.getElementById("Party_info").textContent}
             `;
 
-            console.log("[debug]: system prompt:");
-
+            console.log("[debug]: system prompt:", systemPrompt);
             console.log("[debug]: prompt: ", userContent);
 
             fetch(apiUrl, {
@@ -232,7 +373,16 @@
                 },
                 body: JSON.stringify({
                     "model": "gpt-4o",
-                    "messages": [{"role": "user", "content": userContent}]
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": systemPrompt
+                        },
+                        {
+                            "role": "user",
+                            "content": userContent
+                        }
+                    ]
                 })
             })
             .then(response => response.json())
