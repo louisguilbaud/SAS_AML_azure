@@ -344,6 +344,7 @@
         }
 
         document.getElementById("chatForm").addEventListener("submit", function() {
+            event.preventDefault();
             console.log("[debug]: called api button");
 
             const apiKey = document.getElementById("apiKeyContainer").textContent;
