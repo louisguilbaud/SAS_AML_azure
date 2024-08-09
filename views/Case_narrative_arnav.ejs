@@ -86,6 +86,9 @@
             justify-content: space-between;
             align-items: center;
         }
+        .api-pricing > p {
+            margin-left: 10px;
+        }
     </style>
     <title>Data Workbench</title>
 </head>
@@ -366,8 +369,8 @@
             console.log("[debug]: prompt: ", userContent);
             console.log("[debug]: model: ", model);
 
-            const loading = document.getElementsById("loading-indicator");
-            const pricing = document.getElementsById("pricing-estimate");
+            const loading = document.getElementById("loading-indicator");
+            const pricing = document.getElementById("pricing-estimate");
             loading.classList.toggle("loading");
 
             // if first time calling pricing remove loading
