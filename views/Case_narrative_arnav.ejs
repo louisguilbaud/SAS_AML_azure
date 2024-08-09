@@ -38,6 +38,9 @@
             font-size: 16px;
             cursor: pointer;
             margin: 20px;
+            /* inset */
+            border-radius: 5px;
+            box-shadow: inset 0px 0px 0px 1px #0a0a0a;
         }
         form {
             display: flex;
@@ -57,10 +60,31 @@
             height: auto;
             overflow: hidden;
             resize: none;
+            padding: 0.8em;
         }
         #chatgptResponse {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             color: #02022f;
+        }
+        .loading {
+            display: none;
+            z-index: 999;
+            height: 2em;
+            width: 2em;
+        }
+        .api-response-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 20px;
+        }
+        .api-pricing {
+            display: flex;
+            width: 100%;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
         }
     </style>
     <title>Data Workbench</title>
@@ -68,10 +92,15 @@
 <body>
     <details>
         <summary>API Response</summary>
+        <h2>API response</h2>
         <pre id="apiResponse"></pre>
+        <h2>Filtered Scenario Fired Events</h2>
         <pre id="scenario_fired_event"></pre>
+        <h2>Filtered Transactions</h2>
         <pre id="transactions"></pre>
+        <h2>Personal Information</h2>
         <pre id="Party_info"></pre>
+        <h2>Nonnormalized graph</h2>
         <pre id="postResponse"></pre>
     </details>
     <details>
@@ -85,20 +114,36 @@
     <form id="chatForm">
         <label for="systemPrompt">System Prompt:</label>
         <textarea id="systemPrompt" name="systemPrompt">
-            You are an Anti Money Laundering Investigator of a Bank. You're used to understanding why alerts can get flagged based on complex transactions and customer information. You need to help another Investigator make sense of the alerts that they're receiving.
+        You are an Anti Money Laundering Investigator of a bank. You're used reading and understanding JSON representations of alerts and can get why they're flagged based on complex transactions and customer information. You need to help another Investigator make sense of the alerts that they're receiving by providing informative and actionable insights.
         </textarea>
         <br/>
         <label for="userPrompt">User Prompt - Note that Filtered Scenario Events, Filtered Transactions, and Personal Information will be appended to this prompt:</label>
         <textarea id="userPrompt" name="userPrompt">
-            Please help with a list of scenarios that triggered (also called scenario fired event) with a customer, their personal information, and the list of their transactions. I want you to give recommendations for each scenario fired event on where the investigator should look first to find the suspicious activity. Write the scenario name and then the recommendation for the triggered scenario. You can give the transactions that are suspicious for a specific scenario by giving the transaction ID. Try to give as many details as possible. At the very end give a recommendation on the total alert considering all the information and especially considering the KYC profile of the customer:
+        Please help with a list of scenarios that triggered (also called scenario fired event) with a customer, their personal information, and the list of their transactions. I want you to give recommendations for each scenario fired event on where the investigator should look first to find the suspicious activity. Write the scenario name and then the recommendation for the triggered scenario. You can give the transactions that are suspicious for a specific scenario by giving the transaction ID. Try to give as many details as possible. Please proceed step by step. At the very end give a recommendation on the total alert considering all the information and especially considering the KYC profile of the customer:
         </textarea>
         <br/>
+        <div class="row">
+            <label for="model">Model:</label>
+            <select id="model" name="model">
+                <option value="gpt-4o">GPT-4o</option>
+                <option value="gpt-4o-mini">GPT-4o mini</option>
+            </select>
+        </div>
         <button type="submit" class="btn-primary" id="callApiButton">Case Narrative
         </button>
     </form>
 
+    <h2 class="loading" id="loading-indicator">
+        Loading response
+    </h2>
+
     <div class="api-response-box"> 
-        <pre><span id="chatgptResponse"></span></pre>
+        <div class="api-pricing loading" id="pricing-estimate">
+            <p>Estimated costs</p>
+            <p id="input-token"></p>
+            <p id="output-tokens"></p>
+        </div>
+        <pre style="width: 100%;"><span id="chatgptResponse"></span></pre>
     </div>
     <p hidden><span id="apiKeyContainer"></span></p>
 
@@ -296,6 +341,7 @@
         }
 
         document.getElementById("chatForm").addEventListener("submit", function() {
+            console.log("[debug]: form submitted");
             event.preventDefault();
             console.log("[debug]: called api button");
 
@@ -303,6 +349,7 @@
             const apiUrl = "https://api.openai.com/v1/chat/completions";
             const systemPrompt = document.getElementById("systemPrompt").value;
             const userPrompt = document.getElementById("userPrompt").value;
+            const model = document.getElementById("model").value;
 
             console.log("[debug]: ", apiKey);
 
@@ -317,6 +364,30 @@
 
             console.log("[debug]: system prompt:", systemPrompt);
             console.log("[debug]: prompt: ", userContent);
+            console.log("[debug]: model: ", model);
+
+            const loading = document.getElementsById("loading-indicator");
+            const pricing = document.getElementsById("pricing-estimate");
+            loading.classList.toggle("loading");
+
+            // if first time calling pricing remove loading
+            if (pricing.classList.contains("loading")) {
+                pricing.classList.toggle("loading");
+            }
+
+            const costs = {
+                "gpt-4o": {
+                    "input": 5 / 1_000_000,
+                    "output": 15 / 1_000_000
+                },
+                "gpt-4o-mini": {
+                    "input": 0.15 / 1_000_000,
+                    "output": 0.6 / 1_000_000
+                }
+            }
+
+            const cost = costs[model];
+
 
             fetch(apiUrl, {
                 method: "POST",
@@ -325,7 +396,7 @@
                     "Authorization": "Bearer " + apiKey
                 },
                 body: JSON.stringify({
-                    "model": "gpt-4o",
+                    "model": model,
                     "messages": [
                         {
                             "role": "system",
@@ -340,10 +411,18 @@
             })
             .then(response => response.json())
             .then(data => {
+                loading.classList.toggle("loading");
+                console.log("[debug]: chatgpt response", data);
                 const content = data.choices[0].message.content;
+                const inputTokens = data.usage.prompt_tokens;
+                const outputTokens = data.usage.completion_tokens;
+
                 document.getElementById("chatgptResponse").textContent = content;
+                document.getElementById("input-token").textContent = `Input tokens: ${inputTokens} (Cost: $${(inputTokens * cost.input).toFixed(6)})`;
+                document.getElementById("output-tokens").textContent = `Output tokens: ${outputTokens} (Cost: $${(outputTokens * cost.output).toFixed(6)})`;
             })
             .catch(error => {
+                loading.classList.toggle("loading");
                 console.error("Error:", error);
                 document.getElementById("chatgptResponse").textContent = "Error occurred while fetching API data.";
             });
