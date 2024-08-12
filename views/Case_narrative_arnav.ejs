@@ -450,7 +450,9 @@
         });
 
         // Fetch data on page load
-        fetchData();
+        document.addEventListener("DOMContentLoaded", function() {
+            fetchData();
+        });
     </script>
 </body>
 </html>
