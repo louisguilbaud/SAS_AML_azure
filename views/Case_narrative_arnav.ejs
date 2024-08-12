@@ -297,7 +297,13 @@
         }
 
         async function fetchData() {
-            const alert_id = document.getElementById("alertid").textContent.trim();
+            const alertIdElement = document.getElementById("alertid");
+            const alertId = alertIdElement.textContent.trim(); // Get the alert ID from the element
+            
+            if (!alertId) {
+                console.error('Alert ID is not available');
+                return;
+            }
             const alertUrl = 'https://sasserver.demo.sas.com/svi-alert/alerts/${alert_id}';
             console.log("[debug]: called alerts data");
             try {
