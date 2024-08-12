@@ -317,7 +317,7 @@
                 console.error('Alert ID is still not available after waiting.');
                 return;
             }
-            const alertUrl = 'https://sasserver.demo.sas.com/svi-alert/alerts/${alert_id}';
+            const alertUrl = `https://sasserver.demo.sas.com/svi-alert/alerts/${alertId}`;
             console.log("[debug]: called alerts data");
             try {
                 const response = await fetch(alertUrl, requestOptions);
