@@ -298,10 +298,23 @@
 
         async function fetchData() {
             const alertIdElement = document.getElementById("alertid");
-            const alertId = alertIdElement.textContent.trim(); // Get the alert ID from the element
+            let alertId = alertIdElement.textContent.trim(); // Get the alert ID from the element
             
             if (!alertId) {
-                console.error('Alert ID is not available');
+                console.warn('Alert ID is not immediately available. Waiting for it to be populated...');
+                
+                // Wait for the alert ID to be available
+                for (let i = 0; i < 10; i++) {  // Retry up to 10 times (adjust as needed)
+                    await new Promise(resolve => setTimeout(resolve, 500));  // Wait for 500ms
+                    alertId = alertIdElement.textContent.trim();
+                    if (alertId) {
+                        break;  // Exit the loop once alertId is available
+                    }
+                }
+            }
+            
+            if (!alertId) {
+                console.error('Alert ID is still not available after waiting.');
                 return;
             }
             const alertUrl = 'https://sasserver.demo.sas.com/svi-alert/alerts/${alert_id}';
