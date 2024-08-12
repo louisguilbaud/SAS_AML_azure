@@ -297,7 +297,7 @@
         }
 
         async function fetchData() {
-            const alertUrl = "https://sasserver.demo.sas.com/svi-alert/alerts/${alertid}";
+            const alertUrl = 'https://sasserver.demo.sas.com/svi-alert/alerts/${alertid}';
             console.log("[debug]: called alerts data");
             try {
                 const response = await fetch(alertUrl, requestOptions);
