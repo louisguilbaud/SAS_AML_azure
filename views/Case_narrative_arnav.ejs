@@ -145,6 +145,7 @@
             <p>Estimated costs</p>
             <p id="input-token"></p>
             <p id="output-tokens"></p>
+            <p id="test"></p>
         </div>
         <pre style="width: 100%;"><span id="chatgptResponse"></span></pre>
     </div>
@@ -188,6 +189,18 @@
                 document.getElementById("apiKeyContainer").textContent = "No API key available";
             }
         }
+
+        va.messagingUtil.setOnDataReceivedCallback(onDataReceived);
+
+
+		console.log(">>>>>>>>>>>> Parameters from URL (BEGIN) >>>>>>>>>>>");
+		var urlParams = va.messagingUtil.getUrlParams();
+		Object.keys(urlParams).forEach(function (key) {
+			console.log(key + "=" + urlParams[key]);
+		});
+
+		var alert_id = va.messagingUtil.getUrlParams("alert_id");
+        document.getElementById('test').innerHTML = "Update " + alert_id;
 
         async function getCsrfToken() {
             const url = 'https://sasserver.demo.sas.com/svi-sand/traversals?calculateMetrics=false&expansionLimit=2000';
