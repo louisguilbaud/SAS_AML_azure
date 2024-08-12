@@ -297,6 +297,7 @@
         }
 
         async function fetchData() {
+            const alert_id = document.getElementById("alertid").textContent.trim();
             const alertUrl = 'https://sasserver.demo.sas.com/svi-alert/alerts/${alert_id}';
             console.log("[debug]: called alerts data");
             try {
