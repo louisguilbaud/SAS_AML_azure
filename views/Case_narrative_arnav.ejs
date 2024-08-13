@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <script src='./javascripts/sas/util/messagingUtil.js'></script>
     <meta charset="UTF-8">
@@ -13,11 +14,13 @@
             display: flex;
             flex-direction: column;
         }
+
         pre {
             white-space: pre-wrap;
             font-family: monospace;
             font-size: 14px;
         }
+
         details {
             margin: 20px 0;
             border: 1px solid #ccc;
@@ -25,11 +28,13 @@
             width: 90%;
             padding: 10px;
         }
+
         summary {
             font-size: 24px;
             font-weight: bold;
             cursor: pointer;
         }
+
         .btn-primary {
             background-color: #007bff;
             border-color: #007bff;
@@ -42,6 +47,7 @@
             border-radius: 5px;
             box-shadow: inset 0px 0px 0px 1px #0a0a0a;
         }
+
         form {
             display: flex;
             flex-direction: column;
@@ -49,9 +55,11 @@
             align-items: center;
             justify-content: center;
         }
+
         label {
             margin-bottom: 10px;
         }
+
         textarea {
             width: 90%;
             min-height: 80px;
@@ -62,16 +70,19 @@
             resize: none;
             padding: 0.8em;
         }
+
         #chatgptResponse {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             color: #02022f;
         }
+
         .loading {
             display: none;
             z-index: 999;
             height: 2em;
             width: 2em;
         }
+
         .api-response-box {
             display: flex;
             flex-direction: column;
@@ -79,16 +90,22 @@
             justify-content: center;
             margin: 20px;
         }
+
         .api-pricing {
             display: flex;
-            width: 100%;
+            width: 80%;
             flex-direction: row;
             justify-content: space-between;
             align-items: center;
         }
+
+        .api-pricing>p {
+            margin-left: 10px;
+        }
     </style>
     <title>Data Workbench</title>
 </head>
+
 <body>
     <details>
         <summary>API Response</summary>
@@ -109,6 +126,7 @@
         <pre id="verticesJson"></pre>
         <h2>Edges JSON</h2>
         <pre id="edgesJson"></pre>
+        <p id="alertid"></p>
     </details>
 
     <form id="chatForm">
@@ -116,12 +134,13 @@
         <textarea id="systemPrompt" name="systemPrompt">
         You are an Anti Money Laundering Investigator of a bank. You're used reading and understanding JSON representations of alerts and can get why they're flagged based on complex transactions and customer information. You need to help another Investigator make sense of the alerts that they're receiving by providing informative and actionable insights.
         </textarea>
-        <br/>
-        <label for="userPrompt">User Prompt - Note that Filtered Scenario Events, Filtered Transactions, and Personal Information will be appended to this prompt:</label>
+        <br />
+        <label for="userPrompt">User Prompt - Note that Filtered Scenario Events, Filtered Transactions, and Personal
+            Information will be appended to this prompt:</label>
         <textarea id="userPrompt" name="userPrompt">
         Please help with a list of scenarios that triggered (also called scenario fired event) with a customer, their personal information, and the list of their transactions. I want you to give recommendations for each scenario fired event on where the investigator should look first to find the suspicious activity. Write the scenario name and then the recommendation for the triggered scenario. You can give the transactions that are suspicious for a specific scenario by giving the transaction ID. Try to give as many details as possible. Please proceed step by step. At the very end give a recommendation on the total alert considering all the information and especially considering the KYC profile of the customer:
         </textarea>
-        <br/>
+        <br />
         <div class="row">
             <label for="model">Model:</label>
             <select id="model" name="model">
@@ -137,7 +156,7 @@
         Loading response
     </h2>
 
-    <div class="api-response-box"> 
+    <div class="api-response-box">
         <div class="api-pricing loading" id="pricing-estimate">
             <p>Estimated costs</p>
             <p id="input-token"></p>
@@ -146,6 +165,7 @@
         <pre style="width: 100%;"><span id="chatgptResponse"></span></pre>
     </div>
     <p hidden><span id="apiKeyContainer"></span></p>
+    <p hidden><span id="alertid"></span></p>
 
     <script>
         "use strict";
@@ -157,7 +177,7 @@
 
         // Attach the autoGrow function to input event for all textareas
         document.querySelectorAll('textarea').forEach(textarea => {
-            textarea.addEventListener('input', function() {
+            textarea.addEventListener('input', function () {
                 autoGrow(this);
             });
             // Call autoGrow on page load to set initial height
@@ -181,8 +201,18 @@
                 const apiKey = vaMsgObj.data[0][0];
                 console.log('Fetched API Key:', apiKey);
                 document.getElementById("apiKeyContainer").textContent = apiKey;
+
+                // Extract the value from the parameters array
+                if (vaMsgObj.parameters && vaMsgObj.parameters.length > 0) {
+                    const alert_id = vaMsgObj.parameters[0].value;
+                    console.log('Fetched Parameter Value:', alert_id);
+                    document.getElementById("alertid").textContent = alert_id;
+                } else {
+                    document.getElementById("alertid").textContent = "No parameter value available";
+                }
             } else {
                 document.getElementById("apiKeyContainer").textContent = "No API key available";
+                document.getElementById("alertid").textContent = "No parameter value available";
             }
         }
 
@@ -283,7 +313,28 @@
         }
 
         async function fetchData() {
-            const alertUrl = "https://sasserver.demo.sas.com/svi-alert/alerts/b63203ba-d218-410d-b3fe-95108afb5208";
+            const alertIdElement = document.getElementById("alertid");
+            let alertId = alertIdElement.textContent.trim(); // Get the alert ID from the element
+
+            if (!alertId) {
+                console.warn('Alert ID is not immediately available. Waiting for it to be populated...');
+
+                // Wait for the alert ID to be available
+                for (let i = 0; i < 10; i++) {  // Retry up to 10 times (adjust as needed)
+                    await new Promise(resolve => setTimeout(resolve, 500));  // Wait for 500ms
+                    alertId = alertIdElement.textContent.trim();
+                    if (alertId) {
+                        break;  // Exit the loop once alertId is available
+                    }
+                }
+            }
+
+            if (!alertId) {
+                console.error('Alert ID is still not available after waiting.');
+                return;
+            }
+            const alertUrl = `https://sasserver.demo.sas.com/svi-alert/alerts/${alertId}`;
+
             console.log("[debug]: called alerts data");
             try {
                 const response = await fetch(alertUrl, requestOptions);
@@ -340,7 +391,7 @@
             }
         }
 
-        document.getElementById("chatForm").addEventListener("submit", function() {
+        document.getElementById("chatForm").addEventListener("submit", function () {
             console.log("[debug]: form submitted");
             event.preventDefault();
             console.log("[debug]: called api button");
@@ -366,8 +417,8 @@
             console.log("[debug]: prompt: ", userContent);
             console.log("[debug]: model: ", model);
 
-            const loading = document.getElementsById("loading-indicator");
-            const pricing = document.getElementsById("pricing-estimate");
+            const loading = document.getElementById("loading-indicator");
+            const pricing = document.getElementById("pricing-estimate");
             loading.classList.toggle("loading");
 
             // if first time calling pricing remove loading
@@ -409,24 +460,24 @@
                     ]
                 })
             })
-            .then(response => response.json())
-            .then(data => {
-                loading.classList.toggle("loading");
-                console.log("[debug]: chatgpt response", data);
-                const content = data.choices[0].message.content;
-                const inputTokens = data.usage.prompt_tokens;
-                const outputTokens = data.usage.completion_tokens;
+                .then(response => response.json())
+                .then(data => {
+                    loading.classList.toggle("loading");
+                    console.log("[debug]: chatgpt response", data);
+                    const content = data.choices[0].message.content;
+                    const inputTokens = data.usage.prompt_tokens;
+                    const outputTokens = data.usage.completion_tokens;
 
-                document.getElementById("chatgptResponse").textContent = content;
-                document.getElementById("input-token").textContent = `Input tokens: ${inputTokens} (Cost: $${(inputTokens * cost.input).toFixed(6)})`;
-                document.getElementById("output-tokens").textContent = `Output tokens: ${outputTokens} (Cost: $${(outputTokens * cost.output).toFixed(6)})`;
-                // call it to job execution
-            })
-            .catch(error => {
-                loading.classList.toggle("loading");
-                console.error("Error:", error);
-                document.getElementById("chatgptResponse").textContent = "Error occurred while fetching API data.";
-            });
+                    document.getElementById("chatgptResponse").textContent = content;
+                    document.getElementById("input-token").textContent = `Input tokens: ${inputTokens} (Cost: $${(inputTokens * cost.input).toFixed(6)})`;
+                    document.getElementById("output-tokens").textContent = `Output tokens: ${outputTokens} (Cost: $${(outputTokens * cost.output).toFixed(6)})`;
+                    // call it to job execution
+                })
+                .catch(error => {
+                    loading.classList.toggle("loading");
+                    console.error("Error:", error);
+                    document.getElementById("chatgptResponse").textContent = "Error occurred while fetching API data.";
+                });
         });
 
         // calls the job on SASJobExecution
@@ -440,38 +491,41 @@
                 + "&_action=" + encodeURIComponent("execute")
                 + "&_outputType=ods_html5"
                 + "&vajson=" + encodeURIComponent(JSON.stringify(vajson));
-                + "&_debug=log"
+            + "&_debug=log"
                 ;
-            
+
             try {
-				const url = "/SASJobExecution/" + paramStr;
+                const url = "/SASJobExecution/" + paramStr;
 
-				const requestHeaders = new Headers();
-				requestHeaders.append("Accept", "text/html");
+                const requestHeaders = new Headers();
+                requestHeaders.append("Accept", "text/html");
 
-				const requestOptions = {};
-				requestOptions.headers = requestHeaders;
-				requestOptions.method = "GET";
+                const requestOptions = {};
+                requestOptions.headers = requestHeaders;
+                requestOptions.method = "GET";
 
-				const response = await fetch(url, requestOptions);
+                const response = await fetch(url, requestOptions);
 
-				if (!response.ok) {
-					const error = response.statusText;
-					console.log("[debug]: Job failed with error: ", error);
-				}
+                if (!response.ok) {
+                    const error = response.statusText;
+                    console.log("[debug]: Job failed with error: ", error);
+                }
 
-				const jobOutput = await response.text();
-				console.log("[debug]: Job output: ", jobOutput);
-				return jobOutput;
-			}
-			catch (error) {
-				console.error("************** JOB FAILED ***************");
-				console.error("[debug]: Error: ", error);
-			}
-		}
+                const jobOutput = await response.text();
+                console.log("[debug]: Job output: ", jobOutput);
+                return jobOutput;
+            }
+            catch (error) {
+                console.error("************** JOB FAILED ***************");
+                console.error("[debug]: Error: ", error);
+            }
+        }
 
         // Fetch data on page load
-        fetchData();
+        document.addEventListener("DOMContentLoaded", function () {
+            fetchData();
+        });
     </script>
 </body>
+
 </html>
