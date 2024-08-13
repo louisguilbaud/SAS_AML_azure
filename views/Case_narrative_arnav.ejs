@@ -81,13 +81,10 @@
         }
         .api-pricing {
             display: flex;
-            width: 80%;
+            width: 100%;
             flex-direction: row;
             justify-content: space-between;
             align-items: center;
-        }
-        .api-pricing > p {
-            margin-left: 10px;
         }
     </style>
     <title>Data Workbench</title>
@@ -112,7 +109,6 @@
         <pre id="verticesJson"></pre>
         <h2>Edges JSON</h2>
         <pre id="edgesJson"></pre>
-        <p id="alertid"></p>
     </details>
 
     <form id="chatForm">
@@ -150,7 +146,7 @@
         <pre style="width: 100%;"><span id="chatgptResponse"></span></pre>
     </div>
     <p hidden><span id="apiKeyContainer"></span></p>
-    <p hidden><span id="alertid"></span></p>
+
     <script>
         "use strict";
 
@@ -185,18 +181,8 @@
                 const apiKey = vaMsgObj.data[0][0];
                 console.log('Fetched API Key:', apiKey);
                 document.getElementById("apiKeyContainer").textContent = apiKey;
-                
-                // Extract the value from the parameters array
-                if (vaMsgObj.parameters && vaMsgObj.parameters.length > 0) {
-                    const alert_id = vaMsgObj.parameters[0].value;
-                    console.log('Fetched Parameter Value:', alert_id );
-                    document.getElementById("alertid").textContent = alert_id ;
-                } else {
-                    document.getElementById("alertid").textContent = "No parameter value available";
-                }
             } else {
                 document.getElementById("apiKeyContainer").textContent = "No API key available";
-                document.getElementById("alertid").textContent = "No parameter value available";
             }
         }
 
@@ -297,27 +283,7 @@
         }
 
         async function fetchData() {
-            const alertIdElement = document.getElementById("alertid");
-            let alertId = alertIdElement.textContent.trim(); // Get the alert ID from the element
-            
-            if (!alertId) {
-                console.warn('Alert ID is not immediately available. Waiting for it to be populated...');
-                
-                // Wait for the alert ID to be available
-                for (let i = 0; i < 10; i++) {  // Retry up to 10 times (adjust as needed)
-                    await new Promise(resolve => setTimeout(resolve, 500));  // Wait for 500ms
-                    alertId = alertIdElement.textContent.trim();
-                    if (alertId) {
-                        break;  // Exit the loop once alertId is available
-                    }
-                }
-            }
-            
-            if (!alertId) {
-                console.error('Alert ID is still not available after waiting.');
-                return;
-            }
-            const alertUrl = `https://sasserver.demo.sas.com/svi-alert/alerts/${alertId}`;
+            const alertUrl = "https://sasserver.demo.sas.com/svi-alert/alerts/b63203ba-d218-410d-b3fe-95108afb5208";
             console.log("[debug]: called alerts data");
             try {
                 const response = await fetch(alertUrl, requestOptions);
@@ -400,8 +366,8 @@
             console.log("[debug]: prompt: ", userContent);
             console.log("[debug]: model: ", model);
 
-            const loading = document.getElementById("loading-indicator");
-            const pricing = document.getElementById("pricing-estimate");
+            const loading = document.getElementsById("loading-indicator");
+            const pricing = document.getElementsById("pricing-estimate");
             loading.classList.toggle("loading");
 
             // if first time calling pricing remove loading
@@ -454,6 +420,7 @@
                 document.getElementById("chatgptResponse").textContent = content;
                 document.getElementById("input-token").textContent = `Input tokens: ${inputTokens} (Cost: $${(inputTokens * cost.input).toFixed(6)})`;
                 document.getElementById("output-tokens").textContent = `Output tokens: ${outputTokens} (Cost: $${(outputTokens * cost.output).toFixed(6)})`;
+                // call it to job execution
             })
             .catch(error => {
                 loading.classList.toggle("loading");
@@ -462,10 +429,49 @@
             });
         });
 
+        // calls the job on SASJobExecution
+        async function callJob(inputPrice, outputPrice) {
+            const vajson = {
+                "inputPrice": inputPrice,
+                "outputPrice": outputPrice
+            }
+
+            const paramStr = "?_program=" + encodeURIComponent("/Public/Jobs/Report")
+                + "&_action=" + encodeURIComponent("execute")
+                + "&_outputType=ods_html5"
+                + "&vajson=" + encodeURIComponent(JSON.stringify(vajson));
+                + "&_debug=log"
+                ;
+            
+            try {
+				const url = "/SASJobExecution/" + paramStr;
+
+				const requestHeaders = new Headers();
+				requestHeaders.append("Accept", "text/html");
+
+				const requestOptions = {};
+				requestOptions.headers = requestHeaders;
+				requestOptions.method = "GET";
+
+				const response = await fetch(url, requestOptions);
+
+				if (!response.ok) {
+					const error = response.statusText;
+					console.log("[debug]: Job failed with error: ", error);
+				}
+
+				const jobOutput = await response.text();
+				console.log("[debug]: Job output: ", jobOutput);
+				return jobOutput;
+			}
+			catch (error) {
+				console.error("************** JOB FAILED ***************");
+				console.error("[debug]: Error: ", error);
+			}
+		}
+
         // Fetch data on page load
-        document.addEventListener("DOMContentLoaded", function() {
-            fetchData();
-        });
+        fetchData();
     </script>
 </body>
 </html>
