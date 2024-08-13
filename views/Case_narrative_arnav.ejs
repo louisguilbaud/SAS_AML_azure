@@ -483,20 +483,24 @@
 
         // calls the job on SASJobExecution
         async function callJob(inputPrice, outputPrice) {
+            console.log("[debug]: called job execution");
             const vajson = {
                 "inputPrice": inputPrice,
                 "outputPrice": outputPrice
             }
 
-            const paramStr = "?_program=" + encodeURIComponent("/Public/Jobs/Report")
+            const paramStr = "?_program=" + encodeURIComponent("/Public/Jobs/Report/Prices")
                 + "&_action=" + encodeURIComponent("execute")
                 + "&_outputType=ods_html5"
                 + "&vajson=" + encodeURIComponent(JSON.stringify(vajson));
             + "&_debug=log"
                 ;
-
+            
             try {
                 const url = "/SASJobExecution/" + paramStr;
+
+                console.log("[debug]: Job URL: ", url);
+                console.log("[debug]: ", vajson);
 
                 const requestHeaders = new Headers();
                 requestHeaders.append("Accept", "text/html");
