@@ -489,13 +489,14 @@
                 "outputPrice": outputPrice
             }
 
-            const paramStr = "?_program=" + encodeURIComponent("/Public/Jobs/Report/Prices")
+            const paramStr = "?_program="
+                + encodeURIComponent("/Public/Report/Prices")
                 + "&_action=" + encodeURIComponent("execute")
                 + "&_outputType=ods_html5"
                 + "&vajson=" + encodeURIComponent(JSON.stringify(vajson));
             + "&_debug=log"
                 ;
-            
+
             try {
                 const url = "/SASJobExecution/" + paramStr;
 
