@@ -199,13 +199,13 @@
             console.log('Received vaMsgObj:', vaMsgObj);
             if (vaMsgObj && vaMsgObj.data && vaMsgObj.data.length > 0) {
                 const apiKey = vaMsgObj.data[0][0];
-                console.log('Fetched API Key:', apiKey);
+                console.log('[debug]: Fetched API Key:', apiKey);
                 document.getElementById("apiKeyContainer").textContent = apiKey;
 
                 // Extract the value from the parameters array
                 if (vaMsgObj.parameters && vaMsgObj.parameters.length > 0) {
                     const alert_id = vaMsgObj.parameters[0].value;
-                    console.log('Fetched Parameter Value:', alert_id);
+                    console.log('[debug]: Fetched Parameter Value:', alert_id);
                     document.getElementById("alertid").textContent = alert_id;
                 } else {
                     document.getElementById("alertid").textContent = "No parameter value available";
@@ -231,7 +231,7 @@
                 console.log("[debug]: csrfToken set")
                 return csrfToken;
             } catch (error) {
-                console.error('Error in getCsrfToken:', error);
+                console.error('[debug]: Error in getCsrfToken:', error);
                 throw error;
             }
         }
@@ -307,7 +307,7 @@
                 document.getElementById('verticesJson').textContent = JSON.stringify(vertices, null, 2);
                 document.getElementById('edgesJson').textContent = JSON.stringify(edges, null, 2);
             } catch (error) {
-                console.error('Error in postData:', error);
+                console.error('[debug]: Error in postData:', error);
                 document.getElementById('postResponse').textContent = `Error: ${error}`;
             }
         }
@@ -317,7 +317,7 @@
             let alertId = alertIdElement.textContent.trim(); // Get the alert ID from the element
 
             if (!alertId) {
-                console.warn('Alert ID is not immediately available. Waiting for it to be populated...');
+                console.warn('[debug]: Alert ID is not immediately available. Waiting for it to be populated...');
 
                 // Wait for the alert ID to be available
                 for (let i = 0; i < 10; i++) {  // Retry up to 10 times (adjust as needed)
@@ -469,14 +469,19 @@
                     const outputTokens = data.usage.completion_tokens;
 
                     document.getElementById("chatgptResponse").textContent = content;
-                    document.getElementById("input-token").textContent = `Input tokens: ${inputTokens} (Cost: $${(inputTokens * cost.input).toFixed(6)})`;
-                    document.getElementById("output-tokens").textContent = `Output tokens: ${outputTokens} (Cost: $${(outputTokens * cost.output).toFixed(6)})`;
-                    // call it to job execution
-                    callJob(inputTokens, outputTokens);
+
+                    const inputPrice = (inputTokens * cost.input).toFixed(6);
+                    const outputPrice = (outputTokens * cost.output).toFixed(6);
+
+                    document.getElementById("input-token").textContent = `Input tokens: ${inputTokens} (Cost: $${inputPrice})`;
+                    document.getElementById("output-tokens").textContent = `Output tokens: ${outputTokens} (Cost: $${outputPrice})`;
+                    
+                    // log it to job execution
+                    callJob(inputPrice, outputPrice);
                 })
                 .catch(error => {
                     loading.classList.toggle("loading");
-                    console.error("Error:", error);
+                    console.error("[debug]: Error:", error);
                     document.getElementById("chatgptResponse").textContent = "Error occurred while fetching API data.";
                 });
         });
