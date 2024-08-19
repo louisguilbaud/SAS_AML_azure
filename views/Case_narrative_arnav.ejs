@@ -477,7 +477,7 @@
                     document.getElementById("output-tokens").textContent = `Output tokens: ${outputTokens} (Cost: $${outputPrice})`;
                     
                     // log it to job execution
-                    callJob(inputPrice, outputPrice);
+                    callJob(inputTokens, outputTokens);
                 })
                 .catch(error => {
                     loading.classList.toggle("loading");
@@ -487,11 +487,11 @@
         });
 
         // calls the job on SASJobExecution
-        async function callJob(inputPrice, outputPrice) {
+        async function callJob(inputTokens, outputTokens) {
             console.log("[debug]: called job execution");
             const vajson = {
-                "inputPrice": inputPrice,
-                "outputPrice": outputPrice
+                "inputTokens": inputTokens,
+                "outputTokens": outputTokens
             }
 
             const paramStr = "?_program="
