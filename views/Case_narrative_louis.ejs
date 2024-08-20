@@ -388,7 +388,7 @@
 
             console.log("[debug]: ", apiKey);
 
-            const userContent = `${userPrompt}
+            const userContent = `Please review the following account activity and identify any suspicious patterns or behaviors that could indicate potential money laundering. Focus on analyzing any large transactions, unusual frequency of activities, or connections to high-risk jurisdictions. Provide a detailed case narrative that includes an overview of the activity, specific transaction details, behavioral indicators, and how these activities align with the customer's KYC profile. Conclude with a risk assessment and recommendations for further action, such as enhanced due diligence or filing a SAR, 
 
             Filtered Scenario Fired Events: ${document.getElementById("scenario_fired_event").textContent} 
             
@@ -397,7 +397,6 @@
             Personal information on the customer: ${document.getElementById("Party_info").textContent}
             `;
 
-            console.log("[debug]: system prompt:", systemPrompt);
             console.log("[debug]: prompt: ", userContent);
             console.log("[debug]: model: ", model);
 
@@ -433,10 +432,6 @@
                 body: JSON.stringify({
                     "model": model,
                     "messages": [
-                        {
-                            "role": "system",
-                            "content": systemPrompt
-                        },
                         {
                             "role": "user",
                             "content": userContent
