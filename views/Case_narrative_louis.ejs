@@ -43,6 +43,7 @@
             font-size: 16px;
             cursor: pointer;
             margin: 20px;
+            /* inset */
             border-radius: 5px;
             box-shadow: inset 0px 0px 0px 1px #0a0a0a;
         }
@@ -129,6 +130,17 @@
     </details>
 
     <form id="chatForm">
+        <label for="systemPrompt">System Prompt:</label>
+        <textarea id="systemPrompt" name="systemPrompt">
+        You are an Anti Money Laundering Investigator of a bank. You're used reading and understanding JSON representations of alerts and can get why they're flagged based on complex transactions and customer information. You need to help another Investigator make sense of the alerts that they're receiving by providing informative and actionable insights.
+        </textarea>
+        <br />
+        <label for="userPrompt">User Prompt - Note that Filtered Scenario Events, Filtered Transactions, and Personal
+            Information will be appended to this prompt:</label>
+        <textarea id="userPrompt" name="userPrompt">
+        Please help with a list of scenarios that triggered (also called scenario fired event) with a customer, their personal information, and the list of their transactions. I want you to give recommendations for each scenario fired event on where the investigator should look first to find the suspicious activity. Write the scenario name and then the recommendation for the triggered scenario. You can give the transactions that are suspicious for a specific scenario by giving the transaction ID. Try to give as many details as possible. Please proceed step by step. At the very end give a recommendation on the total alert considering all the information and especially considering the KYC profile of the customer:
+        </textarea>
+        <br />
         <div class="row">
             <label for="model">Model:</label>
             <select id="model" name="model">
@@ -136,7 +148,8 @@
                 <option value="gpt-4o-mini">GPT-4o mini</option>
             </select>
         </div>
-        <button type="submit" class="btn-primary" id="callApiButton">Case Narrative</button>
+        <button type="submit" class="btn-primary" id="callApiButton">Case Narrative
+        </button>
     </form>
 
     <h2 class="loading" id="loading-indicator">
@@ -144,6 +157,11 @@
     </h2>
 
     <div class="api-response-box">
+        <div class="api-pricing loading" id="pricing-estimate">
+            <p>Estimated costs</p>
+            <p id="input-token"></p>
+            <p id="output-tokens"></p>
+        </div>
         <pre style="width: 100%;"><span id="chatgptResponse"></span></pre>
     </div>
     <p hidden><span id="apiKeyContainer"></span></p>
@@ -267,50 +285,256 @@
                 const postResponseText = await response.json();
                 document.getElementById('postResponse').textContent = JSON.stringify(postResponseText, null, 2);
 
-                const verticesJson = postResponseText['vertices'];
-                const edgesJson = postResponseText['edges'];
-                console.log(verticesJson);
-                document.getElementById('verticesJson').textContent = JSON.stringify(verticesJson, null, 2);
-                document.getElementById('edgesJson').textContent = JSON.stringify(edgesJson, null, 2);
-                console.log(edgesJson);
+                const vertices = postResponseText.vertices.map(vertex => ({
+                    type: vertex.type,
+                    id: vertex.id,
+                    typeLabel: vertex.typeLabel,
+                    label: vertex.label
+                }));
 
-                return postResponseText;
+                const edges = postResponseText.edges.map(edge => ({
+                    id: edge.id,
+                    endpoints: edge.endpoints.map(endpoint => ({
+                        type: endpoint.type,
+                        id: endpoint.id
+                    })),
+                    subtype: edge.subtype,
+                    label: edge.label
+                }));
+
+                console.log("[debug]: set pty and graph data");
+
+                document.getElementById('verticesJson').textContent = JSON.stringify(vertices, null, 2);
+                document.getElementById('edgesJson').textContent = JSON.stringify(edges, null, 2);
             } catch (error) {
                 console.error('[debug]: Error in postData:', error);
-                throw error;
+                document.getElementById('postResponse').textContent = `Error: ${error}`;
             }
         }
 
-        document.getElementById("chatForm").addEventListener("submit", async function (event) {
-            event.preventDefault();
+        async function fetchData() {
+            const alertIdElement = document.getElementById("alertid");
+            let alertId = alertIdElement.textContent.trim(); // Get the alert ID from the element
+
+            if (!alertId) {
+                console.warn('[debug]: Alert ID is not immediately available. Waiting for it to be populated...');
+
+                // Wait for the alert ID to be available
+                for (let i = 0; i < 10; i++) {  // Retry up to 10 times (adjust as needed)
+                    await new Promise(resolve => setTimeout(resolve, 500));  // Wait for 500ms
+                    alertId = alertIdElement.textContent.trim();
+                    if (alertId) {
+                        break;  // Exit the loop once alertId is available
+                    }
+                }
+            }
+
+            if (!alertId) {
+                console.error('Alert ID is still not available after waiting.');
+                return;
+            }
+            const alertUrl = `https://amlglobalteam-03.unx.sas.com/svi-alert/alerts/${alertId}`;
+
+            console.log("[debug]: called alerts data");
+            try {
+                const response = await fetch(alertUrl, requestOptions);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                const data = await response.json();
+                const currentAlertingEventId = data.currentAlertingEventId;
+                const actionableEntityId = data.actionableEntityId;
+                document.getElementById("apiResponse").innerHTML = JSON.stringify(data, null, 2);
+
+                const alertingEventsUrl = `https://amlglobalteam-03.unx.sas.com/svi-alert/alertingEvents/${currentAlertingEventId}`;
+                const alertingEventsResponse = await fetch(alertingEventsUrl, requestOptions);
+                if (!alertingEventsResponse.ok) {
+                    throw new Error('Network response was not ok ' + alertingEventsResponse.statusText);
+                }
+                const alertingEventsData = await alertingEventsResponse.json();
+                const filteredScenarioFiredEvents = alertingEventsData.scenarioFiredEvents.map(event => ({
+                    scenarioName: event.scenarioName,
+                    scenarioDescription: event.scenarioDescription,
+                    messageTemplateText: event.messageTemplateText
+                }));
+                document.getElementById("scenario_fired_event").innerHTML = JSON.stringify(filteredScenarioFiredEvents, null, 2);
+
+                const transactionsUrl = `https://amlglobalteam-03.unx.sas.com/amlCore/transactions?entityLevelCode=PTY&entityNumber=${actionableEntityId}`;
+                const transactionsResponse = await fetch(transactionsUrl, requestOptions);
+                if (!transactionsResponse.ok) {
+                    throw new Error('Network response was not ok ' + transactionsResponse.statusText);
+                }
+                const transactionsData = await transactionsResponse.json();
+                const filteredTransactions = transactionsData.items.map(transaction => ({
+                    transactionNumber: transaction.transactionNumber,
+                    primaryMediumDesc: transaction.primaryMediumDesc,
+                    secondaryMediumDesc: transaction.secondaryMediumDesc,
+                    mechanismDesc: transaction.mechanismDesc,
+                    currencyAmount: transaction.currencyAmount,
+                    transactionCDIDesc: transaction.transactionCDIDesc
+                }));
+                document.getElementById("transactions").innerHTML = JSON.stringify(filteredTransactions, null, 2);
+
+                const partyInfoUrl = `https://amlglobalteam-03.unx.sas.com/SASVisualInvestigator/pages/PTY/${actionableEntityId}`;
+                const partyInfoResponse = await fetch(partyInfoUrl, requestOptions);
+                if (!partyInfoResponse.ok) {
+                    throw new Error('Network response was not ok ' + partyInfoResponse.statusText);
+                }
+                const partyInfoData = await partyInfoResponse.json();
+                document.getElementById("Party_info").innerHTML = JSON.stringify(partyInfoData.data, null, 2);
+
+                const csrfToken = await getCsrfToken();
+                await postData(csrfToken);
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('postResponse').textContent = `Error: ${error}`;
+            }
+        }
+
+        document.getElementById("chatForm").addEventListener("submit", function () {
             console.log("[debug]: form submitted");
+            event.preventDefault();
+            console.log("[debug]: called api button");
+
+            const apiKey = document.getElementById("apiKeyContainer").textContent;
+            const apiUrl = "https://api.openai.com/v1/chat/completions";
+            const systemPrompt = document.getElementById("systemPrompt").value;
+            const userPrompt = document.getElementById("userPrompt").value;
+            const model = document.getElementById("model").value;
+
+            console.log("[debug]: ", apiKey);
+
+            const userContent = `${userPrompt}
+
+            Filtered Scenario Fired Events: ${document.getElementById("scenario_fired_event").textContent} 
+            
+            Filtered transactions: ${document.getElementById("transactions").textContent} 
+            
+            Personal information on the customer: ${document.getElementById("Party_info").textContent}
+            `;
+
+            console.log("[debug]: system prompt:", systemPrompt);
+            console.log("[debug]: prompt: ", userContent);
+            console.log("[debug]: model: ", model);
 
             const loading = document.getElementById("loading-indicator");
-            if (loading) {
-                loading.classList.toggle("loading");
-                console.log("[debug]: Loading indicator toggled");
-            } else {
-                console.error("Loading indicator not found");
+            const pricing = document.getElementById("pricing-estimate");
+            loading.classList.toggle("loading");
+
+            // if first time calling pricing remove loading
+            if (pricing.classList.contains("loading")) {
+                pricing.classList.toggle("loading");
             }
+
+            const costs = {
+                "gpt-4o": {
+                    "input": 5 / 1_000_000,
+                    "output": 15 / 1_000_000
+                },
+                "gpt-4o-mini": {
+                    "input": 0.15 / 1_000_000,
+                    "output": 0.6 / 1_000_000
+                }
+            }
+
+            const cost = costs[model];
+
+
+            fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + apiKey
+                },
+                body: JSON.stringify({
+                    "model": model,
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": systemPrompt
+                        },
+                        {
+                            "role": "user",
+                            "content": userContent
+                        }
+                    ]
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    loading.classList.toggle("loading");
+                    console.log("[debug]: chatgpt response", data);
+                    const content = data.choices[0].message.content;
+                    const inputTokens = data.usage.prompt_tokens;
+                    const outputTokens = data.usage.completion_tokens;
+
+                    document.getElementById("chatgptResponse").textContent = content;
+
+                    const inputPrice = (inputTokens * cost.input).toFixed(6);
+                    const outputPrice = (outputTokens * cost.output).toFixed(6);
+
+                    document.getElementById("input-token").textContent = `Input tokens: ${inputTokens} (Cost: $${inputPrice})`;
+                    document.getElementById("output-tokens").textContent = `Output tokens: ${outputTokens} (Cost: $${outputPrice})`;
+                    
+                    // log it to job execution
+                    callJob(inputTokens, outputTokens);
+                })
+                .catch(error => {
+                    loading.classList.toggle("loading");
+                    console.error("[debug]: Error:", error);
+                    document.getElementById("chatgptResponse").textContent = "Error occurred while fetching API data.";
+                });
+        });
+
+        // calls the job on SASJobExecution
+        async function callJob(inputTokens, outputTokens) {
+            console.log("[debug]: called job execution");
+            const vajson = {
+                "inputTokens": inputTokens,
+                "outputTokens": outputTokens
+            }
+
+            const paramStr = "?_program="
+                + encodeURIComponent("/Public/Report/Prices")
+                + "&_action=" + encodeURIComponent("execute")
+                + "&_outputType=ods_html5"
+                + "&vajson=" + encodeURIComponent(JSON.stringify(vajson));
+            + "&_debug=log"
+                ;
 
             try {
-                const csrfToken = await getCsrfToken();
-                const postResponseText = await postData(csrfToken);
-                console.log('[debug]: Post response:', postResponseText);
+                const url = "/SASJobExecution/" + paramStr;
 
-                // Once data is received, hide the loading indicator
-                if (loading) {
-                    loading.classList.remove("loading");
-                    console.log("[debug]: Loading indicator removed");
-                }
-            } catch (error) {
-                console.error('[debug]: Error in form submission:', error);
+                console.log("[debug]: Job URL: ", url);
+                console.log("[debug]: ", vajson);
 
-                // If an error occurs, hide the loading indicator
-                if (loading) {
-                    loading.classList.remove("loading");
+                const requestHeaders = new Headers();
+                requestHeaders.append("Accept", "text/html");
+
+                const requestOptions = {};
+                requestOptions.headers = requestHeaders;
+                requestOptions.method = "GET";
+
+                const response = await fetch(url, requestOptions);
+
+                if (!response.ok) {
+                    const error = response.statusText;
+                    console.log("[debug]: Job failed with error: ", error);
                 }
+
+                const jobOutput = await response.text();
+                console.log("[debug]: Job output: ", jobOutput);
+                return jobOutput;
             }
+            catch (error) {
+                console.error("************** JOB FAILED ***************");
+                console.error("[debug]: Error: ", error);
+            }
+        }
+
+        // Fetch data on page load
+        document.addEventListener("DOMContentLoaded", function () {
+            fetchData();
         });
     </script>
 </body>
