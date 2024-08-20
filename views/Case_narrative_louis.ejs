@@ -217,7 +217,7 @@
         }
 
         async function getCsrfToken() {
-            const url = 'https://sasserver.demo.sas.com/svi-sand/traversals?calculateMetrics=false&expansionLimit=2000';
+            const url = 'https://amlglobalteam-03.unx.sas.com/svi-sand/traversals?calculateMetrics=false&expansionLimit=2000';
             try {
                 const response = await fetch(url, {
                     method: 'GET',
@@ -237,7 +237,7 @@
         }
 
         async function postData(csrfToken) {
-            const url = 'https://sasserver.demo.sas.com/svi-sand/traversals?calculateMetrics=false&expansionLimit=2000';
+            const url = 'https://amlglobalteam-03.unx.sas.com/svi-sand/traversals?calculateMetrics=false&expansionLimit=2000';
             const data = {
                 "edgeTypes": [
                     "social_link"
@@ -333,7 +333,7 @@
                 console.error('Alert ID is still not available after waiting.');
                 return;
             }
-            const alertUrl = `https://sasserver.demo.sas.com/svi-alert/alerts/${alertId}`;
+            const alertUrl = `https://amlglobalteam-03.unx.sas.com/svi-alert/alerts/${alertId}`;
 
             console.log("[debug]: called alerts data");
             try {
@@ -346,7 +346,7 @@
                 const actionableEntityId = data.actionableEntityId;
                 document.getElementById("apiResponse").innerHTML = JSON.stringify(data, null, 2);
 
-                const alertingEventsUrl = `https://sasserver.demo.sas.com/svi-alert/alertingEvents/${currentAlertingEventId}`;
+                const alertingEventsUrl = `https://amlglobalteam-03.unx.sas.com/svi-alert/alertingEvents/${currentAlertingEventId}`;
                 const alertingEventsResponse = await fetch(alertingEventsUrl, requestOptions);
                 if (!alertingEventsResponse.ok) {
                     throw new Error('Network response was not ok ' + alertingEventsResponse.statusText);
@@ -359,7 +359,7 @@
                 }));
                 document.getElementById("scenario_fired_event").innerHTML = JSON.stringify(filteredScenarioFiredEvents, null, 2);
 
-                const transactionsUrl = `https://sasserver.demo.sas.com/amlCore/transactions?entityLevelCode=PTY&entityNumber=${actionableEntityId}`;
+                const transactionsUrl = `https://amlglobalteam-03.unx.sas.com/amlCore/transactions?entityLevelCode=PTY&entityNumber=${actionableEntityId}`;
                 const transactionsResponse = await fetch(transactionsUrl, requestOptions);
                 if (!transactionsResponse.ok) {
                     throw new Error('Network response was not ok ' + transactionsResponse.statusText);
@@ -375,7 +375,7 @@
                 }));
                 document.getElementById("transactions").innerHTML = JSON.stringify(filteredTransactions, null, 2);
 
-                const partyInfoUrl = `https://sasserver.demo.sas.com/SASVisualInvestigator/pages/PTY/${actionableEntityId}`;
+                const partyInfoUrl = `https://amlglobalteam-03.unx.sas.com/SASVisualInvestigator/pages/PTY/${actionableEntityId}`;
                 const partyInfoResponse = await fetch(partyInfoUrl, requestOptions);
                 if (!partyInfoResponse.ok) {
                     throw new Error('Network response was not ok ' + partyInfoResponse.statusText);
