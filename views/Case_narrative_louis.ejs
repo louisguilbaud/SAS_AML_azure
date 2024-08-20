@@ -43,7 +43,6 @@
             font-size: 16px;
             cursor: pointer;
             margin: 20px;
-            /* inset */
             border-radius: 5px;
             box-shadow: inset 0px 0px 0px 1px #0a0a0a;
         }
@@ -137,8 +136,7 @@
                 <option value="gpt-4o-mini">GPT-4o mini</option>
             </select>
         </div>
-        <button type="submit" class="btn-primary" id="callApiButton">Case Narrative
-        </button>
+        <button type="submit" class="btn-primary" id="callApiButton">Case Narrative</button>
     </form>
 
     <h2 class="loading" id="loading-indicator">
@@ -269,258 +267,50 @@
                 const postResponseText = await response.json();
                 document.getElementById('postResponse').textContent = JSON.stringify(postResponseText, null, 2);
 
-                const vertices = postResponseText.vertices.map(vertex => ({
-                    type: vertex.type,
-                    id: vertex.id,
-                    typeLabel: vertex.typeLabel,
-                    label: vertex.label
-                }));
+                const verticesJson = postResponseText['vertices'];
+                const edgesJson = postResponseText['edges'];
+                console.log(verticesJson);
+                document.getElementById('verticesJson').textContent = JSON.stringify(verticesJson, null, 2);
+                document.getElementById('edgesJson').textContent = JSON.stringify(edgesJson, null, 2);
+                console.log(edgesJson);
 
-                const edges = postResponseText.edges.map(edge => ({
-                    id: edge.id,
-                    endpoints: edge.endpoints.map(endpoint => ({
-                        type: endpoint.type,
-                        id: endpoint.id
-                    })),
-                    subtype: edge.subtype,
-                    label: edge.label
-                }));
-
-                console.log("[debug]: set pty and graph data");
-
-                document.getElementById('verticesJson').textContent = JSON.stringify(vertices, null, 2);
-                document.getElementById('edgesJson').textContent = JSON.stringify(edges, null, 2);
+                return postResponseText;
             } catch (error) {
                 console.error('[debug]: Error in postData:', error);
-                document.getElementById('postResponse').textContent = `Error: ${error}`;
+                throw error;
             }
         }
 
-        async function fetchData() {
-            const alertIdElement = document.getElementById("alertid");
-            let alertId = alertIdElement.textContent.trim(); // Get the alert ID from the element
+        document.getElementById("chatForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+            console.log("[debug]: form submitted");
 
-            if (!alertId) {
-                console.warn('[debug]: Alert ID is not immediately available. Waiting for it to be populated...');
-
-                // Wait for the alert ID to be available
-                for (let i = 0; i < 10; i++) {  // Retry up to 10 times (adjust as needed)
-                    await new Promise(resolve => setTimeout(resolve, 500));  // Wait for 500ms
-                    alertId = alertIdElement.textContent.trim();
-                    if (alertId) {
-                        break;  // Exit the loop once alertId is available
-                    }
-                }
-            }
-
-            if (!alertId) {
-                console.error('Alert ID is still not available after waiting.');
-                return;
-            }
-            const alertUrl = `https://amlglobalteam-03.unx.sas.com/svi-alert/alerts/${alertId}`;
-
-            console.log("[debug]: called alerts data");
-            try {
-                const response = await fetch(alertUrl, requestOptions);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
-                }
-                const data = await response.json();
-                const currentAlertingEventId = data.currentAlertingEventId;
-                const actionableEntityId = data.actionableEntityId;
-                document.getElementById("apiResponse").innerHTML = JSON.stringify(data, null, 2);
-
-                const alertingEventsUrl = `https://amlglobalteam-03.unx.sas.com/svi-alert/alertingEvents/${currentAlertingEventId}`;
-                const alertingEventsResponse = await fetch(alertingEventsUrl, requestOptions);
-                if (!alertingEventsResponse.ok) {
-                    throw new Error('Network response was not ok ' + alertingEventsResponse.statusText);
-                }
-                const alertingEventsData = await alertingEventsResponse.json();
-                const filteredScenarioFiredEvents = alertingEventsData.scenarioFiredEvents.map(event => ({
-                    scenarioName: event.scenarioName,
-                    scenarioDescription: event.scenarioDescription,
-                    messageTemplateText: event.messageTemplateText
-                }));
-                document.getElementById("scenario_fired_event").innerHTML = JSON.stringify(filteredScenarioFiredEvents, null, 2);
-
-                const transactionsUrl = `https://amlglobalteam-03.unx.sas.com/amlCore/transactions?entityLevelCode=PTY&entityNumber=${actionableEntityId}`;
-                const transactionsResponse = await fetch(transactionsUrl, requestOptions);
-                if (!transactionsResponse.ok) {
-                    throw new Error('Network response was not ok ' + transactionsResponse.statusText);
-                }
-                const transactionsData = await transactionsResponse.json();
-                const filteredTransactions = transactionsData.items.map(transaction => ({
-                    transactionNumber: transaction.transactionNumber,
-                    primaryMediumDesc: transaction.primaryMediumDesc,
-                    secondaryMediumDesc: transaction.secondaryMediumDesc,
-                    mechanismDesc: transaction.mechanismDesc,
-                    currencyAmount: transaction.currencyAmount,
-                    transactionCDIDesc: transaction.transactionCDIDesc
-                }));
-                document.getElementById("transactions").innerHTML = JSON.stringify(filteredTransactions, null, 2);
-
-                const partyInfoUrl = `https://amlglobalteam-03.unx.sas.com/SASVisualInvestigator/pages/PTY/${actionableEntityId}`;
-                const partyInfoResponse = await fetch(partyInfoUrl, requestOptions);
-                if (!partyInfoResponse.ok) {
-                    throw new Error('Network response was not ok ' + partyInfoResponse.statusText);
-                }
-                const partyInfoData = await partyInfoResponse.json();
-                document.getElementById("Party_info").innerHTML = JSON.stringify(partyInfoData.data, null, 2);
-
-                const csrfToken = await getCsrfToken();
-                await postData(csrfToken);
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('postResponse').textContent = `Error: ${error}`;
-            }
-        }
-
-        document.getElementById("chatForm").addEventListener("submit", function(event) {
-            event.preventDefault();  // Prevent the default form submission
-            console.log("[debug]: form submitted");  // Check if this log appears
-        
             const loading = document.getElementById("loading-indicator");
             if (loading) {
-                loading.classList.toggle("loading");  // Toggle the loading indicator
-                console.log("[debug]: Loading indicator toggled");  // Check if this log appears
+                loading.classList.toggle("loading");
+                console.log("[debug]: Loading indicator toggled");
             } else {
-                console.error("Loading indicator not found");  // Log an error if the loading element is not found
+                console.error("Loading indicator not found");
             }
-            event.preventDefault();
-            console.log("[debug]: called api button");
-
-            const apiKey = document.getElementById("apiKeyContainer").textContent;
-            const apiUrl = "https://api.openai.com/v1/chat/completions";
-            const model = document.getElementById("model").value;
-
-            console.log("[debug]: ", apiKey);
-
-            const userContent = `Please review the following account activity and identify any suspicious patterns or behaviors that could indicate potential money laundering. Focus on analyzing any large transactions, unusual frequency of activities, or connections to high-risk jurisdictions. Provide a detailed case narrative that includes an overview of the activity, specific transaction details, behavioral indicators, and how these activities align with the customer's KYC profile. Conclude with a risk assessment and recommendations for further action, such as enhanced due diligence or filing a SAR, 
-
-            Filtered Scenario Fired Events: ${document.getElementById("scenario_fired_event").textContent} 
-            
-            Filtered transactions: ${document.getElementById("transactions").textContent} 
-            
-            Personal information on the customer: ${document.getElementById("Party_info").textContent}
-            `;
-
-            console.log("[debug]: prompt: ", userContent);
-            console.log("[debug]: model: ", model);
-
-            const loading = document.getElementById("loading-indicator");
-            const pricing = document.getElementById("pricing-estimate");
-            loading.classList.toggle("loading");
-
-            // if first time calling pricing remove loading
-            if (pricing.classList.contains("loading")) {
-                pricing.classList.toggle("loading");
-            }
-
-            const costs = {
-                "gpt-4o": {
-                    "input": 5 / 1_000_000,
-                    "output": 15 / 1_000_000
-                },
-                "gpt-4o-mini": {
-                    "input": 0.15 / 1_000_000,
-                    "output": 0.6 / 1_000_000
-                }
-            }
-
-            const cost = costs[model];
-
-
-            fetch(apiUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + apiKey
-                },
-                body: JSON.stringify({
-                    "model": model,
-                    "messages": [
-                        {
-                            "role": "user",
-                            "content": userContent
-                        }
-                    ]
-                })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    loading.classList.toggle("loading");
-                    console.log("[debug]: chatgpt response", data);
-                    const content = data.choices[0].message.content;
-                    const inputTokens = data.usage.prompt_tokens;
-                    const outputTokens = data.usage.completion_tokens;
-
-                    document.getElementById("chatgptResponse").textContent = content;
-
-                    const inputPrice = (inputTokens * cost.input).toFixed(6);
-                    const outputPrice = (outputTokens * cost.output).toFixed(6);
-
-                    document.getElementById("input-token").textContent = `Input tokens: ${inputTokens} (Cost: $${inputPrice})`;
-                    document.getElementById("output-tokens").textContent = `Output tokens: ${outputTokens} (Cost: $${outputPrice})`;
-                    
-                    // log it to job execution
-                    callJob(inputTokens, outputTokens);
-                })
-                .catch(error => {
-                    loading.classList.toggle("loading");
-                    console.error("[debug]: Error:", error);
-                    document.getElementById("chatgptResponse").textContent = "Error occurred while fetching API data.";
-                });
-        });
-
-        // calls the job on SASJobExecution
-        async function callJob(inputTokens, outputTokens) {
-            console.log("[debug]: called job execution");
-            const vajson = {
-                "inputTokens": inputTokens,
-                "outputTokens": outputTokens
-            }
-
-            const paramStr = "?_program="
-                + encodeURIComponent("/Public/Report/Prices")
-                + "&_action=" + encodeURIComponent("execute")
-                + "&_outputType=ods_html5"
-                + "&vajson=" + encodeURIComponent(JSON.stringify(vajson));
-            + "&_debug=log"
-                ;
 
             try {
-                const url = "/SASJobExecution/" + paramStr;
+                const csrfToken = await getCsrfToken();
+                const postResponseText = await postData(csrfToken);
+                console.log('[debug]: Post response:', postResponseText);
 
-                console.log("[debug]: Job URL: ", url);
-                console.log("[debug]: ", vajson);
-
-                const requestHeaders = new Headers();
-                requestHeaders.append("Accept", "text/html");
-
-                const requestOptions = {};
-                requestOptions.headers = requestHeaders;
-                requestOptions.method = "GET";
-
-                const response = await fetch(url, requestOptions);
-
-                if (!response.ok) {
-                    const error = response.statusText;
-                    console.log("[debug]: Job failed with error: ", error);
+                // Once data is received, hide the loading indicator
+                if (loading) {
+                    loading.classList.remove("loading");
+                    console.log("[debug]: Loading indicator removed");
                 }
+            } catch (error) {
+                console.error('[debug]: Error in form submission:', error);
 
-                const jobOutput = await response.text();
-                console.log("[debug]: Job output: ", jobOutput);
-                return jobOutput;
+                // If an error occurs, hide the loading indicator
+                if (loading) {
+                    loading.classList.remove("loading");
+                }
             }
-            catch (error) {
-                console.error("************** JOB FAILED ***************");
-                console.error("[debug]: Error: ", error);
-            }
-        }
-
-        // Fetch data on page load
-        document.addEventListener("DOMContentLoaded", function () {
-            fetchData();
         });
     </script>
 </body>
