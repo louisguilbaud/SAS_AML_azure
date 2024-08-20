@@ -401,24 +401,6 @@
             console.log("[debug]: model: ", model);
 
             const loading = document.getElementById("loading-indicator");
-            const pricing = document.getElementById("pricing-estimate");
-            loading.classList.toggle("loading");
-
-            // if first time calling pricing remove loading
-            if (pricing.classList.contains("loading")) {
-                pricing.classList.toggle("loading");
-            }
-
-            const costs = {
-                "gpt-4o": {
-                    "input": 5 / 1_000_000,
-                    "output": 15 / 1_000_000
-                },
-                "gpt-4o-mini": {
-                    "input": 0.15 / 1_000_000,
-                    "output": 0.6 / 1_000_000
-                }
-            }
 
             const cost = costs[model];
 
