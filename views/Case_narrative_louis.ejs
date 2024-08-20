@@ -351,6 +351,7 @@
                 const transactionsData = await transactionsResponse.json();
                 const filteredTransactions = transactionsData.items.map(transaction => ({
                     transactionNumber: transaction.transactionNumber,
+                    transactionDate:transaction.transactionDate,
                     primaryMediumDesc: transaction.primaryMediumDesc,
                     secondaryMediumDesc: transaction.secondaryMediumDesc,
                     mechanismDesc: transaction.mechanismDesc,
