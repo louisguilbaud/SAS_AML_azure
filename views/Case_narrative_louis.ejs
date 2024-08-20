@@ -375,8 +375,17 @@
             }
         }
 
-        document.getElementById("chatForm").addEventListener("submit", function () {
-            console.log("[debug]: form submitted");
+        document.getElementById("chatForm").addEventListener("submit", function(event) {
+            event.preventDefault();  // Prevent the default form submission
+            console.log("[debug]: form submitted");  // Check if this log appears
+        
+            const loading = document.getElementById("loading-indicator");
+            if (loading) {
+                loading.classList.toggle("loading");  // Toggle the loading indicator
+                console.log("[debug]: Loading indicator toggled");  // Check if this log appears
+            } else {
+                console.error("Loading indicator not found");  // Log an error if the loading element is not found
+            }
             event.preventDefault();
             console.log("[debug]: called api button");
 
