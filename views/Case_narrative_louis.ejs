@@ -402,8 +402,6 @@
 
             const loading = document.getElementById("loading-indicator");
 
-            const cost = costs[model];
-
 
             fetch(apiUrl, {
                 method: "POST",
@@ -431,11 +429,6 @@
 
                     document.getElementById("chatgptResponse").textContent = content;
 
-                    const inputPrice = (inputTokens * cost.input).toFixed(6);
-                    const outputPrice = (outputTokens * cost.output).toFixed(6);
-
-                    document.getElementById("input-token").textContent = `Input tokens: ${inputTokens} (Cost: $${inputPrice})`;
-                    document.getElementById("output-tokens").textContent = `Output tokens: ${outputTokens} (Cost: $${outputPrice})`;
                     
                     // log it to job execution
                     callJob(inputTokens, outputTokens);
