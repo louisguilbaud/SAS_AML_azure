@@ -130,17 +130,6 @@
     </details>
 
     <form id="chatForm">
-        <label for="systemPrompt">System Prompt:</label>
-        <textarea id="systemPrompt" name="systemPrompt">
-        You are an Anti Money Laundering Investigator of a bank. You're used reading and understanding JSON representations of alerts and can get why they're flagged based on complex transactions and customer information. You need to help another Investigator make sense of the alerts that they're receiving by providing informative and actionable insights.
-        </textarea>
-        <br />
-        <label for="userPrompt">User Prompt - Note that Filtered Scenario Events, Filtered Transactions, and Personal
-            Information will be appended to this prompt:</label>
-        <textarea id="userPrompt" name="userPrompt">
-        Please help with a list of scenarios that triggered (also called scenario fired event) with a customer, their personal information, and the list of their transactions. I want you to give recommendations for each scenario fired event on where the investigator should look first to find the suspicious activity. Write the scenario name and then the recommendation for the triggered scenario. You can give the transactions that are suspicious for a specific scenario by giving the transaction ID. Try to give as many details as possible. Please proceed step by step. At the very end give a recommendation on the total alert considering all the information and especially considering the KYC profile of the customer:
-        </textarea>
-        <br />
         <div class="row">
             <label for="model">Model:</label>
             <select id="model" name="model">
@@ -157,11 +146,6 @@
     </h2>
 
     <div class="api-response-box">
-        <div class="api-pricing loading" id="pricing-estimate">
-            <p>Estimated costs</p>
-            <p id="input-token"></p>
-            <p id="output-tokens"></p>
-        </div>
         <pre style="width: 100%;"><span id="chatgptResponse"></span></pre>
     </div>
     <p hidden><span id="apiKeyContainer"></span></p>
