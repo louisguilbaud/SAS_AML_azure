@@ -91,4 +91,8 @@ router.get('/Case_narrative_arnav.html', function(req, res, next) {
   res.render('Case_narrative_arnav', { title: 'Case_narrative_arnav ddc' });
 });
 
+router.get('/Case_narrative_louis.html', function(req, res, next) {
+  res.render('Case_narrative_louis', { title: 'Case_narrative_louis ddc' });
+});
+
 module.exports = router;
