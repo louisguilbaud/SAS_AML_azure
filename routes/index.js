@@ -96,7 +96,7 @@ router.get("/Case_narrative_louis.html", function (req, res, next) {
 	res.render("Case_narrative_louis", { title: "Case_narrative_louis ddc" });
 });
 
-router.get("qna.html", function (req, res, next) {
+router.get("/qna.html", function (req, res, next) {
 	res.render("qna", { title: "qna ddc" });
 });
 
