@@ -175,7 +175,6 @@
 					Ask a follow up question
 				</label>
 				<textarea id="userPrompt" name="userPrompt">
-Please help with a list of scenarios that triggered (also called scenario fired event) with a customer, their personal information, and the list of their transactions. I want to understand what I begin focusing to find the suspicious activity. Please explain step by step.
 				</textarea>
 			</div>
 
@@ -487,7 +486,9 @@ Please help with a list of scenarios that triggered (also called scenario fired 
 		const conversation = document.getElementById("conversation");
 		const messages = [];
 		let firstMessage = true;
-		const systemPrompt = `You are a helpful senior Anti Money Laundering Investigator of a bank. You're used reading and understanding JSON representations of alerts and can get why they're flagged based on complex transactions and customer information. You are helping another Investigator make sense of the alerts that they're receiving by providing informative and actionable insights and discussing any issues that they're having, while not being afraid to admit your own ignorance and say that the answer may be unclear from just the data provided.`;
+		const systemPrompt = `You are a helpful Anti Money Laundering AI tool of a bank. You're used to reading and understanding complex JSON representations of alerts and can get why they're flagged based on filtered transactions and customer information. You are helping an  Investigator make sense of the alerts that they're receiving by providing informative and actionable insights and discussing any issues that they're having, while not being afraid to admit your own ignorance and say that the answer may be unclear from just the data provided.
+		
+		Make sure to output plaintext responses that are easy to understand and actionable.`;
 		const systemMessage = {
 			role: "assistant",
 			content: systemPrompt
@@ -509,8 +510,7 @@ Please help with a list of scenarios that triggered (also called scenario fired 
 
 				console.log("[debug]: ", apiKey);
 
-				let userPrompt =
-					document.getElementById("userPrompt").value;
+				let userPrompt = `Please review the following account activity and identify any suspicious patterns or behaviors that could indicate potential money laundering. Focus on analyzing any large transactions, unusual frequency of activities, or connections to high-risk jurisdictions. Provide a detailed case narrative that includes an overview of the activity, specific transaction details, behavioral indicators, and how these activities align with the customer's KYC profile. Conclude with a risk assessment and recommendations for further action, such as enhanced due diligence or filing a SAR. `;
 
 				const newMessage = {
 					role: "user",
@@ -623,7 +623,7 @@ Please help with a list of scenarios that triggered (also called scenario fired 
 				const url = "/SASJobExecution/" + paramStr;
 
 				console.log("[debug]: Job URL: ", url);
-				console.log("[debug]: ", vajson);
+				// console.log("[debug]: vajson ", vajson);
 
 				const requestHeaders = new Headers();
 				requestHeaders.append("Accept", "text/html");
@@ -640,7 +640,7 @@ Please help with a list of scenarios that triggered (also called scenario fired 
 				}
 
 				const jobOutput = await response.text();
-				console.log("[debug]: Job output: ", jobOutput);
+				// console.log("[debug]: Job output: ", jobOutput);
 				return jobOutput;
 			} catch (error) {
 				console.error("************** JOB FAILED ***************");
