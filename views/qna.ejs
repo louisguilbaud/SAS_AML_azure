@@ -519,10 +519,12 @@
 							content: userPrompt
 						};
 						addMessage(newMessage);
+						messages.push(newMessage);
 					}
 
 					if (firstMessage) {
 						firstMessage = false;
+
 						userPrompt = `Please review the following account activity and identify any suspicious patterns or behaviors that could indicate potential money laundering. Focus on analyzing any large transactions, unusual frequency of activities, or connections to high-risk jurisdictions. Provide a detailed case narrative that includes an overview of the activity, specific transaction details, behavioral indicators, and how these activities align with the customer's KYC profile. Conclude with a risk assessment and recommendations for further action, such as enhanced due diligence or filing a SAR. Please don't respond with markdown and instead use plaintext.`;
 
 						const newMessage = {
@@ -545,6 +547,7 @@
 									.textContent
 							}`;
 						newMessage.content = userPrompt;
+						messages.push(newMessage);
 
 						const prompt =
 							document.getElementsByClassName("prompt")[0];
@@ -553,7 +556,6 @@
 							document.getElementsByClassName("btn-primary")[0];
 						btn.textContent = "Send";
 					}
-					messages.push(newMessage);
 
 					console.log("[debug]: prompt: ", userPrompt);
 					console.log("[debug]: model: ", model);
