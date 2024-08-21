@@ -508,7 +508,9 @@
 
 					console.log("[debug]: ", apiKey);
 
-					let userPrompt = `Please review the following account activity and identify any suspicious patterns or behaviors that could indicate potential money laundering. Focus on analyzing any large transactions, unusual frequency of activities, or connections to high-risk jurisdictions. Provide a detailed case narrative that includes an overview of the activity, specific transaction details, behavioral indicators, and how these activities align with the customer's KYC profile. Conclude with a risk assessment and recommendations for further action, such as enhanced due diligence or filing a SAR. `;
+					let userPrompt = `Please review the following account activity and identify any suspicious patterns or behaviors that could indicate potential money laundering. Focus on analyzing any large transactions, unusual frequency of activities, or connections to high-risk jurisdictions. Provide a detailed case narrative that includes an overview of the activity, specific transaction details, behavioral indicators, and how these activities align with the customer's KYC profile. Conclude with a risk assessment and recommendations for further action, such as enhanced due diligence or filing a SAR.
+
+					Please don't respond with markdown.`;
 
 					const newMessage = {
 						role: "user",
@@ -596,7 +598,7 @@
 				});
 
 			function addMessage(message) {
-				const messageElement = document.createElement("p");
+				const messageElement = document.createElement("pre");
 				messageElement.classList.add("message");
 				messageElement.classList.add(message.role + "-response");
 				messageElement.textContent = message.content;
