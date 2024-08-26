@@ -624,7 +624,10 @@ arnav.priyadarshi@sas.com
 				messageElement.classList.add(message.role + "-response");
 				messageElement.innerHTML = message.content;
 				conversation.appendChild(messageElement);
-				autoGrow(conversation);
+				// needs a timeout since markdown takes some time to render
+				setTimeout(() => autoGrow(conversation), 100);
+				//backup in case the first timeout doesn't work
+				setTimeout(() => autoGrow(conversation), 500);
 			}
 
 			// calls the job on SASJobExecution
