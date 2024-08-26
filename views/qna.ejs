@@ -675,15 +675,8 @@ arnav.priyadarshi@sas.com
 			}
 
 			// Fetch data on page load
-			document.addEventListener("DOMContentLoaded", async function () {
-				const btn = document.getElementById("callApiButton");
-				btn.ariaDisabled = true;
-				btn.disabled = true;
-				button.classList.toggle("btn-primary");
-				await fetchData();
-				btn.ariaDisabled = false;
-				btn.disabled = false;
-				button.classList.toggle("btn-primary");
+			document.addEventListener("DOMContentLoaded", function () {
+				fetchData();
 			});
 		</script>
 	</body>
