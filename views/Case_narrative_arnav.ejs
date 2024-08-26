@@ -7,6 +7,7 @@ arnav.priyadarshi@sas.com
 <html lang="en">
 	<head>
 		<script src="./javascripts/sas/util/messagingUtil.js"></script>
+		<script type="module" src="https://md-block.verou.me/md-block.js"></script>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<style>
@@ -101,7 +102,6 @@ arnav.priyadarshi@sas.com
 				align-items: center;
 				margin: 20px;
 				width: 100%;
-				border: 1px solid #131212;
 				border-radius: 5px;
 				background-color: #fefeff;
 				margin-bottom: 40px;
@@ -113,7 +113,7 @@ arnav.priyadarshi@sas.com
 				border-radius: 5px;
 				background-color: #eeeeee;
 				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-				max-width: 60%;
+				max-width: 100%;
 				line-height: 1.5;
 				font-family: system-ui, -apple-system, BlinkMacSystemFont,
 					"Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
@@ -123,7 +123,7 @@ arnav.priyadarshi@sas.com
 			.assistant-response {
 				/* the box is aligned to the left inside #conversation */
 				align-self: flex-start;
-				color: #0020af;
+				color: #010721;
 			}
 
 			.user-response {
@@ -483,6 +483,8 @@ arnav.priyadarshi@sas.com
 						"postResponse"
 					).textContent = `Error: ${error}`;
 				}
+				console.log("[debug]: fetched data - all ok");
+				return true;
 			}
 
 			const conversation = document.getElementById("conversation");
@@ -593,10 +595,10 @@ arnav.priyadarshi@sas.com
 				});
 
 			function addMessage(message) {
-				const messageElement = document.createElement("pre");
+				const messageElement = document.createElement("md-block");
 				messageElement.classList.add("message");
 				messageElement.classList.add(message.role + "-response");
-				messageElement.textContent = message.content;
+				messageElement.innerHTML = message.content;
 				conversation.appendChild(messageElement);
 				autoGrow(conversation);
 			}
@@ -649,8 +651,13 @@ arnav.priyadarshi@sas.com
 			}
 
 			// Fetch data on page load
-			document.addEventListener("DOMContentLoaded", function () {
-				fetchData();
+			document.addEventListener("DOMContentLoaded", async function () {
+				const btn = document.getElementById("callApiButton");
+				btn.ariaDisabled = true;
+				btn.disabled = true;
+				await fetchData();
+				btn.ariaDisabled = false;
+				btn.disabled = false;
 			});
 		</script>
 	</body>
