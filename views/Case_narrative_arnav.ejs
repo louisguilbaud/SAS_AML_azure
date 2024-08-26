@@ -491,7 +491,7 @@ arnav.priyadarshi@sas.com
 			const messages = [];
 			const systemPrompt = `You are a helpful Anti Money Laundering AI tool of a bank. You're used to reading and understanding complex JSON representations of alerts and can get why they're flagged based on filtered transactions and customer information. You are helping an  Investigator make sense of the alerts that they're receiving by providing informative and actionable insights and discussing any issues that they're having, while not being afraid to admit your own ignorance and say that the answer may be unclear from just the data provided.
 
-			Make sure to output plaintext responses that are easy to understand and actionable.`;
+			Make sure to output responses that are easy to understand and actionable.`;
 			const systemMessage = {
 				role: "assistant",
 				content: systemPrompt
@@ -513,7 +513,7 @@ arnav.priyadarshi@sas.com
 
 					console.log("[debug]: ", apiKey);
 
-					let userPrompt = `Please review the following account activity and identify any suspicious patterns or behaviors that could indicate potential money laundering. Focus on analyzing any large transactions, unusual frequency of activities, or connections to high-risk jurisdictions. Provide a detailed case narrative that includes an overview of the activity, specific transaction details, behavioral indicators, and how these activities align with the customer's KYC profile. Conclude with a risk assessment and recommendations for further action, such as enhanced due diligence or filing a SAR. Please don't respond with markdown and instead use plaintext.`;
+					let userPrompt = `Please review the following account activity and identify any suspicious patterns or behaviors that could indicate potential money laundering. Focus on analyzing any large transactions, unusual frequency of activities, or connections to high-risk jurisdictions. Provide a detailed case narrative that includes an overview of the activity, specific transaction details, behavioral indicators, and how these activities align with the customer's KYC profile. Conclude with a risk assessment and recommendations for further action, such as enhanced due diligence or filing a SAR. You may respond in Markdown.`;
 
 					const newMessage = {
 						role: "user",
@@ -651,13 +651,8 @@ arnav.priyadarshi@sas.com
 			}
 
 			// Fetch data on page load
-			document.addEventListener("DOMContentLoaded", async function () {
-				const btn = document.getElementById("callApiButton");
-				btn.ariaDisabled = true;
-				btn.disabled = true;
-				await fetchData();
-				btn.ariaDisabled = false;
-				btn.disabled = false;
+			document.addEventListener("DOMContentLoaded", function () {
+				fetchData();
 			});
 		</script>
 	</body>
