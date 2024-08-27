@@ -657,8 +657,6 @@ arnav.priyadarshi@sas.com
 		const loading = document.getElementById("loading-indicator");
 		const loadingCN = document.getElementById("loading-indicator-cn");
 
-		const apiKey =
-			document.getElementById("apiKeyContainer").textContent;
 		const apiUrl = "https://api.openai.com/v1/chat/completions";
 		console.log("[debug]: apiKey", apiKey);
 		const filteredScenarioFiredEvents = document.getElementById(
@@ -683,6 +681,7 @@ arnav.priyadarshi@sas.com
 
 
 		function getCaseNarrative(event) {
+			const apiKey = document.getElementById("apiKeyContainer").textContent;
 			console.log("[debug]: CaseNarrative called");
 			event.preventDefault();
 
@@ -758,6 +757,8 @@ arnav.priyadarshi@sas.com
 		document
 			.getElementById("chatForm")
 			.addEventListener("submit", function () {
+				const apiKey = document.getElementById("apiKeyContainer").textContent;
+
 				console.log("[debug]: form submitted");
 				event.preventDefault();
 				console.log("[debug]: called api button");
@@ -793,7 +794,7 @@ Personal information on the customer: ${partyInfo}`;
 
 					newMessage.content = userPrompt;
 				}
-				
+
 				messages.push(newMessage);
 				console.log("[debug]: prompt: ", userPrompt);
 				console.log("[debug]: model: ", model);
