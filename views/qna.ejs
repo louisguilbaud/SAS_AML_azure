@@ -635,6 +635,8 @@ arnav.priyadarshi@sas.com
 				document.getElementById("Party_info").innerHTML =
 					JSON.stringify(partyInfoData.data, null, 2);
 
+				console.log("[debug]: fetched VI data - all ok");
+
 				const csrfToken = await getCsrfToken();
 				await postData(csrfToken);
 			} catch (error) {
@@ -658,7 +660,6 @@ arnav.priyadarshi@sas.com
 		const loadingCN = document.getElementById("loading-indicator-cn");
 
 		const apiUrl = "https://api.openai.com/v1/chat/completions";
-		console.log("[debug]: apiKey", apiKey);
 
 
 		const messages = [];
