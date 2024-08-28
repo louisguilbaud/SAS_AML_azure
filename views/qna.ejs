@@ -121,7 +121,6 @@ arnav.priyadarshi@sas.com
 			flex-direction: column;
 			align-items: center;
 			flex: 1;
-			height: 100%;
 		}
 
 		h1 {
@@ -163,8 +162,10 @@ arnav.priyadarshi@sas.com
 			padding: 10px;
 			border-radius: 5px;
 			background-color: #eeeeee;
+			border: #000000 1px solid;
 			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 			max-width: 100%;
+			width: 80%;
 			line-height: 1.5;
 			font-family: system-ui, -apple-system, BlinkMacSystemFont,
 				"Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
@@ -232,6 +233,11 @@ arnav.priyadarshi@sas.com
 			padding: 0px 12px;
 			border: 1px solid #ccc;
 			border-top: none;
+			height: 100%;
+		}
+
+		.container {
+			width: 100%;
 		}
 	</style>
 	<title>AML LLM</title>
@@ -269,6 +275,8 @@ arnav.priyadarshi@sas.com
 		</button>
 	</div>
 
+	<div class="container">
+		
 	<div id="QnA" class="tabcontent">
 		<div class="chat">
 			<h1>Alerts Chatbot</h1>
@@ -316,6 +324,9 @@ arnav.priyadarshi@sas.com
 			</form>
 		</div>
 	</div>
+	
+	</div>
+
 
 	<p hidden><span id="apiKeyContainer"></span></p>
 	<p hidden><span id="alertid"></span></p>
@@ -345,8 +356,6 @@ arnav.priyadarshi@sas.com
 			}
 			const tab = document.getElementById(tabName);
 			tab.style.display = "block";
-
-			autoGrow(body);
 			qna.style.height = qnaChat.scrollHeight + 50 + "px";
 			autoGrow(casenarrative);
 
@@ -819,7 +828,11 @@ Personal information on the customer: ${partyInfo}`;
 				const loading =
 					document.getElementById("loading-indicator");
 				loading.classList.toggle("loading");
+
 				autoGrow(conversation);
+
+				const textarea = document.getElementById("userPrompt");
+				textarea.value = "";
 
 				fetch(apiUrl, {
 					method: "POST",
@@ -884,10 +897,6 @@ Personal information on the customer: ${partyInfo}`;
 				autoGrow(body);
 				autoGrow(casenarrative);
 				autoGrow(qna);
-				const chats = document.querySelectorAll(".chat");
-				for (const chat of chats) {
-					autoGrow(chat);
-				}
 			}, 100);
 
 			// second timeout to ensure the scroll height is updated
@@ -897,10 +906,6 @@ Personal information on the customer: ${partyInfo}`;
 				autoGrow(body);
 				autoGrow(casenarrative);
 				autoGrow(qna);
-				const chats = document.querySelectorAll(".chat");
-				for (const chat of chats) {
-					autoGrow(chat);
-				}
 			}, 500);
 
 		}
