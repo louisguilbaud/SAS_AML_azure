@@ -21,6 +21,7 @@ arnav.priyadarshi@sas.com
 		* {
 			margin: 0;
 			padding: 0;
+			overflow: auto;
 		}
 
 		body {
@@ -112,6 +113,7 @@ arnav.priyadarshi@sas.com
 
 		.loading {
 			display: none;
+			
 		}
 
 		.chat {
@@ -119,6 +121,7 @@ arnav.priyadarshi@sas.com
 			flex-direction: column;
 			align-items: center;
 			flex: 1;
+			height: 100%;
 		}
 
 		h1 {
@@ -258,10 +261,10 @@ arnav.priyadarshi@sas.com
 	</details>
 
 	<div class="tab">
-		<button class="tablinks" onclick="openTab(event, 'CaseNarrative')" aria-label="Case Narrative">
+		<button class="tablinks" onclick="openTab(event, 'CaseNarrative')" aria-label="Case Narrative" id="defaultOpen">
 			Case Narrative
 		</button>
-		<button class="tablinks" onclick="openTab(event, 'QnA')" aria-label="QnA" id="defaultOpen">
+		<button class="tablinks" onclick="openTab(event, 'QnA')" aria-label="QnA" >
 			QnA
 		</button>
 	</div>
@@ -684,6 +687,7 @@ arnav.priyadarshi@sas.com
 				"transactions"
 			).textContent;
 			const partyInfo = document.getElementById("Party_info").textContent;
+
 			console.log("[debug]: CaseNarrative called");
 			event.preventDefault();
 
@@ -701,9 +705,13 @@ arnav.priyadarshi@sas.com
 				content: userPrompt
 			};
 
-			for (let i = 0; i < formCN.children.length; i++) {
-				formCN.children[i].style.display = "none";
-			}
+			// for (let i = 0; i < formCN.children.length; i++) {
+			// 	formCN.children[i].style.display = "none";
+			// }
+
+			// change display flex to none
+			formCN.classList.toggle("loading");
+			formCN.id = "";
 
 			console.log("[debug]: prompt: ", userPrompt);
 			console.log("[debug]: model: ", model);
@@ -868,6 +876,33 @@ Personal information on the customer: ${partyInfo}`;
 			autoGrow(conversation);
 			autoGrow(conversationCN);
 			autoGrow(body);
+
+			// markdown update can take some time
+			setTimeout(() => {
+				autoGrow(conversation);
+				autoGrow(conversationCN);
+				autoGrow(body);
+				autoGrow(casenarrative);
+				autoGrow(qna);
+				const chats = document.querySelectorAll(".chat");
+				for (const chat of chats) {
+					autoGrow(chat);
+				}
+			}, 100);
+
+			// second timeout to ensure the scroll height is updated
+			setTimeout(() => {
+				autoGrow(conversation);
+				autoGrow(conversationCN);
+				autoGrow(body);
+				autoGrow(casenarrative);
+				autoGrow(qna);
+				const chats = document.querySelectorAll(".chat");
+				for (const chat of chats) {
+					autoGrow(chat);
+				}
+			}, 500);
+
 		}
 
 		// calls the job on SASJobExecution
