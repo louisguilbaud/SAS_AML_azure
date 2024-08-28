@@ -734,7 +734,7 @@ arnav.priyadarshi@sas.com
 						role: "assistant",
 						content: content
 					};
-					addMessage(responseMessage);
+					addMessage(responseMessage, true);
 					messages.push(responseMessage);
 					console.log("[debug]: messages", messages);
 
@@ -783,7 +783,7 @@ arnav.priyadarshi@sas.com
 					role: "user",
 					content: userPrompt
 				};
-				addMessage(newMessage);
+				addMessage(newMessage, false);
 
 				if (firstMessage) {
 					firstMessage = false;
@@ -841,7 +841,7 @@ Personal information on the customer: ${partyInfo}`;
 							role: "assistant",
 							content: content
 						};
-						addMessage(responseMessage);
+						addMessage(responseMessage, false);
 						messages.push(responseMessage);
 						console.log("[debug]: messages", messages);
 
@@ -858,12 +858,13 @@ Personal information on the customer: ${partyInfo}`;
 					});
 			});
 
-		function addMessage(message) {
+		function addMessage(message, cn) {
 			const messageElement = document.createElement("md-block");
 			messageElement.classList.add("message");
 			messageElement.classList.add(message.role + "-response");
 			messageElement.innerHTML = message.content;
-			conversation.appendChild(messageElement);
+			const convo = cn ? conversationCN : conversation;
+			convo.appendChild(messageElement);
 			autoGrow(conversation);
 			autoGrow(conversationCN);
 			autoGrow(body);
