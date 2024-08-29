@@ -111,7 +111,6 @@ arnav.priyadarshi@sas.com
 
 		.loading {
 			display: none;
-			
 		}
 
 		.chat {
@@ -122,6 +121,7 @@ arnav.priyadarshi@sas.com
 		}
 
 		h1 {
+			padding-top: 10px;
 			margin-bottom: 0;
 		}
 
@@ -131,7 +131,7 @@ arnav.priyadarshi@sas.com
 			align-items: center;
 			margin: 20px;
 			margin-top: 0;
-			width: 90%;
+			width: 100%;
 			border-radius: 5px;
 			background-color: #eeeeee;
 			margin-bottom: 40px;
@@ -144,7 +144,7 @@ arnav.priyadarshi@sas.com
 			align-items: center;
 			margin: 20px;
 			margin-top: 0;
-			width: 90%;
+			width: 100%;
 			border-radius: 5px;
 			background-color: #fefeff;
 			margin-bottom: 40px;
@@ -240,7 +240,7 @@ arnav.priyadarshi@sas.com
 		.tabcontent {
 			display: none;
 			padding: 0px 12px;
-			border: 1px solid #ccc;
+			/* border: 1px solid #ccc; */
 			border-top: none;
 		}
 	</style>
@@ -798,6 +798,7 @@ arnav.priyadarshi@sas.com
 
 				let userPrompt =
 					document.getElementById("userPrompt").value;
+				document.getElementById("userPrompt").value = "";
 
 				const newMessage = {
 					role: "user",
@@ -894,6 +895,28 @@ Personal information on the customer: ${partyInfo}`;
 			autoGrow(conversation);
 			autoGrow(conversationCN);
 			autoGrow(body);
+
+			setTimeout(() => {
+				autoGrow(conversation);
+				autoGrow(conversationCN);
+				for (const chat of chats) {
+					autoGrow(chat);
+				}
+				autoGrow(qna);
+				autoGrow(casenarrative);
+				autoGrow(body);
+			}, 200);
+
+			setTimeout(() => {
+				autoGrow(conversation);
+				autoGrow(conversationCN);
+				for (const chat of chats) {
+					autoGrow(chat);
+				}
+				autoGrow(qna);
+				autoGrow(casenarrative);
+				autoGrow(body);
+			}, 500);
 		}
 
 		// calls the job on SASJobExecution
