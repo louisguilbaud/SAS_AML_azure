@@ -21,7 +21,6 @@ arnav.priyadarshi@sas.com
 		* {
 			margin: 0;
 			padding: 0;
-			overflow: auto;
 		}
 
 		body {
@@ -42,17 +41,7 @@ arnav.priyadarshi@sas.com
 		}
 
 		details {
-			margin: 20px 0;
-			border: 1px solid #ccc;
-			border-radius: 5px;
-			padding: 10px;
 			display: none;
-		}
-
-		summary {
-			font-size: 24px;
-			font-weight: bold;
-			cursor: pointer;
 		}
 
 		.btn-primary {
@@ -63,10 +52,19 @@ arnav.priyadarshi@sas.com
 			font-size: 16px;
 			cursor: pointer;
 			margin: 20px;
-			/* inset */
 			border-radius: 5px;
 			box-shadow: inset 0px 0px 0px -0.1px #0a0a0a;
 		}
+
+		.btn-primary:disabled {
+			background-color: #d6d6d6; /* Lighter background to indicate it's disabled */
+			border-color: #ccc;         /* Lighter border */
+			color: #888;                /* Greyed out text */
+			cursor: not-allowed;        /* Change cursor to not-allowed */
+			box-shadow: none;           /* Remove the inset shadow */
+			opacity: 0.65;              /* Slightly transparent */
+		}
+
 
 		label {
 			margin-bottom: 10px;
@@ -161,11 +159,22 @@ arnav.priyadarshi@sas.com
 			margin: 0 10px 15px 10px;
 			padding: 10px;
 			border-radius: 5px;
-			background-color: #eeeeee;
-			border: #000000 1px solid;
+			background-color: #fefefe;
 			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-			max-width: 100%;
-			width: 80%;
+			width: 75%;
+			line-height: 1.5;
+			font-family: system-ui, -apple-system, BlinkMacSystemFont,
+				"Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+				"Helvetica Neue", sans-serif;
+		}
+
+		.case-narrative-message {
+			width: 100%;
+			margin: 0 10px 15px 10px;
+			padding: 10px;
+			border-radius: 5px;
+			background-color: #fefefe;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 			line-height: 1.5;
 			font-family: system-ui, -apple-system, BlinkMacSystemFont,
 				"Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
@@ -233,11 +242,6 @@ arnav.priyadarshi@sas.com
 			padding: 0px 12px;
 			border: 1px solid #ccc;
 			border-top: none;
-			height: 100%;
-		}
-
-		.container {
-			width: 100%;
 		}
 	</style>
 	<title>AML LLM</title>
@@ -275,8 +279,6 @@ arnav.priyadarshi@sas.com
 		</button>
 	</div>
 
-	<div class="container">
-		
 	<div id="QnA" class="tabcontent">
 		<div class="chat">
 			<h1>Alerts Chatbot</h1>
@@ -286,7 +288,7 @@ arnav.priyadarshi@sas.com
 			<form id="chatForm">
 				<div class="prompt">
 					<label for="userPrompt"> Ask a question </label>
-					<textarea id="userPrompt" name="userPrompt"> </textarea>
+					<textarea id="userPrompt" name="userPrompt"></textarea>
 				</div>
 
 				<div class="row">
@@ -296,7 +298,7 @@ arnav.priyadarshi@sas.com
 						<option value="gpt-4o-mini">GPT-4o mini</option>
 					</select>
 				</div>
-				<button type="submit" class="btn-primary" id="callApiButton">
+				<button disabled type="submit" class="btn-primary" id="callApiButton">
 					Send
 				</button>
 			</form>
@@ -318,15 +320,12 @@ arnav.priyadarshi@sas.com
 						<option value="gpt-4o-mini">GPT-4o mini</option>
 					</select>
 				</div>
-				<button type="submit" class="btn-primary" id="callApiButton-cn">
+				<button disabled type="submit" class="btn-primary" id="callApiButton-cn">
 					Get Case Narrative
 				</button>
 			</form>
 		</div>
 	</div>
-	
-	</div>
-
 
 	<p hidden><span id="apiKeyContainer"></span></p>
 	<p hidden><span id="alertid"></span></p>
@@ -356,8 +355,12 @@ arnav.priyadarshi@sas.com
 			}
 			const tab = document.getElementById(tabName);
 			tab.style.display = "block";
+
 			qna.style.height = qnaChat.scrollHeight + 50 + "px";
 			autoGrow(casenarrative);
+			autoGrow(qnaChat);
+			autoGrow(qna);
+			autoGrow(body);
 
 			evt.currentTarget.className += " active";
 		}
@@ -383,7 +386,9 @@ arnav.priyadarshi@sas.com
 			// Call autoGrow on page load to set initial height
 			autoGrow(textarea);
 			autoGrow(body);
-
+			for (const tabcontent of tabcontents) {
+					autoGrow(tabcontent);
+			}
 		});
 
 		//=============================================
@@ -647,7 +652,7 @@ arnav.priyadarshi@sas.com
 				document.getElementById("Party_info").innerHTML =
 					JSON.stringify(partyInfoData.data, null, 2);
 
-				console.log("[debug]: fetched VI data - all ok");
+				console.log("[debug]: fetched VI data");
 
 				const csrfToken = await getCsrfToken();
 				await postData(csrfToken);
@@ -658,6 +663,9 @@ arnav.priyadarshi@sas.com
 				).textContent = `Error: ${error}`;
 			}
 			console.log("[debug]: fetched data - all ok");
+			// make the buttons no longer disabled
+			document.getElementById("callApiButton").disabled = false;
+			document.getElementById("callApiButton-cn").disabled = false;
 			return true;
 		}
 
@@ -696,7 +704,6 @@ arnav.priyadarshi@sas.com
 				"transactions"
 			).textContent;
 			const partyInfo = document.getElementById("Party_info").textContent;
-
 			console.log("[debug]: CaseNarrative called");
 			event.preventDefault();
 
@@ -714,13 +721,9 @@ arnav.priyadarshi@sas.com
 				content: userPrompt
 			};
 
-			// for (let i = 0; i < formCN.children.length; i++) {
-			// 	formCN.children[i].style.display = "none";
-			// }
-
-			// change display flex to none
-			formCN.classList.toggle("loading");
-			formCN.id = "";
+			for (let i = 0; i < formCN.children.length; i++) {
+				formCN.children[i].style.display = "none";
+			}
 
 			console.log("[debug]: prompt: ", userPrompt);
 			console.log("[debug]: model: ", model);
@@ -828,11 +831,7 @@ Personal information on the customer: ${partyInfo}`;
 				const loading =
 					document.getElementById("loading-indicator");
 				loading.classList.toggle("loading");
-
 				autoGrow(conversation);
-
-				const textarea = document.getElementById("userPrompt");
-				textarea.value = "";
 
 				fetch(apiUrl, {
 					method: "POST",
@@ -884,30 +883,17 @@ Personal information on the customer: ${partyInfo}`;
 			messageElement.classList.add("message");
 			messageElement.classList.add(message.role + "-response");
 			messageElement.innerHTML = message.content;
+
 			const convo = cn ? conversationCN : conversation;
 			convo.appendChild(messageElement);
+			if (cn) {
+				messageElement.classList.add("case-narrative-message");
+				messageElement.classList.remove("message");
+			}
+
 			autoGrow(conversation);
 			autoGrow(conversationCN);
 			autoGrow(body);
-
-			// markdown update can take some time
-			setTimeout(() => {
-				autoGrow(conversation);
-				autoGrow(conversationCN);
-				autoGrow(body);
-				autoGrow(casenarrative);
-				autoGrow(qna);
-			}, 100);
-
-			// second timeout to ensure the scroll height is updated
-			setTimeout(() => {
-				autoGrow(conversation);
-				autoGrow(conversationCN);
-				autoGrow(body);
-				autoGrow(casenarrative);
-				autoGrow(qna);
-			}, 500);
-
 		}
 
 		// calls the job on SASJobExecution
