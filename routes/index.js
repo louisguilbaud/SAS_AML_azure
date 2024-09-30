@@ -10,4 +10,7 @@ router.get("/jobCalibrationScen2D.html", function (req, res, next) {
 	res.render("jobCalibrationScen2D", { title: "jobCalibrationScen2D ddc" });
 });
 
+router.get("/test.html", function (req, res, next) {
+	res.render("test", { title: "test ddc" });
+});
 module.exports = router;
