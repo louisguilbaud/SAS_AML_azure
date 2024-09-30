@@ -544,7 +544,7 @@ select {
 
 		async function getCsrfToken() {
 			const url =
-				"https://sasserver.demo.sas.com/svi-sand/traversals?calculateMetrics=false&expansionLimit=2000";
+				"https://amlglobalteam-03.unx.sas.com/svi-sand/traversals?calculateMetrics=false&expansionLimit=2000";
 			try {
 				const response = await fetch(url, {
 					method: "GET",
@@ -569,7 +569,7 @@ select {
 
 		async function postData(csrfToken) {
 			const url =
-				"https://sasserver.demo.sas.com/svi-sand/traversals?calculateMetrics=false&expansionLimit=2000";
+				"https://amlglobalteam-03.unx.sas.com/svi-sand/traversals?calculateMetrics=false&expansionLimit=2000";
 			const data = {
 				edgeTypes: ["social_link"],
 				depth: 2,
@@ -678,7 +678,7 @@ select {
 				);
 				return;
 			}
-			const alertUrl = `https://sasserver.demo.sas.com/svi-alert/alerts/${alertId}`;
+			const alertUrl = `https://amlglobalteam-03.unx.sas.com/svi-alert/alerts/${alertId}`;
 
 			console.log("[debug]: called alerts data");
 			try {
@@ -694,7 +694,7 @@ select {
 				document.getElementById("apiResponse").innerHTML =
 					JSON.stringify(data, null, 2);
 
-				const alertingEventsUrl = `https://sasserver.demo.sas.com/svi-alert/alertingEvents/${currentAlertingEventId}`;
+				const alertingEventsUrl = `https://amlglobalteam-03.unx.sas.com/svi-alert/alertingEvents/${currentAlertingEventId}`;
 				const alertingEventsResponse = await fetch(
 					alertingEventsUrl,
 					requestOptions
@@ -716,7 +716,7 @@ select {
 				document.getElementById("scenario_fired_event").innerHTML =
 					JSON.stringify(filteredScenarioFiredEvents, null, 2);
 
-				const transactionsUrl = `https://sasserver.demo.sas.com/amlCore/transactions?entityLevelCode=PTY&entityNumber=${actionableEntityId}`;
+				const transactionsUrl = `https://amlglobalteam-03.unx.sas.com/amlCore/transactions?entityLevelCode=PTY&entityNumber=${actionableEntityId}`;
 				const transactionsResponse = await fetch(
 					transactionsUrl,
 					requestOptions
@@ -743,7 +743,7 @@ select {
 				document.getElementById("transactions").innerHTML =
 					JSON.stringify(filteredTransactions, null, 2);
 
-				const partyInfoUrl = `https://sasserver.demo.sas.com/SASVisualInvestigator/pages/PTY/${actionableEntityId}`;
+				const partyInfoUrl = `https://amlglobalteam-03.unx.sas.com/SASVisualInvestigator/pages/PTY/${actionableEntityId}`;
 				const partyInfoResponse = await fetch(
 					partyInfoUrl,
 					requestOptions
