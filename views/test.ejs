@@ -937,7 +937,7 @@ Personal information on the customer: ${partyInfo}`;
 
 				const loading =
 					document.getElementById("loading-indicator");
-				loading.classList.start("loading");
+				loading.classList.toggle("loading");
 				autoGrow(conversation);
 
 				fetch(apiUrl, {
@@ -958,7 +958,7 @@ Personal information on the customer: ${partyInfo}`;
 				})
 					.then(response => response.json())
 					.then(data => {
-						loading.classList.stop("loading");
+						loading.classList.toggle("loading");
 						console.log("[debug]: chatgpt response", data);
 						const content = data.choices[0].message.content;
 						const inputTokens = data.usage.prompt_tokens;
@@ -976,7 +976,7 @@ Personal information on the customer: ${partyInfo}`;
 						callJob(inputTokens, outputTokens);
 					})
 					.catch(error => {
-						loading.classList.stop("loading");
+						loading.classList.toggle("loading");
 						console.error("[debug]: Error:", error);
 						document.getElementById(
 							"chatgptResponse"
